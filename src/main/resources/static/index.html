@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello WebSocket</title>
+<script src="libs/sockjs-0.3.4.js"></script>
+<script src="libs/stomp.js"></script>
+<script src="libs/jquery-3.0.0.min.js"></script>
+<script src="libs/x3dom-1.7.0.js"></script>
+<link rel="stylesheet" href="libs/x3dom-1.7.0.css">
+<script src="js/application.js"></script>
+</head>
+<body onload="disconnect()">
+	<noscript>
+		<h2 style="color: #ff0000">Seems your browser doesn't support
+			Javascript! Websocket relies on Javascript being enabled. Please
+			enable Javascript and reload this page!</h2>
+	</noscript>
+	<div>
+		<div>
+			<button id="connect" onclick="connect();">Connect</button>
+			<button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+		</div>
+		<div id="conversationDiv">
+			<label>Change log:</label>
+			<p id="response"></p>
+		</div>
+		<div id="scene">
+			<x3d width='500px' height='400px' showLog="true"> <scene>
+			<transform translation="0 0 0" >
+			<shape id="sphere" onClick=sendObject(this)> <appearance> <material
+				id="sphere-material" diffuseColor='1.0 0.0 0.0'></material> </appearance> <sphere></sphere>
+			</shape> </transform> <transform translation="3 2 1" >
+			<shape id="box" onClick=sendObject(this)> <appearance> <material
+				id="box-material" diffuseColor='0.0 1.0 0.0'></material> </appearance> <box></box>
+			</shape> </transform> </scene> </x3d>
+		</div>
+	</div>
+</body>
+</html>

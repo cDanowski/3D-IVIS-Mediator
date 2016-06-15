@@ -1,4 +1,10 @@
 target/
+/bin/
+.classpath
+.project
+.settings
+!*.gitkeep/
+
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
