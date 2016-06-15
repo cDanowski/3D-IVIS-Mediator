@@ -1,4 +1,4 @@
-package hello;
+package exampleApplication;
 
 public class X3dObject {
 	
