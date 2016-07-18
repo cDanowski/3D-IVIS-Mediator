@@ -7,7 +7,7 @@ package runtime.modify;
  * @author Christian Danowski
  *
  */
-public class RuntimeManipulationMessage {
+public class RuntimeModificationMessage {
 
 	/*
 	 * e.g. NEW or UPDATE to indicate the type of manipulation method
@@ -31,12 +31,6 @@ public class RuntimeManipulationMessage {
 	 * where should the new content be embedded within the running scene
 	 */
 	public String appendLocation;
-
-	/*
-	 * scene content needed to inform all other clients and keep them
-	 * synchronized.
-	 */
-	public String responseSceneContent;
 
 	/*
 	 * TODO what else is needed?

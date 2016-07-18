@@ -4,7 +4,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import runtime.additionalData.RuntimeRequestDataMessage;
 import util.UrlConstants;
 
 /**
@@ -20,7 +19,7 @@ public class DataModificationController {
 
 	@MessageMapping(UrlConstants.RUNTIME_MODIFICATION_ENDPOINT)
 	@SendTo("") //TODO inform all other clients!
-	public RuntimeManipulationMessage updateDataSource(RuntimeManipulationMessage runtimeMessage) {
+	public RuntimeModificationMessage updateDataSource(RuntimeModificationMessage runtimeMessage) {
 
 		/*
 		 * TODO message contains information about update TASK (NEW object or
