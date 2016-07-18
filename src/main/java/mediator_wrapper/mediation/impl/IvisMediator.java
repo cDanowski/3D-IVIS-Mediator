@@ -7,14 +7,20 @@ import runtime.modify.RuntimeModificationMessage;
  * Central mediator component of a Mediator-Wrapper architecture to offer a
  * homogeneous interface to query heterogeneous data sources.
  * 
- * TODO as instance object?
- * 
  * @author Christian Danowski
  *
  */
 public class IvisMediator implements IvisMediatorInterface {
 
 	private String pathToGlobalSchema;
+
+	/**
+	 * attribute shall indicate whether a user already performs a modification
+	 * request. Different Modifications should not happen at the same time.
+	 * 
+	 * Could return an info message, if another user already updates something
+	 */
+	private boolean isCurrentlyModifying = false;
 
 	/*
 	 * TODO attribute that holds the global schema!
@@ -65,6 +71,8 @@ public class IvisMediator implements IvisMediatorInterface {
 	@Override
 	public Object modifyDataInstances(RuntimeModificationMessage modificationMessage) {
 
+		this.isCurrentlyModifying = true;
+		
 		/*
 		 * analyze the query against the global schema
 		 * 
@@ -75,6 +83,8 @@ public class IvisMediator implements IvisMediatorInterface {
 		 * 
 		 * collect and return results (all queried objects!)
 		 */
+		
+		this.isCurrentlyModifying = false;
 
 		return null;
 
