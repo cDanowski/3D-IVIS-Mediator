@@ -1,7 +1,7 @@
-package trigger;
+package synchronize;
 
 /**
- * Java representation of a trigger message sent to clients! The message must
+ * Java representation of a synchronize message sent to clients! The message must
  * contain all necessary information to update/embed scene content into a
  * running scene.
  * 
@@ -10,7 +10,7 @@ package trigger;
  * @author Christian Danowski
  *
  */
-public class TriggerMessage {
+public class SynchronizationMessage {
 
 	/*
 	 * could be NEW for completely new data or UPDATE for modification of
@@ -26,7 +26,7 @@ public class TriggerMessage {
 	public String objectId;
 
 	/*
-	 * identifies the location here new data should be added/appended
+	 * identifies the location where new data should be added/appended
 	 */
 	public String appendLocation;
 }

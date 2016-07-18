@@ -1,4 +1,4 @@
-package mediaton;
+package visualize;
 
 /**
  * Java representation of a server side visualization message, which is sent by

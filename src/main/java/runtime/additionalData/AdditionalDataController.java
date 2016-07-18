@@ -1,15 +1,14 @@
-package runtime;
+package runtime.additionalData;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import runtime.modify.RuntimeManipulationMessage;
 import util.UrlConstants;
 
 /**
- * Controller that handles runtime behavior like:
- * 
- * - user triggered updates of content --> causing data source updates
+ * Controller that handles following runtime behavior:
  * 
  * - query of additional data the user requests from within a running scene!
  * 
@@ -17,18 +16,7 @@ import util.UrlConstants;
  *
  */
 @Controller
-public class RuntimeController {
-
-	@MessageMapping(UrlConstants.RUNTIME_MODIFICATION_ENDPOINT)
-	@SendTo("") //TODO inform all other clients!
-	public RuntimeManipulationMessage updateDataSource(RuntimeManipulationMessage runtimeMessage) {
-
-		/*
-		 * TODO message contains information about update TASK (NEW object or
-		 * UPDATE existing object), which object is meant (ID)
-		 */
-		return null;
-	}
+public class AdditionalDataController {
 
 	@MessageMapping(UrlConstants.RUNTIME_ADDITIONAL_DATA_ENDPOINT)
 	@SendTo("") // TODO only send back to requesting client!
