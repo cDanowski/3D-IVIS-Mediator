@@ -13,6 +13,6 @@ public class UrlConstants {
 	 * stomp endpoint, used to broadcast data changes to affected clients
 	 */
 	public static final String STOMP_CLIENT_SYNCHRONIZATION_ENDPOINT = "/topic/synchronize";
-	public static final String APPLICATION_PREFIX = "/ivisApp/";
+	public static final String APPLICATION_PREFIX = "/ivisApp";
 
 }

@@ -1,7 +1,7 @@
 package mediator_wrapper.mediation.impl;
 
+import controller.runtime.modify.RuntimeModificationMessage;
 import mediator_wrapper.mediation.IvisMediatorInterface;
-import runtime.modify.RuntimeModificationMessage;
 
 /**
  * Central mediator component of a Mediator-Wrapper architecture to offer a

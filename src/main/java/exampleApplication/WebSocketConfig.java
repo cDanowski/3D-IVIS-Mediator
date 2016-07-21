@@ -19,6 +19,8 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/changeColor").withSockJS();
+		
+		registry.addEndpoint("/test/changeColor2").withSockJS();
 	}
 
 }

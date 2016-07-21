@@ -1,6 +1,6 @@
 package mediator_wrapper.mediation;
 
-import runtime.modify.RuntimeModificationMessage;
+import controller.runtime.modify.RuntimeModificationMessage;
 
 /**
  * Interface definition of the central mediator component of a Mediator-Wrapper

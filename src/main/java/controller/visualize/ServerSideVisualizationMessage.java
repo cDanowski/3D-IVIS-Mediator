@@ -1,4 +1,4 @@
-package visualize;
+package controller.visualize;
 
 /**
  * Java representation of a server side visualization message, which is sent by

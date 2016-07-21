@@ -1,4 +1,4 @@
-package runtime.modify;
+package controller.runtime.modify;
 
 /**
  * Java representation of a runtime manipulation message, which is sent by

@@ -1,4 +1,4 @@
-package runtime.additionalData;
+package controller.runtime.additional_data;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

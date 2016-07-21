@@ -1,8 +1,8 @@
 package mediator_wrapper.wrapper.impl;
 
+import controller.runtime.modify.RuntimeModificationMessage;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
-import runtime.modify.RuntimeModificationMessage;
 
 /**
  * Wrapper that manages database access

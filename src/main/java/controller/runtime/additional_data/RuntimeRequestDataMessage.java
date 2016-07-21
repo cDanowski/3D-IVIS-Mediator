@@ -1,4 +1,4 @@
-package runtime.additionalData;
+package controller.runtime.additional_data;
 /**
  * Java representation of a runtime request data message, which is sent by
  * clients to request additional data from within a running scene.

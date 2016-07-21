@@ -1,4 +1,4 @@
-package visualize;
+package controller.visualize;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -32,6 +32,7 @@ public class ServerSideVisualizationController {
 		 * queryObject should have an attribute with the query against the
 		 * global schema.
 		 */
+		System.out.println("test1234");
 
 		// TODO return object should have an attribute that holds the x3d scene!
 		return null;

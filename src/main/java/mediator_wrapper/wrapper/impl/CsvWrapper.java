@@ -2,9 +2,9 @@ package mediator_wrapper.wrapper.impl;
 
 import java.net.URI;
 
+import controller.runtime.modify.RuntimeModificationMessage;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
-import runtime.modify.RuntimeModificationMessage;
 
 /**
  * Wrapper to manage access to CSV files.
