@@ -1,9 +1,11 @@
 package controller.runtime.modify;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import mediator_wrapper.mediation.impl.IvisMediator;
 import util.UrlConstants;
 
 /**
@@ -16,6 +18,9 @@ import util.UrlConstants;
  */
 @Controller
 public class DataModificationController {
+	
+	@Autowired
+	IvisMediator mediator;
 
 	@MessageMapping(UrlConstants.RUNTIME_MODIFICATION_ENDPOINT)
 	@SendTo("") //TODO inform all other clients!
@@ -29,6 +34,9 @@ public class DataModificationController {
 		 * 
 		 * trigger synchronization broadcast on successful update.
 		 */
+		
+		this.mediator.modifyDataInstances(runtimeMessage);
+		
 		return null;
 	}
 

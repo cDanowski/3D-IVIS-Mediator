@@ -1,7 +1,10 @@
 package mediator_wrapper.mediation.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import controller.runtime.modify.RuntimeModificationMessage;
 import mediator_wrapper.mediation.IvisMediatorInterface;
+import mediator_wrapper.wrapper.impl.XmlWrapper;
 
 /**
  * Central mediator component of a Mediator-Wrapper architecture to offer a
@@ -11,6 +14,12 @@ import mediator_wrapper.mediation.IvisMediatorInterface;
  *
  */
 public class IvisMediator implements IvisMediatorInterface {
+	
+	@Autowired
+	XmlWrapper xmlWrapper;
+	
+	@Autowired
+	XmlWrapper csvWrapper;
 
 	private Object wrapperMapping;
 

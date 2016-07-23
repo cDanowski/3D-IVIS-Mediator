@@ -1,9 +1,11 @@
 package controller.runtime.additional_data;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import mediator_wrapper.mediation.impl.IvisMediator;
 import util.UrlConstants;
 
 /**
@@ -16,6 +18,9 @@ import util.UrlConstants;
  */
 @Controller
 public class AdditionalDataController {
+	
+	@Autowired
+	IvisMediator mediator;
 
 	@MessageMapping(UrlConstants.RUNTIME_ADDITIONAL_DATA_ENDPOINT)
 	@SendTo("") // TODO only send back to requesting client!
@@ -30,6 +35,9 @@ public class AdditionalDataController {
 		 * sent to server as well, or be left on the client side JavScript
 		 * code???
 		 */
+		
+		Object retrievedData = this.mediator.queryData(runtimeMessage.query);
+		
 		return null;
 	}
 
