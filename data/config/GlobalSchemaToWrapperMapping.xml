@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<globalSchemaToWrapperMappingDefinition>
+
+	<!-- map an XPath selector to a Wrapper-Instances that offer information 
+		about it -->
+	<mapping>
+		<!-- selector is an XPath expression pointing to an element of the global schema -->
+		<selector>bookstore/book</selector>
+		<wrappers>
+			<!-- multiple wrappers might offer data for that specific element -->
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvMapper</wrapper>
+		</wrappers>
+	</mapping>
+	
+	<!-- mapping for attribute stock -->
+	<mapping>
+		<selector>bookstore/book/@stock</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvMapper</wrapper>
+		</wrappers>
+	</mapping>
+	
+	<!-- mapping for attribute language -->
+	<mapping>
+		<selector>bookstore/book/@language</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvMapper</wrapper>
+		</wrappers>
+	</mapping>
+	
+	<!-- mapping for element title-->
+	<mapping>
+		<selector>bookstore/book/title</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvMapper</wrapper>
+		</wrappers>
+	</mapping>
+	
+	<!-- mapping for element author-->
+	<mapping>
+		<selector>bookstore/book/author</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvMapper</wrapper>
+		</wrappers>
+	</mapping>
+	
+	<!-- mapping for element category-->
+	<mapping>
+		<selector>bookstore/book/category</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvMapper</wrapper>
+		</wrappers>
+	</mapping>
+	
+	<!-- mapping for element price-->
+	<mapping>
+		<selector>bookstore/book/price</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvMapper</wrapper>
+		</wrappers>
+	</mapping>
+	
+	<!-- mapping for attribute currency-->
+	<mapping>
+		<selector>bookstore/book/price/@currency</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvMapper</wrapper>
+		</wrappers>
+	</mapping>
+
+
+</globalSchemaToWrapperMappingDefinition>

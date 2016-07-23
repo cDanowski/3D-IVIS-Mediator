@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wrapperSpecificMapping>
+
+	<!-- map an XPath selector against the global schema to elements of the local schema -->
+	<mapping>
+		<!-- selector is an XPath expression pointing to an element of the global schema -->
+		<selector_globalSchema>bookstore/book</selector_globalSchema>
+		<!-- selector pointing to the equivalent element of the local schema;
+			in this case it represents the HEADER of the CSV column that holds the 
+			equivalent information -->
+			
+			<!-- in a CSV file, each row (except HEADER row) represents a book-->
+		<selector_localSchema>ALL ROWS</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for attribute stock -->
+	<mapping>
+		<selector_globalSchema>bookstore/book/@stock</selector_globalSchema>
+		<selector_localSchema>NumberInStock</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for attribute language -->
+	<mapping>
+		<selector_globalSchema>bookstore/book/@language</selector_globalSchema>
+		<selector_localSchema>Language</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for element title-->
+	<mapping>
+		<selector_globalSchema>bookstore/book/title</selector_globalSchema>
+		<selector_localSchema>Title</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for element author-->
+	<mapping>
+		<selector_globalSchema>bookstore/book/author</selector_globalSchema>
+		<selector_localSchema>Author</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for element category-->
+	<mapping>
+		<selector_globalSchema>bookstore/book/category</selector_globalSchema>
+		<selector_localSchema>Category</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for element price-->
+	<mapping>
+		<selector_globalSchema>bookstore/book/price</selector_globalSchema>
+		<selector_localSchema>Price</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for attribute currency-->
+	<mapping>
+		<selector_globalSchema>bookstore/book/price/@currency</selector_globalSchema>
+		<selector_localSchema>Currency</selector_localSchema>
+	</mapping>
+
+</wrapperSpecificMapping>
