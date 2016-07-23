@@ -12,7 +12,7 @@ import mediator_wrapper.mediation.IvisMediatorInterface;
  */
 public class IvisMediator implements IvisMediatorInterface {
 
-	private String pathToGlobalSchema;
+	private Object wrapperMapping;
 
 	/**
 	 * attribute shall indicate whether a user already performs a modification
@@ -33,21 +33,12 @@ public class IvisMediator implements IvisMediatorInterface {
 	 * allow dynamic addition and deletion of wrappers)
 	 */
 
-	/*
-	 * initiate instance
-	 */
-	private IvisMediator instance = new IvisMediator();
-
-	private IvisMediator() {
+	public IvisMediator(String pathToWrapperMappingFile) {
 		/*
-		 * TODO load all necessary files and wrapper classes etc.
+		 * TODO load mapping file from argument
+		 * 
+		 * as a map that maps selectors to wrapper names?!?!
 		 */
-	}
-
-	public IvisMediator getInstance() {
-
-		return this.instance;
-
 	}
 
 	@Override
