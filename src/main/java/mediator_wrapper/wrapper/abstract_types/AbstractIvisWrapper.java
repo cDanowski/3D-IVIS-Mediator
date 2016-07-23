@@ -3,23 +3,10 @@ package mediator_wrapper.wrapper.abstract_types;
 public abstract class AbstractIvisWrapper {
 
 	/*
-	 * the local schema of the wrapper
-	 */
-	protected Object localSchema;
-
-	/*
-	 * object that holds the maping between entries of the global schema and
+	 * object that holds the mapping between entries of the global schema and
 	 * entries of the wrapper's local schema
 	 */
 	protected Object schemaMapping;
-
-	public Object getLocalSchema() {
-		return localSchema;
-	}
-
-	public void setLocalSchema(Object localSchema) {
-		this.localSchema = localSchema;
-	}
 
 	public Object getSchemaMapping() {
 		return schemaMapping;

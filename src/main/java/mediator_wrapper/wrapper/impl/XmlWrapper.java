@@ -5,19 +5,19 @@ import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
 
 /**
- * Wrapper to manage access to CSV files.
+ * Wrapper to manage access to XML files.
  * 
  * @author Christian Danowski
  *
  */
-public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperInterface{
-	
-	public CsvWrapper(String pathToSourcefile, String pathToSchemaMappingFile) {
+public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperInterface {
+
+	public XmlWrapper(String pathToSourcefile, String pathToSchemaMappingFile) {
 		super(pathToSourcefile, pathToSchemaMappingFile);
-		
 		/* 
 		 * TODO instantiate wrapper properly!
 		 */
+
 	}
 
 	@Override
