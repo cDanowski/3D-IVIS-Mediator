@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<bookstore>
+
+	<book stock="" language="">
+		<title></title>
+		<author></author>
+		<category></category>
+		<price currency=""></price>
+	</book>
+
+</bookstore> 
