@@ -1,5 +1,9 @@
 package config;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.dom4j.DocumentException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +13,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 import mediator_wrapper.mediation.impl.IvisMediator;
+import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.impl.CsvWrapper;
 import mediator_wrapper.wrapper.impl.XmlWrapper;
 import util.UrlConstants;
@@ -65,22 +70,13 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	 */
 
 	/**
-	 * configure mediator instance
-	 * 
-	 * @return
-	 */
-	@Bean
-	public IvisMediator initializeMediator() {
-		return new IvisMediator(this.pathToWrapperMappingFile);
-	}
-
-	/**
 	 * configure xml wrapper instance
 	 * 
 	 * @return
+	 * @throws DocumentException
 	 */
 	@Bean
-	public XmlWrapper initializeXmlWrapper() {
+	public XmlWrapper initializeXmlWrapper() throws DocumentException {
 		String fileLocation = "data/data_sources/products.xml";
 		String localSchemaMappingLocation = "data/config/XmlBookstoreMapping.xml";
 
@@ -91,13 +87,31 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	 * configure csv wrapper instance
 	 * 
 	 * @return
+	 * @throws DocumentException 
 	 */
 	@Bean
-	public CsvWrapper initializeCsvWrapper() {
+	public CsvWrapper initializeCsvWrapper() throws DocumentException {
 		String fileLocation = "data/data_sources/products.csv";
 		String localSchemaMappingLocation = "data/config/CsvBookstoreMapping.xml";
 
 		return new CsvWrapper(fileLocation, localSchemaMappingLocation);
+	}
+	
+	/**
+	 * configure mediator instance
+	 * 
+	 * @return
+	 * @throws DocumentException 
+	 */
+	@Bean
+	public IvisMediator initializeMediator() throws DocumentException {
+		List<IvisWrapperInterface> wrappers= new ArrayList<IvisWrapperInterface>();
+		wrappers.add(initializeXmlWrapper());
+		wrappers.add(initializeCsvWrapper());
+		
+		IvisMediator mediator =  new IvisMediator(wrappers, this.pathToWrapperMappingFile);
+		
+		return mediator;
 	}
 
 }
