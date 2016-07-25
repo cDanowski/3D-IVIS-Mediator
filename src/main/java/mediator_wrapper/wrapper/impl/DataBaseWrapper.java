@@ -1,6 +1,10 @@
 package mediator_wrapper.wrapper.impl;
 
+import java.util.List;
+
 import controller.runtime.modify.RuntimeModificationMessage;
+import ivisObject.IvisObject;
+import ivisQuery.IvisQuery;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
 
@@ -13,7 +17,7 @@ import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
 public class DataBaseWrapper extends AbstractIvisDataBaseWrapper implements IvisWrapperInterface {
 
 	@Override
-	public Object queryData(String subQueryAgainstGlobalSchema) {
+	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors) {
 		// TODO Auto-generated method stub
 		return null;
 	}

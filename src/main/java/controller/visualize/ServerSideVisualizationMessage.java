@@ -1,5 +1,7 @@
 package controller.visualize;
 
+import ivisQuery.IvisQuery;
+
 /**
  * Java representation of a server side visualization message, which is sent by
  * clients that request an initial visualization of data.
@@ -9,15 +11,15 @@ package controller.visualize;
  */
 public class ServerSideVisualizationMessage {
 	
-	public String query;
+	public IvisQuery query;
 	
 	public String responseScene;
 
-	public String getQuery() {
+	public IvisQuery getQuery() {
 		return query;
 	}
 
-	public void setQuery(String query) {
+	public void setQuery(IvisQuery query) {
 		this.query = query;
 	}
 

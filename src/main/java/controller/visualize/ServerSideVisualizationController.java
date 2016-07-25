@@ -1,5 +1,6 @@
 package controller.visualize;
 
+import org.jaxen.JaxenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -41,7 +42,12 @@ public class ServerSideVisualizationController {
 		/*
 		 * forward query to mediator
 		 */
-		Object retrievedData = this.mediator.queryData(queryObject.query);
+		try {
+			Object retrievedData = this.mediator.queryData(queryObject.query);
+		} catch (JaxenException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// TODO return object should have an attribute that holds the x3d scene!
 		return null;

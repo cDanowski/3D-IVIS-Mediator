@@ -1,8 +1,12 @@
 package mediator_wrapper.wrapper.impl;
 
+import java.util.List;
+
 import org.dom4j.DocumentException;
 
 import controller.runtime.modify.RuntimeModificationMessage;
+import ivisObject.IvisObject;
+import ivisQuery.IvisQuery;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
 
@@ -20,7 +24,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	public Object queryData(String subQueryAgainstGlobalSchema) {
+	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors) {
 		// TODO Auto-generated method stub
 		return null;
 	}

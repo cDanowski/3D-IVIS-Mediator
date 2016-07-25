@@ -1,6 +1,10 @@
 package mediator_wrapper.wrapper;
 
+import java.util.List;
+
 import controller.runtime.modify.RuntimeModificationMessage;
+import ivisObject.IvisObject;
+import ivisQuery.IvisQuery;
 
 /**
  * Interface definition for wrapper components of a Mediator-Wrapper
@@ -20,14 +24,19 @@ public interface IvisWrapperInterface {
 	 * wrapper's local schema and then executes that query to retrieve data from
 	 * the wrapper's specific data source.
 	 * 
-	 * @param subQueryAgainstGlobalSchema
-	 *            the sub-query against the global schema of the
-	 *            mediator-wrapper. "Sub-query" indicates, that the query only
-	 *            contains selectors for elements which are guaranteed to be
-	 *            found in the local schema of the wrapper.
+	 * @param queryAgainstGlobalSchema
+	 *            the query against the global schema of the mediator-wrapper
+	 *            that contains the selector against the global schema and
+	 *            filter definitions.
+	 * @param subquerySelectors
+	 *            necessary subquerySelectors that point to all child nodes and
+	 *            attributes of the element selected by
+	 *            queryAgainstGlobalSchema. If it represents the same selector
+	 *            as in queryAgainstGlobalSchema, then there are no such sub
+	 *            elements
 	 * @return the data objects which were queried
 	 */
-	public Object queryData(String subQueryAgainstGlobalSchema);
+	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors);
 
 	/**
 	 * 

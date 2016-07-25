@@ -1,5 +1,6 @@
 package controller.runtime.additional_data;
 
+import org.jaxen.JaxenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -36,7 +37,12 @@ public class AdditionalDataController {
 		 * code???
 		 */
 		
-		Object retrievedData = this.mediator.queryData(runtimeMessage.query);
+		try {
+			Object retrievedData = this.mediator.queryData(runtimeMessage.query);
+		} catch (JaxenException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return null;
 	}
