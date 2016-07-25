@@ -28,8 +28,9 @@ public interface IvisMediatorInterface {
 	 *            of elements according to the global schema and filter objects
 	 * @return all queried data objects
 	 * @throws JaxenException
+	 * @throws Exception 
 	 */
-	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema) throws JaxenException;
+	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema) throws JaxenException, Exception;
 
 	/**
 	 * Analyzes the modification message to identify, which object of the global

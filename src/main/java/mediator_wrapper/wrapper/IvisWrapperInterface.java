@@ -2,6 +2,8 @@ package mediator_wrapper.wrapper;
 
 import java.util.List;
 
+import org.dom4j.DocumentException;
+
 import controller.runtime.modify.RuntimeModificationMessage;
 import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
@@ -35,8 +37,9 @@ public interface IvisWrapperInterface {
 	 *            as in queryAgainstGlobalSchema, then there are no such sub
 	 *            elements
 	 * @return the data objects which were queried
+	 * @throws Exception 
 	 */
-	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors);
+	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors) throws Exception;
 
 	/**
 	 * 

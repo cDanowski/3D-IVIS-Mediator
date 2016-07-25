@@ -173,7 +173,7 @@ public class IvisMediator implements IvisMediatorInterface {
 	}
 
 	@Override
-	public List<IvisObject> queryData(IvisQuery query) throws JaxenException {
+	public List<IvisObject> queryData(IvisQuery query) throws Exception {
 
 		/*
 		 * analyze the query (XPath expression) against the global schema

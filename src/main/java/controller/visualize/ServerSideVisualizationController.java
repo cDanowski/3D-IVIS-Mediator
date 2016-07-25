@@ -50,6 +50,9 @@ public class ServerSideVisualizationController {
 		} catch (JaxenException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		// TODO return object should have an attribute that holds the x3d scene!
