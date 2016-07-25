@@ -1,11 +1,14 @@
 package controller.visualize;
 
+import java.util.List;
+
 import org.jaxen.JaxenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import ivisObject.IvisObject;
 import mediator_wrapper.mediation.impl.IvisMediator;
 import util.UrlConstants;
 
@@ -43,7 +46,7 @@ public class ServerSideVisualizationController {
 		 * forward query to mediator
 		 */
 		try {
-			Object retrievedData = this.mediator.queryData(queryObject.query);
+			List<IvisObject> retrievedData = this.mediator.queryData(queryObject.query);
 		} catch (JaxenException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,8 +1,11 @@
 package mediator_wrapper.mediation;
 
+import java.util.List;
+
 import org.jaxen.JaxenException;
 
 import controller.runtime.modify.RuntimeModificationMessage;
+import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
 
 /**
@@ -26,7 +29,7 @@ public interface IvisMediatorInterface {
 	 * @return all queried data objects
 	 * @throws JaxenException
 	 */
-	public Object queryData(IvisQuery queryAgainstGlobalSchema) throws JaxenException;
+	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema) throws JaxenException;
 
 	/**
 	 * Analyzes the modification message to identify, which object of the global

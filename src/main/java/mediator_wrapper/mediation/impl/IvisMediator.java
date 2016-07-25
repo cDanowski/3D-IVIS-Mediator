@@ -14,6 +14,7 @@ import org.jaxen.JaxenException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import controller.runtime.modify.RuntimeModificationMessage;
+import ivisObject.IvisObject;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.IvisMediatorInterface;
@@ -172,7 +173,7 @@ public class IvisMediator implements IvisMediatorInterface {
 	}
 
 	@Override
-	public Object queryData(IvisQuery query) throws JaxenException {
+	public List<IvisObject> queryData(IvisQuery query) throws JaxenException {
 
 		/*
 		 * analyze the query (XPath expression) against the global schema
@@ -184,7 +185,7 @@ public class IvisMediator implements IvisMediatorInterface {
 		 * 
 		 * collect and return results (all queried objects!)
 		 */
-		List<Object> foundItems = new ArrayList<Object>();
+		List<IvisObject> retrievedItems = new ArrayList<IvisObject>();
 		
 		String selector_globalSchema = query.getSelector();
 		
@@ -206,10 +207,8 @@ public class IvisMediator implements IvisMediatorInterface {
 		 * to each found wrapper instance and collect its data 
 		 */
 		for (IvisWrapperInterface wrapper : wrappersForSelector) {
-			
-			
-			
-			wrapper.queryData(query, subquerySelectors);
+
+			retrievedItems.addAll(wrapper.queryData(query, subquerySelectors));
 		}
 
 		/*
@@ -247,18 +246,7 @@ public class IvisMediator implements IvisMediatorInterface {
 		 * 
 		 */
 
-		// DocumentBuilder builder =
-		// DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		// org.w3c.dom.Document document = builder.parse(new
-		// File("/widgets.xml"));
-		//
-		// javax.xml.xpath.XPath xpath = XPathFactory.newInstance().newXPath();
-		// xpath.getXPathVariableResolver().
-		//
-		// XPath xPathObject = new Dom4jXPath("Countries/Country/Name");
-		// xPathObject.
-
-		return null;
+		return retrievedItems;
 
 	}
 
