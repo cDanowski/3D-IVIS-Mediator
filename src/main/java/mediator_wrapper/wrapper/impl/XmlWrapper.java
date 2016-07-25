@@ -1,5 +1,7 @@
 package mediator_wrapper.wrapper.impl;
 
+import org.dom4j.DocumentException;
+
 import controller.runtime.modify.RuntimeModificationMessage;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
@@ -12,11 +14,8 @@ import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
  */
 public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperInterface {
 
-	public XmlWrapper(String pathToSourcefile, String pathToSchemaMappingFile) {
+	public XmlWrapper(String pathToSourcefile, String pathToSchemaMappingFile) throws DocumentException {
 		super(pathToSourcefile, pathToSchemaMappingFile);
-		/* 
-		 * TODO instantiate wrapper properly!
-		 */
 
 	}
 
