@@ -15,6 +15,16 @@ public class IvisQuery {
 	private String selector;
 
 	private List<IvisFilterForQuery> filters;
+	
+	private FilterStrategy filterStrategy;
+
+	public FilterStrategy getFilterStrategy() {
+		return filterStrategy;
+	}
+
+	public void setFilterStrategy(FilterStrategy filterStrategy) {
+		this.filterStrategy = filterStrategy;
+	}
 
 	public String getSelector() {
 		return selector;
