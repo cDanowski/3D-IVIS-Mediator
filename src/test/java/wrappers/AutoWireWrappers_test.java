@@ -1,4 +1,4 @@
-package autowireWrappers;
+package wrappers;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

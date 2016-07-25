@@ -33,7 +33,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors)
+	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors_globalSchema)
 			throws DocumentException {
 		/*
 		 * TODO
@@ -52,6 +52,8 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		String selector_globalSchema = queryAgainstGlobalSchema.getSelector();
 
 		String selector_localSchema = this.getSchemaMapping().get(selector_globalSchema);
+		
+		List<String> subquerySelectors_localSchema = transformIntoLocalQueries(selector_localSchema, subquerySelectors_globalSchema);
 
 		/*
 		 * now for each element that matches the selector of the local schema,
@@ -59,7 +61,36 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 */
 
 		return this.retrieveDataFromXml(selector_localSchema, selector_globalSchema,
-				queryAgainstGlobalSchema.getFilters(), queryAgainstGlobalSchema.getFilterStrategy(), subquerySelectors);
+				queryAgainstGlobalSchema.getFilters(), queryAgainstGlobalSchema.getFilterStrategy(), 
+				subquerySelectors_localSchema);
+	}
+
+	private List<String> transformIntoLocalQueries(String selector_localSchema, List<String> subquerySelectors_globalSchema) {
+		List<String> subqueries_localSchema = new ArrayList<String>(subquerySelectors_globalSchema.size());
+		
+		for (String subquery_globalSchema : subquerySelectors_globalSchema) {
+			String subquery_localSchema = this.getSchemaMapping().get(subquery_globalSchema);
+			
+			/*
+			 * now cut off the part that is equal with the selector_localSchema
+			 */
+			if(subquery_localSchema.contains(selector_localSchema)){
+				String[] subqueryElements = subquery_localSchema.split(selector_localSchema);
+				
+				subquery_localSchema = subqueryElements[subqueryElements.length - 1];
+				
+				/*
+				 * eliminate a leading '/'
+				 */
+				if(subquery_localSchema.startsWith("/"))
+					subquery_localSchema = subquery_localSchema.substring(1);
+			}
+				
+			
+			subqueries_localSchema.add(subquery_localSchema);
+		}
+		
+		return subqueries_localSchema;
 	}
 
 	private List<IvisObject> retrieveDataFromXml(String selector_localSchema, String selector_globalSchema,
@@ -91,7 +122,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		for (Node node : selectedNodes) {
 			ivisObjects.add(this.createIvisObject(node, subquerySelectors, elementName));
 		}
-		
+
 		return ivisObjects;
 
 	}
@@ -101,13 +132,14 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			String[] elements = selector.split("/");
 
 			String name = elements[elements.length - 1];
-			
+
 			/*
-			 * in case of an attribute there is a leading '@', which should be removed
+			 * in case of an attribute there is a leading '@', which should be
+			 * removed
 			 */
-			if(name.startsWith("@"))
+			if (name.startsWith("@"))
 				name = name.substring(1);
-			
+
 			return name;
 		} else
 			return selector;
@@ -116,17 +148,17 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	private IvisObject createIvisObject(Node node, List<String> subquerySelectors, String elementName) {
 
 		List<AttributeValuePair> attributeValuePairs = new ArrayList<AttributeValuePair>(subquerySelectors.size());
-		
+
 		for (String subquerySelector : subquerySelectors) {
 			String name = getName(subquerySelector);
-			
+
 			Object value = node.selectSingleNode(subquerySelector).getText();
-			
-			attributeValuePairs.add(new AttributeValuePair(elementName, value));
+
+			attributeValuePairs.add(new AttributeValuePair(name, value));
 		}
-		
+
 		IvisObject newIvisObject = new IvisObject(elementName, attributeValuePairs);
-		
+
 		return newIvisObject;
 
 	}
