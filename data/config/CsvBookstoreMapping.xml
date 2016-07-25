@@ -10,7 +10,7 @@
 			equivalent information -->
 			
 			<!-- in a CSV file, each row (except HEADER row) represents a book-->
-		<selector_localSchema>ALL ROWS</selector_localSchema>
+		<selector_localSchema>COMPLETE ROW</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for attribute stock -->
