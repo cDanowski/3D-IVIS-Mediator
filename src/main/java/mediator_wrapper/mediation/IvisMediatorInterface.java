@@ -1,6 +1,9 @@
 package mediator_wrapper.mediation;
 
+import org.jaxen.JaxenException;
+
 import controller.runtime.modify.RuntimeModificationMessage;
+import ivisQuery.IvisQuery;
 
 /**
  * Interface definition of the central mediator component of a Mediator-Wrapper
@@ -17,10 +20,13 @@ public interface IvisMediatorInterface {
 	 * sub-queries to wrapper-components to retrieve the queried data.
 	 * 
 	 * @param queryAgainstGlobalSchema
-	 *            a ready-to-use query against the global data schema
+	 *            a ready-to-use query against the global data schema. The query
+	 *            is represented through an XPath expression selecting a subset
+	 *            of elements according to the global schema and filter objects
 	 * @return all queried data objects
+	 * @throws JaxenException
 	 */
-	public Object queryData(String queryAgainstGlobalSchema);
+	public Object queryData(IvisQuery queryAgainstGlobalSchema) throws JaxenException;
 
 	/**
 	 * Analyzes the modification message to identify, which object of the global

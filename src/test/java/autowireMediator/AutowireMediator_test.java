@@ -17,6 +17,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import config.WebSocketConfig;
 import mediator_wrapper.mediation.impl.IvisMediator;
+import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -58,6 +59,14 @@ public class AutowireMediator_test {
 			assertNotNull(mappingEntry.getValue());
 		}
 
+	}
+	
+	@Test
+	public void testSubqueryGenerator() {
+
+		SubqueryGenerator subqueryGenerator = mediator.getSubqueryGenerator();
+
+		assertNotNull(subqueryGenerator);
 	}
 
 }

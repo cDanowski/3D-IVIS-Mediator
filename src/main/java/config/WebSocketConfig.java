@@ -13,6 +13,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 import mediator_wrapper.mediation.impl.IvisMediator;
+import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.impl.CsvWrapper;
 import mediator_wrapper.wrapper.impl.XmlWrapper;
@@ -24,6 +25,7 @@ import util.UrlConstants;
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 	private String pathToWrapperMappingFile = "data/config/GlobalSchemaToWrapperMapping.xml";
+	private String pathToSubqueryMappingFile = "data/config/SubqueryMapping.xml";
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -82,12 +84,12 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 		return new XmlWrapper(fileLocation, localSchemaMappingLocation);
 	}
-	
+
 	/**
 	 * configure csv wrapper instance
 	 * 
 	 * @return
-	 * @throws DocumentException 
+	 * @throws DocumentException
 	 */
 	@Bean
 	public CsvWrapper initializeCsvWrapper() throws DocumentException {
@@ -96,21 +98,35 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 		return new CsvWrapper(fileLocation, localSchemaMappingLocation);
 	}
-	
+
+	/**
+	 * create instance of SubqueryGenerator
+	 * 
+	 * @return
+	 * @throws DocumentException
+	 */
+	@Bean
+	public SubqueryGenerator subqueryGenerator() throws DocumentException {
+
+		return new SubqueryGenerator(this.pathToSubqueryMappingFile);
+	}
+
 	/**
 	 * configure mediator instance
 	 * 
 	 * @return
-	 * @throws DocumentException 
+	 * @throws DocumentException
 	 */
 	@Bean
 	public IvisMediator initializeMediator() throws DocumentException {
-		List<IvisWrapperInterface> wrappers= new ArrayList<IvisWrapperInterface>();
+		List<IvisWrapperInterface> wrappers = new ArrayList<IvisWrapperInterface>();
 		wrappers.add(initializeXmlWrapper());
 		wrappers.add(initializeCsvWrapper());
-		
-		IvisMediator mediator =  new IvisMediator(wrappers, this.pathToWrapperMappingFile);
-		
+
+		SubqueryGenerator subqueryGenerator = subqueryGenerator();
+
+		IvisMediator mediator = new IvisMediator(wrappers, this.pathToWrapperMappingFile, subqueryGenerator);
+
 		return mediator;
 	}
 
