@@ -16,9 +16,21 @@ public abstract class AbstractIvisWrapper {
 	 * @return query against the wrapper's local schema
 	 */
 	protected abstract Object transformToLocalQuery(IvisQuery globalQuery);
-	
-	
-	protected abstract List<String> transformIntoLocalSubqueries(IvisQuery globalQuery, List<String> subquerySelectors_globalSchema);
+
+	/**
+	 * Transform global subqueries into local subqueries (against the local
+	 * schema).
+	 * 
+	 * @param globalQuery
+	 *            the global query object
+	 * @param subquerySelectors_globalSchema
+	 *            subqueries against the global schema, which shall be
+	 *            transformed into equivalent subqueries against the local
+	 *            schema
+	 * @return equivalent subqueries against the local schema
+	 */
+	protected abstract List<String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+			List<String> subquerySelectors_globalSchema);
 
 	/**
 	 * Performs the query against the wrapper's data source.
@@ -31,7 +43,7 @@ public abstract class AbstractIvisWrapper {
 	 * @param globalQuery
 	 *            the initial global query
 	 * @return queried result objects from the wrapper's data source
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	protected abstract List<IvisObject> executeLocalQuery(Object localQuery, List<String> subquerySelectors_localSchema,
 			IvisQuery globalQuery) throws Exception;
