@@ -105,7 +105,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * now execute all subqueries for each element and create IvisObject
 		 */
 
-		String elementName = this.getName(globalQuery.getSelector());
+		String elementName = this.getNameFromXPathExpression(globalQuery.getSelector());
 
 		for (Node node : selectedNodes) {
 			ivisObjects.add(this.createIvisObject(node, subquerySelectors, elementName));
@@ -115,9 +115,17 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 	}
 
-	private String getName(String selector) {
-		if (selector.contains("/")) {
-			String[] elements = selector.split("/");
+	/**
+	 * extracts the name of the given XPath selector.
+	 * 
+	 * @param xPathSelector
+	 *            an XPath selector
+	 * @return the name. this will usually be the last element of the XPath
+	 *         expression (e.g. from 'item1/item2' the name will be 'item2')
+	 */
+	private String getNameFromXPathExpression(String xPathSelector) {
+		if (xPathSelector.contains("/")) {
+			String[] elements = xPathSelector.split("/");
 
 			String name = elements[elements.length - 1];
 
@@ -130,15 +138,27 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 			return name;
 		} else
-			return selector;
+			return xPathSelector;
 	}
 
+	/**
+	 * create IvisObject
+	 * 
+	 * @param node
+	 *            the node containing all information
+	 * @param subquerySelectors
+	 *            the subqueries that are used to retrieve the information from
+	 *            the node
+	 * @param elementName
+	 *            the name of the object
+	 * @return new instance of {@link IvisObject}
+	 */
 	private IvisObject createIvisObject(Node node, List<String> subquerySelectors, String elementName) {
 
 		List<AttributeValuePair> attributeValuePairs = new ArrayList<AttributeValuePair>(subquerySelectors.size());
 
 		for (String subquerySelector : subquerySelectors) {
-			String name = getName(subquerySelector);
+			String name = getNameFromXPathExpression(subquerySelector);
 
 			Object value = node.selectSingleNode(subquerySelector).getText();
 
