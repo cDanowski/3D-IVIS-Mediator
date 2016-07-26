@@ -92,6 +92,32 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 	public Map<String, String> getSchemaMapping() {
 		return schemaMapping;
 	}
+	
+	/**
+	 * extracts the name of the given XPath selector.
+	 * 
+	 * @param xPathSelector
+	 *            an XPath selector
+	 * @return the name. this will usually be the last element of the XPath
+	 *         expression (e.g. from 'item1/item2' the name will be 'item2')
+	 */
+	protected String getNameFromXPathExpression(String xPathSelector) {
+		if (xPathSelector.contains("/")) {
+			String[] elements = xPathSelector.split("/");
+
+			String name = elements[elements.length - 1];
+
+			/*
+			 * in case of an attribute there is a leading '@', which should be
+			 * removed
+			 */
+			if (name.startsWith("@"))
+				name = name.substring(1);
+
+			return name;
+		} else
+			return xPathSelector;
+	}
 
 	/**
 	 * TODO generic methods to access, parse, modify a file?
