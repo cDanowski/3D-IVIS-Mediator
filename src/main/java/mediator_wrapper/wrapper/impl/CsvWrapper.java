@@ -35,13 +35,21 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	public Object transformToLocalQuery(Object globalQuery) {
+	protected Object transformToLocalQuery(IvisQuery globalQuery) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Object executeLocalQuery(Object localQuery) {
+	protected List<String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+			List<String> subquerySelectors_globalSchema) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected List<IvisObject> executeLocalQuery(Object localQuery, List<String> subquerySelectors_localSchema,
+			IvisQuery globalQuery) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
