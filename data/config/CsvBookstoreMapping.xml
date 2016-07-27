@@ -28,7 +28,7 @@
 	<!-- mapping for element title-->
 	<mapping>
 		<selector_globalSchema>bookstore/book/title</selector_globalSchema>
-		<selector_localSchema>Title</selector_localSchema>
+		<selector_localSchema>﻿Title</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for element author-->
