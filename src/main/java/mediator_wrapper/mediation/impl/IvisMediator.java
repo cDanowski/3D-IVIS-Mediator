@@ -189,8 +189,6 @@ public class IvisMediator implements IvisMediatorInterface {
 		
 		String selector_globalSchema = query.getSelector();
 		
-		List<IvisFilterForQuery> filters = query.getFilters();
-		
 		/*
 		 * create all subqueries identifying possible child nodes and 
 		 * attributes of the selected element of the global schema
@@ -210,41 +208,6 @@ public class IvisMediator implements IvisMediatorInterface {
 
 			retrievedItems.addAll(wrapper.queryData(query, subquerySelectors));
 		}
-
-		/*
-		 * PROBLEM: in theory, an incoming query must be split into subqueries
-		 * for each wrapper that offers the requested data.
-		 * 
-		 * but what if an element with child nodes and attributes is selected?
-		 * then it might be, that certain child nodes and/or attributes are only
-		 * accessible by certain wrappers!!! Thus, multiple subqueries have to be generated:
-		 * 
-		 * 
-		 * e.g.: in the xml document
-		 * 
-		 * <book stock="" language="">
-			<title></title>
-			<author></author>
-			<category></category>
-			<price currency=""></price>
-		   </book>
-		 * 
-		 * if the initial query is to select all books, then it could happen, that 
-		 * the information of child nodes and attributes is distributed over 
-		 * several data sources with own wrappers.
-		 * 
-		 * ALSO what if items shall be filtered by some value? e.g. only those books from the same author?
-		 * How can such a query be mapped to subqueries?
-		 * 
-		 * --> initial query object could be different from mere xPath, but be like:
-		 * query{
-		 * 	selector: XPath expression (only pointing to element)
-		 * 	filter: list of filters (property name and value and filterType (equals, >, <, >=, <=) )
-		 * }
-		 * 
-		 * NOOOO, WE HAVE XPATH --> parse xpath and derive the above structure from it
-		 * 
-		 */
 
 		return retrievedItems;
 
