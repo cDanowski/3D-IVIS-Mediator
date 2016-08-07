@@ -22,6 +22,24 @@
 		</wrappers>
 	</mapping>
 	
+	<!-- mapping for attribute reorderLevel -->
+	<mapping>
+		<selector>bookstore/book/@reorderLevel</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+		</wrappers>
+	</mapping>
+	
+	<!-- mapping for attribute reordered -->
+	<mapping>
+		<selector>bookstore/book/@reordered</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+		</wrappers>
+	</mapping>
+	
 	<!-- mapping for attribute language -->
 	<mapping>
 		<selector>bookstore/book/@language</selector>

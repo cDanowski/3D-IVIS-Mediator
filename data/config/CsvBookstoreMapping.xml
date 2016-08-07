@@ -19,6 +19,18 @@
 		<selector_localSchema>NumberInStock</selector_localSchema>
 	</mapping>
 	
+	<!-- mapping for attribute reorderLevel -->
+	<mapping>
+		<selector_globalSchema>bookstore/book/@reorderLevel</selector_globalSchema>
+		<selector_localSchema>ReorderLevel</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for attribute reordered -->
+	<mapping>
+		<selector_globalSchema>bookstore/book/@reordered</selector_globalSchema>
+		<selector_localSchema>IsReordered</selector_localSchema>
+	</mapping>
+	
 	<!-- mapping for attribute language -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@language</selector_globalSchema>

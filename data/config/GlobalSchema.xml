@@ -2,7 +2,7 @@
 
 <bookstore>
 
-	<book stock="" language="">
+	<book stock="" reorderLevel="" reordered="" language="">
 		<title></title>
 		<author></author>
 		<category></category>

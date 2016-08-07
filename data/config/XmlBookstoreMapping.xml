@@ -16,6 +16,18 @@
 		<selector_localSchema>books/book/amountInStock</selector_localSchema>
 	</mapping>
 	
+	<!-- mapping for attribute stock -->
+	<mapping>
+		<selector_globalSchema>bookstore/book/@reorderLevel</selector_globalSchema>
+		<selector_localSchema>books/book/@reorderLevel</selector_localSchema>
+	</mapping>
+	
+	<!-- mapping for attribute stock -->
+	<mapping>
+		<selector_globalSchema>bookstore/book/@reordered</selector_globalSchema>
+		<selector_localSchema>books/book/@isReordered</selector_localSchema>
+	</mapping>
+	
 	<!-- mapping for attribute language -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@language</selector_globalSchema>

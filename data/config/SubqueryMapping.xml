@@ -11,6 +11,8 @@
 		<subqueries>
 			<!-- list of all subqueries (pointing to all child elements and attributes) -->
 			<subquerySelector>bookstore/book/@stock</subquerySelector>
+			<subquerySelector>bookstore/book/@reorderLevel</subquerySelector>
+			<subquerySelector>bookstore/book/@reordered</subquerySelector>
 			<subquerySelector>bookstore/book/@language</subquerySelector>
 			<subquerySelector>bookstore/book/title</subquerySelector>
 			<subquerySelector>bookstore/book/author</subquerySelector>
