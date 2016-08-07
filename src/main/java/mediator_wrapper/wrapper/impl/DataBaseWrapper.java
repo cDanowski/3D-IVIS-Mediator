@@ -1,6 +1,7 @@
 package mediator_wrapper.wrapper.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import controller.runtime.modify.RuntimeModificationMessage;
 import ivisObject.IvisObject;
@@ -35,14 +36,14 @@ public class DataBaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	}
 
 	@Override
-	protected List<String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+	protected Map<String, String> transformIntoLocalSubqueries(IvisQuery globalQuery,
 			List<String> subquerySelectors_globalSchema) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	protected List<IvisObject> executeLocalQuery(Object localQuery, List<String> subquerySelectors_localSchema,
+	protected List<IvisObject> executeLocalQuery(Object localQuery, Map<String, String> subquerySelectors_global_and_local_schema,
 			IvisQuery globalQuery) throws Exception {
 		// TODO Auto-generated method stub
 		return null;

@@ -1,6 +1,7 @@
 package mediator_wrapper.wrapper.abstract_types;
 
 import java.util.List;
+import java.util.Map;
 
 import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
@@ -27,9 +28,9 @@ public abstract class AbstractIvisWrapper {
 	 *            subqueries against the global schema, which shall be
 	 *            transformed into equivalent subqueries against the local
 	 *            schema
-	 * @return equivalent subqueries against the local schema
+	 * @return equivalent subqueries against the local schema in a map with the global equivalents as key
 	 */
-	protected abstract List<String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+	protected abstract Map<String, String> transformIntoLocalSubqueries(IvisQuery globalQuery,
 			List<String> subquerySelectors_globalSchema);
 
 	/**
@@ -37,15 +38,15 @@ public abstract class AbstractIvisWrapper {
 	 * 
 	 * @param localQuery
 	 *            the localQuery that was transformed from the globalSchema
-	 * @param subquerySelectors_localSchema
+	 * @param subquerySelectors_global_and_local_schema
 	 *            subqueries that are necessary to retrieve data from a
-	 *            requested arent element
+	 *            requested parent element (keys of map are the gloabl equivalents)
 	 * @param globalQuery
 	 *            the initial global query
 	 * @return queried result objects from the wrapper's data source
 	 * @throws Exception
 	 */
-	protected abstract List<IvisObject> executeLocalQuery(Object localQuery, List<String> subquerySelectors_localSchema,
+	protected abstract List<IvisObject> executeLocalQuery(Object localQuery, Map<String, String> subquerySelectors_global_and_local_schema,
 			IvisQuery globalQuery) throws Exception;
 
 }

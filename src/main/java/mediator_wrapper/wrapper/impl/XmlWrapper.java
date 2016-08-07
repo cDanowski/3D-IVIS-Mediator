@@ -1,7 +1,11 @@
 package mediator_wrapper.wrapper.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -45,7 +49,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * that comprises all subquery-properties
 		 */
 
-		List<String> subquerySelectors_localSchema = transformIntoLocalSubqueries(queryAgainstGlobalSchema,
+		Map<String, String> subquerySelectors_localSchema = transformIntoLocalSubqueries(queryAgainstGlobalSchema,
 				subquerySelectors_globalSchema);
 
 		String localQuery = (String) this.transformToLocalQuery(queryAgainstGlobalSchema);
@@ -54,12 +58,12 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	protected List<String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+	protected Map<String, String> transformIntoLocalSubqueries(IvisQuery globalQuery,
 			List<String> subquerySelectors_globalSchema) {
 		String selector_globalSchema = globalQuery.getSelector();
 		String selector_localSchema = this.getSchemaMapping().get(selector_globalSchema);
 
-		List<String> subqueries_localSchema = new ArrayList<String>(subquerySelectors_globalSchema.size());
+		Map<String, String> subqueries_global_and_local_schema = new HashMap<String, String>();
 
 		for (String subquery_globalSchema : subquerySelectors_globalSchema) {
 			String subquery_localSchema = this.getSchemaMapping().get(subquery_globalSchema);
@@ -79,13 +83,13 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 					subquery_localSchema = subquery_localSchema.substring(1);
 			}
 
-			subqueries_localSchema.add(subquery_localSchema);
+			subqueries_global_and_local_schema.put(subquery_globalSchema, subquery_localSchema);
 		}
 
-		return subqueries_localSchema;
+		return subqueries_global_and_local_schema;
 	}
 
-	private List<IvisObject> retrieveDataFromXml(String localQuery, List<String> subquerySelectors,
+	private List<IvisObject> retrieveDataFromXml(String localQuery, Map<String, String> subquerySelectors_global_and_local_schema,
 			IvisQuery globalQuery) throws DocumentException {
 
 		List<IvisObject> ivisObjects = new ArrayList<IvisObject>();
@@ -108,7 +112,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		String elementName = this.getNameFromXPathExpression(globalQuery.getSelector());
 
 		for (Node node : selectedNodes) {
-			ivisObjects.add(this.createIvisObject(node, subquerySelectors, elementName));
+			ivisObjects.add(this.createIvisObject(node, subquerySelectors_global_and_local_schema, elementName));
 		}
 
 		return ivisObjects;
@@ -120,21 +124,25 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	 * 
 	 * @param node
 	 *            the node containing all information
-	 * @param subquerySelectors
+	 * @param subquerySelectors_global_and_local_schema
 	 *            the subqueries that are used to retrieve the information from
 	 *            the node
 	 * @param elementName
 	 *            the name of the object
 	 * @return new instance of {@link IvisObject}
 	 */
-	private IvisObject createIvisObject(Node node, List<String> subquerySelectors, String elementName) {
+	private IvisObject createIvisObject(Node node, Map<String, String> subquerySelectors_global_and_local_schema, String elementName) {
 
-		List<AttributeValuePair> attributeValuePairs = new ArrayList<AttributeValuePair>(subquerySelectors.size());
+		List<AttributeValuePair> attributeValuePairs = new ArrayList<AttributeValuePair>(subquerySelectors_global_and_local_schema.size());
 
-		for (String subquerySelector : subquerySelectors) {
-			String name = getNameFromXPathExpression(subquerySelector);
+		Iterator<Entry<String, String>> subqueryIterator = subquerySelectors_global_and_local_schema.entrySet().iterator();
+		
+		while(subqueryIterator.hasNext()){
+			Entry<String, String> subqueryEntry = subqueryIterator.next();
+			
+			String name = getNameFromXPathExpression(subqueryEntry.getKey());
 
-			Object value = node.selectSingleNode(subquerySelector).getText();
+			Object value = node.selectSingleNode(subqueryEntry.getValue()).getText();
 
 			attributeValuePairs.add(new AttributeValuePair(name, value));
 		}
@@ -158,7 +166,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	protected List<IvisObject> executeLocalQuery(Object localQuery, List<String> subquerySelectors_localSchema,
+	protected List<IvisObject> executeLocalQuery(Object localQuery, Map<String, String> subquerySelectors_localSchema,
 			IvisQuery globalQuery) throws DocumentException {
 		// we know that in this class the localQuery is of type String!
 		return this.retrieveDataFromXml((String) localQuery, subquerySelectors_localSchema, globalQuery);

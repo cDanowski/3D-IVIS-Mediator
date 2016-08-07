@@ -8,8 +8,10 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.dom4j.DocumentException;
 
@@ -42,12 +44,12 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	@Override
 	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors_globalSchema)
 			throws Exception {
-		List<String> subquerySelectors_localSchema = transformIntoLocalSubqueries(queryAgainstGlobalSchema,
+		Map<String, String> subqueries_global_and_local_schema = transformIntoLocalSubqueries(queryAgainstGlobalSchema,
 				subquerySelectors_globalSchema);
 
 		IvisQuery localQuery = (IvisQuery) this.transformToLocalQuery(queryAgainstGlobalSchema);
 
-		return this.executeLocalQuery(localQuery, subquerySelectors_localSchema, queryAgainstGlobalSchema);
+		return this.executeLocalQuery(localQuery, subqueries_global_and_local_schema, queryAgainstGlobalSchema);
 	}
 
 	@Override
@@ -90,10 +92,10 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	protected List<String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+	protected Map<String, String> transformIntoLocalSubqueries(IvisQuery globalQuery,
 			List<String> subquerySelectors_globalSchema) {
 
-		List<String> subqueries_localSchema = new ArrayList<String>(subquerySelectors_globalSchema.size());
+		Map<String, String> subqueries_global_and_local_schema = new HashMap<String, String>();
 
 		for (String subquery_globalSchema : subquerySelectors_globalSchema) {
 
@@ -105,20 +107,20 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			 */
 			String subquery_localSchema = this.getSchemaMapping().get(subquery_globalSchema);
 
-			subqueries_localSchema.add(subquery_localSchema);
+			subqueries_global_and_local_schema.put(subquery_globalSchema, subquery_localSchema);
 		}
 
-		return subqueries_localSchema;
+		return subqueries_global_and_local_schema;
 	}
 
 	@Override
-	protected List<IvisObject> executeLocalQuery(Object localQuery, List<String> subquerySelectors_localSchema,
+	protected List<IvisObject> executeLocalQuery(Object localQuery, Map<String, String> subqueries_global_and_local_schema,
 			IvisQuery globalQuery) throws Exception {
 		// we know that in this class the localQuery is of type String!
-		return this.retrieveDataFromCsv((IvisQuery) localQuery, subquerySelectors_localSchema, globalQuery);
+		return this.retrieveDataFromCsv((IvisQuery) localQuery, subqueries_global_and_local_schema, globalQuery);
 	}
 
-	private List<IvisObject> retrieveDataFromCsv(IvisQuery localQuery, List<String> subquerySelectors_localSchema,
+	private List<IvisObject> retrieveDataFromCsv(IvisQuery localQuery, Map<String, String> subqueries_global_and_local_schema,
 			IvisQuery globalQuery) throws UnsupportedEncodingException, FileNotFoundException {
 
 		List<IvisObject> ivisObjects = new ArrayList<IvisObject>();
@@ -151,26 +153,29 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			 */
 			if (this.passesFilters(record, localQuery, csvHeaderIndicesMap))
 				ivisObjects.add(
-						this.createIvisObject(record, subquerySelectors_localSchema, elementName, csvHeaderIndicesMap));
+						this.createIvisObject(record, subqueries_global_and_local_schema, elementName, csvHeaderIndicesMap));
 
 		}
 
 		return ivisObjects;
 	}
 
-	private IvisObject createIvisObject(String[] record, List<String> subquerySelectors_localSchema, String elementName,
+	private IvisObject createIvisObject(String[] record, Map<String, String> subqueries_global_and_local_schema, String elementName,
 			Map<String, Integer> csvHeaderIndicesMap) {
 		List<AttributeValuePair> attributeValuePairs = new ArrayList<AttributeValuePair>(
-				subquerySelectors_localSchema.size());
+				subqueries_global_and_local_schema.size());
 
-		for (String subquerySelector : subquerySelectors_localSchema) {
+		Iterator<Entry<String, String>> subqueryIterator = subqueries_global_and_local_schema.entrySet().iterator();
+		
+		while(subqueryIterator.hasNext()){
+			Entry<String, String> subqueryEntry = subqueryIterator.next();
+			
+			String name = getNameFromXPathExpression(subqueryEntry.getKey());
+
 			/*
-			 * in case of CSV, the subquery selector represents a header of a
-			 * CSV column
+			 * in case of CSV, the value represents the header of the corresponding column
 			 */
-			String name = subquerySelector;
-
-			Integer recordIndex = csvHeaderIndicesMap.get(subquerySelector);
+			Integer recordIndex = csvHeaderIndicesMap.get(subqueryEntry.getValue());
 			Object value = record[recordIndex];
 
 			attributeValuePairs.add(new AttributeValuePair(name, value));
