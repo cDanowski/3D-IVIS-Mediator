@@ -45,12 +45,14 @@ public class XPathQueryHelper {
 
 		String newXPathExpression = selector_localSchema;
 
-		String filterStatement = createCompleteFilterExpression(selector_localSchema, filters, filterStrategy, schemaMapping);
+		if (filters != null && filters.size() > 0){
+			String filterStatement = createCompleteFilterExpression(selector_localSchema, filters, filterStrategy, schemaMapping);
 		
-		/*
-		 * identify where to add the filter
-		 */
-		newXPathExpression = integrateFilterIntoExpression(newXPathExpression, filterStatement);
+			/*
+			 * identify where to add the filter
+			 */
+			newXPathExpression = integrateFilterIntoExpression(newXPathExpression, filterStatement);
+		}
 
 		return newXPathExpression;
 	}
