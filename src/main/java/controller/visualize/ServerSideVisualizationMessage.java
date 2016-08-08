@@ -13,7 +13,9 @@ public class ServerSideVisualizationMessage {
 	
 	public IvisQuery query;
 	
-	public String responseScene;
+	public String applicationTemplateIdentifier;
+	
+	public Object responseScene;
 
 	public IvisQuery getQuery() {
 		return query;
@@ -23,11 +25,19 @@ public class ServerSideVisualizationMessage {
 		this.query = query;
 	}
 
-	public String getResponseScene() {
+	public String getApplicationTemplateIdentifier() {
+		return applicationTemplateIdentifier;
+	}
+
+	public void setApplicationTemplateIdentifier(String applicationTemplateIdentifier) {
+		this.applicationTemplateIdentifier = applicationTemplateIdentifier;
+	}
+
+	public Object getResponseScene() {
 		return responseScene;
 	}
 
-	public void setResponseScene(String responseScene) {
+	public void setResponseScene(Object responseScene) {
 		this.responseScene = responseScene;
 	}
 
