@@ -5,9 +5,10 @@ import java.util.List;
 import org.jaxen.JaxenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
+import application_template.ApplicationTemplateInterface;
 import ivisObject.IvisObject;
 import mediator_wrapper.mediation.impl.IvisMediator;
 import util.UrlConstants;
@@ -21,9 +22,12 @@ import util.UrlConstants;
  */
 @Controller
 public class ServerSideVisualizationController {
-	
+
 	@Autowired
-	IvisMediator mediator;
+	private IvisMediator mediator;
+
+	@Autowired
+	private List<ApplicationTemplateInterface> availableApplicationTemplates;
 
 	/**
 	 * Manages an incoming data query request from clients against the global
@@ -35,28 +39,43 @@ public class ServerSideVisualizationController {
 	 * @return
 	 */
 	@MessageMapping(UrlConstants.SERVER_SIDE_IVIS_ENDPOINT)
-	@SendTo("") // TODO only send back to requesting client!
+	@SendToUser(destinations = UrlConstants.STOMP_CLIENT_SERVER_SIDE_IVIS_ENDPOINT, broadcast = false)
 	public ServerSideVisualizationMessage query(ServerSideVisualizationMessage queryObject) {
 		/**
 		 * queryObject should have an attribute with the query against the
 		 * global schema.
 		 */
-		
-		/*
-		 * forward query to mediator
-		 */
 		try {
+
+			/*
+			 * forward query to mediator
+			 */
 			List<IvisObject> retrievedData = this.mediator.queryData(queryObject.query);
+
+			/*
+			 * forward retrieved data to applicationTemplate to generate scene
+			 */
+			String applicationTemplateIdentifier = queryObject.getApplicationTemplateIdentifier();
+
+			for (ApplicationTemplateInterface applTemplate : this.availableApplicationTemplates) {
+				/*
+				 * identify the requested template!
+				 */
+				if (applTemplate.getUniqueIdentifier().equalsIgnoreCase(applicationTemplateIdentifier)) {
+					Object x3domScene = applTemplate.createInitialScene(retrievedData);
+
+					queryObject.setResponseScene(x3domScene);
+					break;
+				}
+			}
+
 		} catch (JaxenException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		// TODO return object should have an attribute that holds the x3d scene!
-		return null;
+		return queryObject;
 	}
 
 }

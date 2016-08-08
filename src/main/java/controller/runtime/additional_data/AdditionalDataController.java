@@ -6,6 +6,7 @@ import org.jaxen.JaxenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import ivisObject.IvisObject;
@@ -27,7 +28,7 @@ public class AdditionalDataController {
 	IvisMediator mediator;
 
 	@MessageMapping(UrlConstants.RUNTIME_ADDITIONAL_DATA_ENDPOINT)
-	@SendTo("") // TODO only send back to requesting client!
+	@SendToUser(destinations = UrlConstants.STOMP_CLIENT_RUNTIME_ADDITIONAL_DATA_ENDPOINT, broadcast = false)
 	public RuntimeRequestDataMessage requestAdditionalData(RuntimeRequestDataMessage runtimeMessage) {
 
 		/*

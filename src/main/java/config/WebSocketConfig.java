@@ -12,6 +12,8 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
+import application_template.ApplicationTemplateInterface;
+import application_template.impl.bookstoreTemplate.BookstoreApplicationTemplate;
 import mediator_wrapper.mediation.impl.IvisMediator;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
@@ -39,6 +41,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		 * a global application prefix
 		 */
 		config.setApplicationDestinationPrefixes(UrlConstants.APPLICATION_PREFIX);
+		//config.setUserDestinationPrefix(UrlConstants.APPLICATION_USER_PREFIX);
 	}
 
 	@Override
@@ -128,6 +131,18 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		IvisMediator mediator = new IvisMediator(wrappers, this.pathToWrapperMappingFile, subqueryGenerator);
 
 		return mediator;
+	}
+	
+	/**
+	 * create instance of {@link BookstoreApplicationTemplate}
+	 * 
+	 * @return
+	 * @throws DocumentException
+	 */
+	@Bean
+	public ApplicationTemplateInterface bookstoreApplicationTemplate() throws DocumentException {
+
+		return new BookstoreApplicationTemplate() ;
 	}
 
 }
