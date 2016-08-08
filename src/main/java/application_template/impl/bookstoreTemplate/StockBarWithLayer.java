@@ -123,22 +123,25 @@ public class StockBarWithLayer {
 		 * 
 		 * needs to be moved towards the user
 		 */
-		builder.append("	<transform translation='0 0 1.1'>");
-		builder.append("		<shape>");
+		builder.append("	<transform translation='0 -3.5 0'>");
+		builder.append("		<billboard axisOfRotation='0 0 0'>");
+		builder.append("			<shape>");
 
-		builder.append("			<appearance>");
+		builder.append("				<appearance>");
 		// black text
-		builder.append("				<material diffuseColor='0 0 0'>");
-		builder.append("				</material>");
-		builder.append("			</appearance>");
+		builder.append("					<material diffuseColor='0 0 0'>");
+		builder.append("					</material>");
+		builder.append("				</appearance>");
 
 		// create a text element for the marker
-		builder.append("			<text string=" + this.createDisplayNameString(this.displayName) + ">");
-		builder.append("				<fontStyle size='0.8' justify='MIDDLE'>");
-		builder.append("				</fontStyle>");
-		builder.append("			</text>");
+		builder.append("				<text string=" + this.createDisplayNameString(this.displayName) + ">");
+		builder.append("					<fontStyle size='0.8' justify='MIDDLE'>");
+		builder.append("					</fontStyle>");
+		builder.append("				</text>");
 
-		builder.append("		</shape>");
+		builder.append("			</shape>");
+		
+		builder.append("		</billboard>");
 
 		builder.append("	</transform>");
 

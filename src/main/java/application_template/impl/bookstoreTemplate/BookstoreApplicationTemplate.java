@@ -125,34 +125,45 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 
 		int numberOfObjects = visObjects.size();
 
-		int maxNumberOfColumns = numberOfObjects / 2;
-
-		int currentColumn = 0;
-
 		// column translation
-		int translation_x = 0;
+		int translation_x_positive = 7;
+		int translation_x_negative = -7;
 		// row translation
-		int translation_z = 0;
+		int translation_y = 0;
+		
+		// rotation about 90°
+		String rotation_z_left = "0 0 1 1.57";
+		String rotation_z_right = "0 0 1 -1.57";
 
 		int translationIncrement = 5;
+		
+		boolean isEvenIndex = false;
 
 		for (StockBarWithLayer visObject : visObjects) {
-
-			// translation to right and back of the scene
-			stringBuilder.append("<transform translation='" + translation_x + " 0 " + -translation_z + "'>");
-			stringBuilder.append(visObject.writeToX3DOM());
-			stringBuilder.append("</transform>");
-
-			currentColumn++;
-			translation_x = translation_x + translationIncrement;
-
-			if (currentColumn > maxNumberOfColumns) {
-				// next row
-				translation_z = translation_z + translationIncrement;
-				translation_x = 0;
-
-				currentColumn = 0;
+			
+			if(isEvenIndex){
+				// translation to right of the scene
+				stringBuilder.append("<transform translation='" + translation_x_positive + " " + translation_y + " 0 '>");
+				stringBuilder.append("	<transform rotation='" + rotation_z_right + "' >");
+				stringBuilder.append(visObject.writeToX3DOM());
+				stringBuilder.append("	</transform>");
+				stringBuilder.append("</transform>");
+				
+				// after each second object increase y-translation
+				translation_y = translation_y + translationIncrement;
+				isEvenIndex = false;
 			}
+			else{
+				// translation to left of the scene
+				stringBuilder.append("<transform translation='" + translation_x_negative + " " + translation_y + " 0 '>");
+				stringBuilder.append("	<transform rotation='" + rotation_z_left + "' >");
+				stringBuilder.append(visObject.writeToX3DOM());
+				stringBuilder.append("	</transform>");
+				stringBuilder.append("</transform>");
+				
+				isEvenIndex = true;
+			}
+
 		}
 
 		// end X3DOM scene definition

@@ -182,6 +182,9 @@ function reloadAndZoomScene(){
 	sceneElement.runtime.showAll();
 }
 
+//global y-translation value needed to properly insert additional objects
+var translation_y = -5;
+
 function integrateSceneIntoDOM_runtime(additionalObjects){
 	/*
 	 * for each object, 
@@ -193,16 +196,17 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 	
 	var numberOfObjects = additionalObjects.length;
 
-	var maxNumberOfColumns = numberOfObjects / 2;
-
-	var currentColumn = 0;
-
 	// column translation
-	var translation_x = 0;
-	// row translation
-	var translation_z = 5;
+	var translation_x_positive = 7;
+	var translation_x_negative = -7;
+	
+	// rotation about 90°
+	var rotation_z_left = "0 0 1 1.57";
+	var rotation_z_right = "0 0 1 -1.57";
 
 	var translationIncrement = 5;
+	
+	var isEvenIndex = false;
 	
 	for(var index=0; index < numberOfObjects; index++){
 		var currentAdditionalObject = additionalObjects[index];
@@ -230,26 +234,34 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 			parentElement.append(x3domString);
 		}
 		else{
-			// it is a new object that has to be inserted at a new position
-			var newX3domString = "<transform translation='" + translation_x + " 0 " + translation_z + "'>";
-			newX3domString = newX3domString + x3domString;
-			newX3domString = newX3domString + "</transform>";
+			
+			if(isEvenIndex){
+				// translation to right of the scene
+				var newX3domString = "<transform translation='" + translation_x_positive + " " + translation_y + " 0 '>";
+				newX3domString = newX3domString + "	<transform rotation='" + rotation_z_right + "' >";
+				newX3domString = newX3domString + x3domString;
+				newX3domString = newX3domString + "	</transform>";
+				newX3domString = newX3domString + "</transform>";
+				
+				// after each second object decrease y-translation
+				translation_y = translation_y - translationIncrement;
+				isEvenIndex = false;
+			}
+			else{
+				// translation to left of the scene
+				var newX3domString = "<transform translation='" + translation_x_negative + " " + translation_y + " 0 '>";
+				newX3domString = newX3domString + "	<transform rotation='" + rotation_z_left + "' >";
+				newX3domString = newX3domString + x3domString;
+				newX3domString = newX3domString + "	</transform>";
+				newX3domString = newX3domString + "</transform>";
+				
+				isEvenIndex = true;
+			}
 			
 			/*
 			 * append new object to the "scene" element of the x3dom scene
 			 */
 			$("scene").append(newX3domString);
-			
-			currentColumn++;
-			translation_x = translation_x + translationIncrement;
-
-			if (currentColumn > maxNumberOfColumns) {
-				// next row
-				translation_z = translation_z + translationIncrement;
-				translation_x = 0;
-
-				currentColumn = 0;
-			}
 		}
 	}
 	
@@ -294,4 +306,7 @@ function resetScene(){
 	$("#scene").empty();
 	
 	$('.runtime').prop("disabled", true);
+	
+	// also reset translation value to initial value
+	translation_y = -5;
 }
