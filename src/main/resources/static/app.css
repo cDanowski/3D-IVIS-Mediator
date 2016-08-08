@@ -10,6 +10,12 @@
 	margin-left: 2px;
 }  
 
+#configuration {
+	height: auto !important;
+	max-height: 95%;
+	overflow-y: scroll;
+}
+
 #scene {
 	height: 100%;
 }  
