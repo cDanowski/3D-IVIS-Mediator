@@ -25,13 +25,18 @@
 			<h1>Bookstore Example</h1>
 
 			<p>In this example you may visualize available book stocks.</p>
-			<p>Optionally, you may specify some filters using the
-				corresponding fields.</p>
+			
+			<button type="button" class="btn btn-danger runtime"
+					onclick="resetScene()" disabled>Remove Current Visualization</button>
 
 			<div class="form-group">
+			
+				<h4>Server Side Information Visualization</h4>
+				
+				<p>Create an initial scene showing available books. Optionally, you may specify some filters using the
+				corresponding fields.</p>
 
 				<div class="form-group">
-					<label></label>
 
 					<div class="checkbox">
 						<label><input id="filter_enableCheckbox" type="checkbox"
@@ -79,6 +84,20 @@
 
 				<button type="button" class="btn btn-primary"
 					onclick="visualizeBookStocks()">Visualize Book Stocks</button>
+			</div>
+			
+			<!-- additional data request -->
+			
+			<div class="form-group">
+			
+				<h3>Runtime Information Visualization - Additional Data</h3>
+				
+				<p>Request additional books that are integrated into the existing visualization. Again, you may specify some filters using the
+				corresponding fields.</p>
+				<p>Note that any existing object is replaced with the new object. New objects are visualized in front of the existing ones!</p>
+			
+				<button type="button" class="btn btn-warning runtime"
+					onclick="visualizeBookStocks_runtime()" disabled>Visualize Additional Book Stocks</button>
 			</div>
 
 

@@ -1,5 +1,8 @@
 package controller.runtime.additional_data;
 
+import java.util.List;
+
+import application_template.impl.VisualizationObject;
 import ivisQuery.IvisQuery;
 
 /**
@@ -10,15 +13,44 @@ import ivisQuery.IvisQuery;
  *
  */
 public class RuntimeRequestDataMessage {
-	
+
+	/*
+	 * identifier for the application template
+	 */
+	public String applicationTemplateIdentifier;
+
 	/*
 	 * query against the global schema
 	 */
 	public IvisQuery query;
-	
+
 	/*
 	 * the resulting scene content as X3DOM subtree
 	 */
-	public String responseSceneContent;
+	public List<VisualizationObject> additionalObjects;
+
+	public String getApplicationTemplateIdentifier() {
+		return applicationTemplateIdentifier;
+	}
+
+	public void setApplicationTemplateIdentifier(String applicationTemplateIdentifier) {
+		this.applicationTemplateIdentifier = applicationTemplateIdentifier;
+	}
+
+	public IvisQuery getQuery() {
+		return query;
+	}
+
+	public void setQuery(IvisQuery query) {
+		this.query = query;
+	}
+
+	public List<VisualizationObject> getAdditionalObjects() {
+		return additionalObjects;
+	}
+
+	public void setAdditionalObjects(List<VisualizationObject> additionalObjects) {
+		this.additionalObjects = additionalObjects;
+	}
 
 }

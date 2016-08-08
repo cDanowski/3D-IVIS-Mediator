@@ -2,6 +2,7 @@ package application_template;
 
 import java.util.List;
 
+import application_template.impl.VisualizationObject;
 import ivisObject.IvisObject;
 
 /**
@@ -54,6 +55,6 @@ public interface ApplicationTemplateInterface {
 	 * @return the visual shapes as result of the IVIS transformation used on
 	 *         'dataToVisualize'
 	 */
-	public Object visualizeData_runtime(List<IvisObject> dataToVisualize);
+	public List<VisualizationObject> visualizeData_runtime(List<IvisObject> dataToVisualize);
 
 }

@@ -17,6 +17,8 @@ var SEND_RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/ivisApp'
 		+ RUNTIME_ADDITIONAL_DATA_ENDPOINT;
 var SEND_RUNTIME_MODIFY_ENDPOINT = '/ivisApp' + RUNTIME_MODIFY_ENDPOINT;
 
+var APPLICATION_TEMPLATE_IDENTIFIER = "bookstoreApplicationTemplate";
+
 // stomp client variable that holds the connection to server
 var stompClient = null;
 
@@ -37,11 +39,22 @@ function connect() {
 		stompClient.subscribe(STOMP_SERVER_SIDE_IVIS_ENDPOINT,
 				function(object) {
 
-					var returnedQueryResult = JSON.parse(object.body);
+					var serverSideVisualizationMessage = JSON.parse(object.body);
 
-					var x3domSceneString = returnedQueryResult.responseScene;
+					var x3domSceneString = serverSideVisualizationMessage.responseScene;
 
 					integrateSceneIntoDOM(x3domSceneString);
+				});
+		
+		// runtime additional data
+		stompClient.subscribe(STOMP_RUNTIME_ADDITIONAL_DATA_ENDPOINT,
+				function(object) {
+
+					var runtimeAdditionalDataMessage = JSON.parse(object.body);
+
+					var additionalObjects = runtimeAdditionalDataMessage.additionalObjects;
+
+					integrateSceneIntoDOM_runtime(additionalObjects);
 				});
 
 		// synchronization updates
@@ -76,7 +89,7 @@ function createServerSideVisualizationRequest() {
 
 	var serverSideVisualizationMessage = {};
 
-	serverSideVisualizationMessage.applicationTemplateIdentifier = "bookstoreApplicationTemplate";
+	serverSideVisualizationMessage.applicationTemplateIdentifier = APPLICATION_TEMPLATE_IDENTIFIER;
 
 	serverSideVisualizationMessage.query = {};
 	serverSideVisualizationMessage.query.selector = "bookstore/book";
@@ -155,14 +168,92 @@ function integrateSceneIntoDOM(x3domSceneString) {
 	$("#scene").empty();
 	$("#scene").append(x3domSceneString);
 
+	reloadAndZoomScene();
+
+	$('.runtime').prop("disabled", false);
+}
+
+function reloadAndZoomScene(){
 	// trigger reload to parse new x3d scene
 	x3dom.reload();
 
 	// zoom/fit to all elements of the scene
 	var sceneElement = $('x3d').get(0);
 	sceneElement.runtime.showAll();
+}
 
-	console.log("should see new scene");
+function integrateSceneIntoDOM_runtime(additionalObjects){
+	/*
+	 * for each object, 
+	 * 
+	 * check if it already exists (using ID), then replace the existing object
+	 * 
+	 * if it is a new object insert it into the scene in front of the existing ones
+	 */
+	
+	var numberOfObjects = additionalObjects.length;
+
+	var maxNumberOfColumns = numberOfObjects / 2;
+
+	var currentColumn = 0;
+
+	// column translation
+	var translation_x = 0;
+	// row translation
+	var translation_z = 5;
+
+	var translationIncrement = 5;
+	
+	for(var index=0; index < numberOfObjects; index++){
+		var currentAdditionalObject = additionalObjects[index];
+		
+		var currentId = currentAdditionalObject.id;
+		var x3domString = currentAdditionalObject.visualizationObject;
+		
+		// "_object" must be appended, since scene elements have this suffix!
+		var jqueryExpression = "#"+currentId + "_object";
+		
+		if($(jqueryExpression).length > 0){
+			// replace the existing object
+			
+			/*
+			 * get parent element
+			 * 
+			 * delete all child elements (including the target object)
+			 * 
+			 * append new child elements (with our new object)
+			 */
+			var parentElement = $(jqueryExpression).parent();
+			
+			parentElement.empty();
+			
+			parentElement.append(x3domString);
+		}
+		else{
+			// it is a new object that has to be inserted at a new position
+			var newX3domString = "<transform translation='" + translation_x + " 0 " + translation_z + "'>";
+			newX3domString = newX3domString + x3domString;
+			newX3domString = newX3domString + "</transform>";
+			
+			/*
+			 * append new object to the "scene" element of the x3dom scene
+			 */
+			$("scene").append(newX3domString);
+			
+			currentColumn++;
+			translation_x = translation_x + translationIncrement;
+
+			if (currentColumn > maxNumberOfColumns) {
+				// next row
+				translation_z = translation_z + translationIncrement;
+				translation_x = 0;
+
+				currentColumn = 0;
+			}
+		}
+	}
+	
+	reloadAndZoomScene();
 }
 
 function onEnableFiltersChange() {
@@ -173,4 +264,34 @@ function onEnableFiltersChange() {
 		// unchecked
 		$('.form-control').prop("disabled", true);
 	}
+}
+
+function visualizeBookStocks_runtime(){
+	// create and send request to fetch additional scene objects!
+
+	var runtimeAdditionalDataMessage = createRuntimeAdditionalDataRequest();
+
+	stompClient.send(SEND_RUNTIME_ADDITIONAL_DATA_ENDPOINT, {}, JSON
+			.stringify(runtimeAdditionalDataMessage));
+}
+
+function createRuntimeAdditionalDataRequest(){
+	var runtimeAdditionalDataMessage = {};
+
+	runtimeAdditionalDataMessage.applicationTemplateIdentifier = APPLICATION_TEMPLATE_IDENTIFIER;
+
+	runtimeAdditionalDataMessage.query = {};
+	runtimeAdditionalDataMessage.query.selector = "bookstore/book";
+	runtimeAdditionalDataMessage = configureFilters(runtimeAdditionalDataMessage);
+	
+	return runtimeAdditionalDataMessage;
+}
+
+function resetScene(){
+	/*
+	 * remove the complete x3d scene subtree from DOM
+	 */
+	$("#scene").empty();
+	
+	$('.runtime').prop("disabled", true);
 }
