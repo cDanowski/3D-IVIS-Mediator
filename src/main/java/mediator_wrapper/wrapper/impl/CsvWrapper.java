@@ -70,17 +70,20 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		List<IvisFilterForQuery> globalFilters = globalQuery.getFilters();
 
 		List<IvisFilterForQuery> localFilters = new ArrayList<IvisFilterForQuery>();
+		
+		if (globalFilters != null && globalFilters.size() > 0) {
 
-		for (IvisFilterForQuery globalFilter : globalFilters) {
-			String filterSelector_globalSchema = globalFilter.getSelector();
-			String filterSelector_localSchema = this.getSchemaMapping().get(filterSelector_globalSchema);
+			for (IvisFilterForQuery globalFilter : globalFilters) {
+				String filterSelector_globalSchema = globalFilter.getSelector();
+				String filterSelector_localSchema = this.getSchemaMapping().get(filterSelector_globalSchema);
 
-			IvisFilterForQuery localFilter = new IvisFilterForQuery();
-			localFilter.setSelector(filterSelector_localSchema);
-			localFilter.setFilterType(globalFilter.getFilterType());
-			localFilter.setFilterValue(globalFilter.getFilterValue());
+				IvisFilterForQuery localFilter = new IvisFilterForQuery();
+				localFilter.setSelector(filterSelector_localSchema);
+				localFilter.setFilterType(globalFilter.getFilterType());
+				localFilter.setFilterValue(globalFilter.getFilterValue());
 
-			localFilters.add(localFilter);
+				localFilters.add(localFilter);
+			}
 		}
 
 		IvisQuery localQuery = new IvisQuery();
