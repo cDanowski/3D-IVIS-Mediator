@@ -1,5 +1,9 @@
 package application_template;
 
+import java.util.List;
+
+import ivisObject.IvisObject;
+
 /**
  * The application template interface defines central methods of an application
  * template, which are called by the Spring controllers to visualize and process
@@ -34,7 +38,7 @@ public interface ApplicationTemplateInterface {
 	 *            the data that shall be transformed to visual shapes
 	 * @return a completely new interactive scene
 	 */
-	public Object createInitialScene(Object dataToVisualize);
+	public Object createInitialScene(List<IvisObject> dataToVisualize);
 
 	/**
 	 * Takes the given data and creates visual objects, which can be integrated
@@ -50,6 +54,6 @@ public interface ApplicationTemplateInterface {
 	 * @return the visual shapes as result of the IVIS transformation used on
 	 *         'dataToVisualize'
 	 */
-	public Object visualizeData_runtime(Object dataToVisualize);
+	public Object visualizeData_runtime(List<IvisObject> dataToVisualize);
 
 }
