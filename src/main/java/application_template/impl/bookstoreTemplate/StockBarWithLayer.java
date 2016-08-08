@@ -45,12 +45,17 @@ public class StockBarWithLayer {
 	public StockBarWithLayer(String id, String displayName, double height, Color rgbColor_bar, Color rgbColor_marker,
 			double markerHeight) {
 		super();
-		this.id = id;
+		// replace any whitespace with an underbar and "'" with nothing
+		this.id = id.replaceAll(" ", "_").replaceAll("'", "");
 		this.displayName = displayName;
 		this.height = height;
 		this.rgbColor_bar = rgbColor_bar;
 		this.rgbColor_marker = rgbColor_marker;
 		this.markerHeight = markerHeight;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	/**
