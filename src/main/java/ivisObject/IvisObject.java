@@ -27,4 +27,17 @@ public class IvisObject {
 		return elementName;
 	}
 
+	public Object getValueForAttribute(String attributeName) {
+		
+		for (AttributeValuePair attributeValuePair : attributeValuePairs) {
+			if (attributeValuePair.getName().equalsIgnoreCase(attributeName))
+				return attributeValuePair.getValue();
+		}
+		
+		/*
+		 * if nothing has been founf return null
+		 */
+		return null;
+	}
+
 }
