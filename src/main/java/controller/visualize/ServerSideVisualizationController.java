@@ -40,7 +40,7 @@ public class ServerSideVisualizationController {
 	 */
 	@MessageMapping(UrlConstants.SERVER_SIDE_IVIS_ENDPOINT)
 	@SendToUser(destinations = UrlConstants.STOMP_CLIENT_SERVER_SIDE_IVIS_ENDPOINT, broadcast = false)
-	public ServerSideVisualizationMessage query(ServerSideVisualizationMessage queryObject) {
+	public ServerSideVisualizationMessage query(ServerSideVisualizationMessage serverSideIvisMessage) {
 		/**
 		 * queryObject should have an attribute with the query against the
 		 * global schema.
@@ -50,12 +50,12 @@ public class ServerSideVisualizationController {
 			/*
 			 * forward query to mediator
 			 */
-			List<IvisObject> retrievedData = this.mediator.queryData(queryObject.query);
+			List<IvisObject> retrievedData = this.mediator.queryData(serverSideIvisMessage.query);
 
 			/*
 			 * forward retrieved data to applicationTemplate to generate scene
 			 */
-			String applicationTemplateIdentifier = queryObject.getApplicationTemplateIdentifier();
+			String applicationTemplateIdentifier = serverSideIvisMessage.getApplicationTemplateIdentifier();
 
 			for (ApplicationTemplateInterface applTemplate : this.availableApplicationTemplates) {
 				/*
@@ -64,7 +64,7 @@ public class ServerSideVisualizationController {
 				if (applTemplate.getUniqueIdentifier().equalsIgnoreCase(applicationTemplateIdentifier)) {
 					Object x3domScene = applTemplate.createInitialScene(retrievedData);
 
-					queryObject.setResponseScene(x3domScene);
+					serverSideIvisMessage.setResponseScene(x3domScene);
 					break;
 				}
 			}
@@ -75,7 +75,7 @@ public class ServerSideVisualizationController {
 			e.printStackTrace();
 		}
 
-		return queryObject;
+		return serverSideIvisMessage;
 	}
 
 }
