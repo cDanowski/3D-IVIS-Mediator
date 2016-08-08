@@ -7,9 +7,10 @@
 <script src="libs/jquery-3.0.0.min.js"></script>
 <script src="libs/x3dom-1.7.0.js"></script>
 <script src="libs/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="libs/x3dom-1.7.0.css">
-<link rel="stylesheet" href="libs/bootstrap-3.3.7-dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="libs/x3dom-1.7.0.css" />
+<link rel="stylesheet"
+	href="libs/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="app.css" />
 <script src="js/application.js"></script>
 </head>
 <body>
@@ -19,18 +20,71 @@
 			enable Javascript and reload this page!</h2>
 	</noscript>
 	<div class="row" align="center" id="appContainer">
-	
+
 		<div class="col-sm-3" id="configuration">
 			<h1>Bookstore Example</h1>
-			
+
 			<p>In this example you may visualize available book stocks.</p>
-			
-			<button type="button" class="btn btn-primary" onclick="visualizeBookStocks()">Visualize Book Stocks</button>
+			<p>Optionally, you may specify some filters using the
+				corresponding fields.</p>
+
+			<div class="form-group">
+
+				<div class="form-group">
+					<label></label>
+
+					<div class="checkbox">
+						<label><input id="filter_enableCheckbox" type="checkbox"
+							value="" onChange="onEnableFiltersChange()">Enable
+							filters:</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label>Filter Strategy:</label> <select class="form-control"
+						id="filter_strategy" disabled>
+						<option title="queried objects have to pass ALL filters">AND</option>
+						<option title="queried objects have to pass at least ONE filter">OR</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label>Author (only one author can be specified)</label> <select
+						class="form-control" id="filter_author_comparison" disabled>
+						<option title="queried objects have the specified author value">EQUAL</option>
+						<option
+							title="queried objects have NOT the specified author value">NOT_EQUAL</option>
+					</select> <input type="text" class="form-control" id="filter_author_value"
+						placeholder="enter an author's full name..." disabled></input>
+				</div>
+
+				<div class="form-group">
+					<label>Price</label> <select class="form-control"
+						id="filter_price_comparison" disabled>
+						<option title="queried objects have the specified price value">EQUAL</option>
+						<option title="queried objects have NOT the specified price value">NOT_EQUAL</option>
+						<option
+							title="queried objects have a price GREATER THAN the specified price value">GREATER_THAN</option>
+						<option
+							title="queried objects have a price GREATER THAN OR EQUAL TO the specified price value">GREATER_THAN_OR_EQUAL_TO</option>
+						<option
+							title="queried objects have a price LESS THAN the specified price value">LESS_THAN</option>
+						<option
+							title="queried objects have a price LESS THAN OR EQUAL TO the specified price value">LESS_THAN_OR_EQUAL_TO</option>
+					</select> 
+					
+					<input type="text" class="form-control" id="filter_price_value"
+						placeholder="enter price, e.g. '4.99'" disabled></input>
+				</div>
+
+				<button type="button" class="btn btn-primary"
+					onclick="visualizeBookStocks()">Visualize Book Stocks</button>
+			</div>
+
+
 		</div>
-		
-		<div class="col-sm-9" id="scene">
-			
-		</div>
+
+		<div class="col-sm-9" id="scene"></div>
 	</div>
 </body>
 </html>
