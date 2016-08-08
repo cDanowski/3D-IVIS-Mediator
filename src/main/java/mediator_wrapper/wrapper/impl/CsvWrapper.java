@@ -190,6 +190,17 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	private boolean passesFilters(String[] record, IvisQuery localQuery, Map<String, Integer> csvHeaderIndicesMap) {
+		
+		/*
+		 * if there are no filters specified just return true!
+		 */
+		if(localQuery.getFilters() == null || localQuery.getFilters().size() == 0)
+			return true;
+		
+		/*
+		 * else check filters!
+		 */
+		
 		boolean passesFilters = false;
 
 		List<IvisFilterForQuery> localFilters = localQuery.getFilters();

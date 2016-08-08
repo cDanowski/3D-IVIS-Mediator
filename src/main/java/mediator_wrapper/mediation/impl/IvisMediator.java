@@ -206,7 +206,9 @@ public class IvisMediator implements IvisMediatorInterface {
 		 */
 		for (IvisWrapperInterface wrapper : wrappersForSelector) {
 
-			retrievedItems.addAll(wrapper.queryData(query, subquerySelectors));
+			List<IvisObject> retrievedObjectsForWrapper = wrapper.queryData(query, subquerySelectors);
+			
+			retrievedItems.addAll(retrievedObjectsForWrapper);
 		}
 
 		return retrievedItems;
