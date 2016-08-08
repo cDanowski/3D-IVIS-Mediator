@@ -6,33 +6,30 @@
 <script src="libs/stomp.js"></script>
 <script src="libs/jquery-3.0.0.min.js"></script>
 <script src="libs/x3dom-1.7.0.js"></script>
+<script src="libs/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="libs/x3dom-1.7.0.css">
+<link rel="stylesheet" href="libs/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="app.css">
 <script src="js/application.js"></script>
 </head>
-<body onload="disconnect()">
+<body>
 	<noscript>
 		<h2 style="color: #ff0000">Seems your browser doesn't support
 			Javascript! Websocket relies on Javascript being enabled. Please
 			enable Javascript and reload this page!</h2>
 	</noscript>
-	<div>
-		<div>
-			<button id="connect" onclick="connect();">Connect</button>
-			<button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+	<div class="row" align="center" id="appContainer">
+	
+		<div class="col-sm-3" id="configuration">
+			<h1>Bookstore Example</h1>
+			
+			<p>In this example you may visualize available book stocks.</p>
+			
+			<button type="button" class="btn btn-primary" onclick="visualizeBookStocks()">Visualize Book Stocks</button>
 		</div>
-		<div id="conversationDiv">
-			<label>Change log:</label>
-			<p id="response"></p>
-		</div>
-		<div id="scene">
-			<x3d width='500px' height='400px' showLog="true"> <scene>
-			<transform translation="0 0 0" >
-			<shape id="sphere" onClick=sendObject(this)> <appearance> <material
-				id="sphere-material" diffuseColor='1.0 0.0 0.0'></material> </appearance> <sphere></sphere>
-			</shape> </transform> <transform translation="3 2 1" >
-			<shape id="box" onClick=sendObject(this)> <appearance> <material
-				id="box-material" diffuseColor='0.0 1.0 0.0'></material> </appearance> <box></box>
-			</shape> </transform> </scene> </x3d>
+		
+		<div class="col-sm-9" id="scene">
+			
 		</div>
 	</div>
 </body>
