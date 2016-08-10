@@ -1,4 +1,4 @@
-package controller.runtime.modify;
+package controller;
 
 /**
  * Abstract class declaring an application template identifier

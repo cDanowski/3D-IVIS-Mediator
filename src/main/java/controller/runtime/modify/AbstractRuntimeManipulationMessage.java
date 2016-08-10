@@ -1,5 +1,7 @@
 package controller.runtime.modify;
 
+import controller.AbstractMessage;
+
 public class AbstractRuntimeManipulationMessage extends AbstractMessage {
 
 	/*

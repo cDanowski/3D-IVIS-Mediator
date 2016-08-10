@@ -1,6 +1,6 @@
 package controller.visualize;
 
-import controller.runtime.modify.AbstractMessage;
+import controller.AbstractMessage;
 import ivisQuery.IvisQuery;
 
 /**

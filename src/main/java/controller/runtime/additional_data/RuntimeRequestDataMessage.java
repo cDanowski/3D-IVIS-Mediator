@@ -3,7 +3,7 @@ package controller.runtime.additional_data;
 import java.util.List;
 
 import application_template.impl.VisualizationObject;
-import controller.runtime.modify.AbstractMessage;
+import controller.AbstractMessage;
 import ivisQuery.IvisQuery;
 
 /**
