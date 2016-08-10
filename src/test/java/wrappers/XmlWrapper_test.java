@@ -23,7 +23,7 @@ import ivisQuery.FilterType;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
-import mediator_wrapper.wrapper.impl.XmlWrapper;
+import mediator_wrapper.wrapper.impl.xml.XmlWrapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = WebSocketConfig.class, loader = AnnotationConfigContextLoader.class)

@@ -19,8 +19,8 @@ import config.WebSocketConfig;
 import ivisQuery.FilterStrategy;
 import ivisQuery.FilterType;
 import ivisQuery.IvisFilterForQuery;
-import mediator_wrapper.wrapper.impl.XPathQueryHelper;
-import mediator_wrapper.wrapper.impl.XmlWrapper;
+import mediator_wrapper.wrapper.impl.xml.XPathQueryHelper;
+import mediator_wrapper.wrapper.impl.xml.XmlWrapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = WebSocketConfig.class, loader = AnnotationConfigContextLoader.class)

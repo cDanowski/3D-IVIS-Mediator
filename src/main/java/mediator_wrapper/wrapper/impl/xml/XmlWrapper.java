@@ -1,4 +1,4 @@
-package mediator_wrapper.wrapper.impl;
+package mediator_wrapper.wrapper.impl.xml;
 
 import java.util.ArrayList;
 import java.util.HashMap;

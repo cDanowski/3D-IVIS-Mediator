@@ -1,4 +1,4 @@
-package mediator_wrapper.wrapper.impl;
+package mediator_wrapper.wrapper.impl.csv;
 
 import java.io.File;
 import java.io.FileInputStream;

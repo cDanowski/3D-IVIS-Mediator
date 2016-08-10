@@ -1,4 +1,4 @@
-package mediator_wrapper.wrapper.impl;
+package mediator_wrapper.wrapper.impl.database;
 
 import java.util.List;
 import java.util.Map;
