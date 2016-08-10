@@ -87,6 +87,8 @@ function connect() {
 					replaceModifiedObject_runtime(modifiedObject);
 					
 					reloadAndZoomScene();
+					
+					alert("The stock value of an object has been updated! \n\nThe object-id is: " + modifiedObject.id);
 				});
 
 		// synchronization updates
