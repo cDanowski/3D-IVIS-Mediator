@@ -5,6 +5,7 @@ import java.util.List;
 import org.jaxen.JaxenException;
 
 import controller.runtime.modify.RuntimeModificationMessage;
+import controller.runtime.modify.RuntimeNewObjectMessage;
 import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
 
@@ -28,7 +29,7 @@ public interface IvisMediatorInterface {
 	 *            of elements according to the global schema and filter objects
 	 * @return all queried data objects
 	 * @throws JaxenException
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema) throws JaxenException, Exception;
 
@@ -40,8 +41,19 @@ public interface IvisMediatorInterface {
 	 * @param modificationMessage
 	 *            a message-object that contains all necessary information to
 	 *            identify the data object and update it with new information.
-	 * @return object containing information whether modification was successful
+	 * @return new visualization object or error message
 	 */
-	public Object modifyDataInstances(RuntimeModificationMessage modificationMessage);
+	public Object modifyDataInstance(RuntimeModificationMessage modificationMessage);
+
+	/**
+	 * Analyzes the message and creates a new data instance (if possible). To do
+	 * this, it delegates the insert-task to the appropriate wrapper component.
+	 * 
+	 * @param runtimeNewObjectMessage
+	 *            a message-object that contains all necessary information to
+	 *            insert a new object.
+	 * @return new visualization object or error message
+	 */
+	public Object insertNewObject(RuntimeNewObjectMessage runtimeNewObjectMessage);
 
 }

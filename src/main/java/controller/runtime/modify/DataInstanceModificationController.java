@@ -17,14 +17,14 @@ import util.UrlConstants;
  *
  */
 @Controller
-public class DataModificationController {
+public class DataInstanceModificationController {
 	
 	@Autowired
 	IvisMediator mediator;
 
-	@MessageMapping(UrlConstants.RUNTIME_MODIFICATION_ENDPOINT)
+	@MessageMapping(UrlConstants.RUNTIME_MODIFY_EXISTING_OBJECT_ENDPOINT)
 	@SendTo("") //TODO inform all other clients!
-	public RuntimeModificationMessage updateDataSource(RuntimeModificationMessage runtimeMessage) {
+	public RuntimeModificationMessage updateDataSource(RuntimeModificationMessage runtimeModificationMessage) {
 
 		/*
 		 * TODO message contains information about update TASK (NEW object or
@@ -35,7 +35,25 @@ public class DataModificationController {
 		 * trigger synchronization broadcast on successful update.
 		 */
 		
-		this.mediator.modifyDataInstances(runtimeMessage);
+		this.mediator.modifyDataInstance(runtimeModificationMessage);
+		
+		return null;
+	}
+	
+	@MessageMapping(UrlConstants.RUNTIME_NEW_OBJECT_ENDPOINT)
+	@SendTo("") //TODO inform all other clients!
+	public RuntimeModificationMessage insertNewObject(RuntimeNewObjectMessage runtimeNewObjectMessage) {
+
+		/*
+		 * TODO message contains information about update TASK (NEW object or
+		 * UPDATE existing object), which object is meant (ID)
+		 * 
+		 * contact mediator to perform update of data sources
+		 * 
+		 * trigger synchronization broadcast on successful update.
+		 */
+		
+		this.mediator.insertNewObject(runtimeNewObjectMessage);
 		
 		return null;
 	}

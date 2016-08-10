@@ -67,7 +67,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		 * send data modifications to the server and apply them to the data
 		 * sources
 		 */
-		registry.addEndpoint(UrlConstants.RUNTIME_MODIFICATION_ENDPOINT).withSockJS();
+		registry.addEndpoint(UrlConstants.RUNTIME_MODIFY_EXISTING_OBJECT_ENDPOINT).withSockJS();
 	}
 
 	/**

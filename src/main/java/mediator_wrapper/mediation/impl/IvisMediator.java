@@ -14,6 +14,7 @@ import org.jaxen.JaxenException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import controller.runtime.modify.RuntimeModificationMessage;
+import controller.runtime.modify.RuntimeNewObjectMessage;
 import ivisObject.IvisObject;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
@@ -216,25 +217,41 @@ public class IvisMediator implements IvisMediatorInterface {
 	}
 
 	@Override
-	public Object modifyDataInstances(RuntimeModificationMessage modificationMessage) {
+	public Object modifyDataInstance(RuntimeModificationMessage modificationMessage) {
 
 		this.isCurrentlyModifying = true;
 
 		/*
-		 * analyze the query against the global schema
+		 * identify affected wrapper (data source, that has to be accessed)
 		 * 
-		 * identify affected wrappers (data sources, that have to be accessed)
+		 * forward information to wrapper to create new data instance
 		 * 
-		 * create and delegate sub-queries to wrappers (best as new Thread to
-		 * allow concurrent execution!)
-		 * 
-		 * collect and return results (all queried objects!)
+		 * collect and return results (new visualization object!)
 		 */
 
 		this.isCurrentlyModifying = false;
 
 		return null;
 
+	}
+	
+	@Override
+	public Object insertNewObject(RuntimeNewObjectMessage runtimeNewObjectMessage) {
+		
+		this.isCurrentlyModifying = true;
+
+		/*
+		 * identify affected wrapper (data source, that has to be accessed)
+		 * 
+		 * forward information to wrapper to create new data instance
+		 * 
+		 * collect and return results (new visualization object!)
+		 */
+
+		this.isCurrentlyModifying = false;
+
+		return null;
+		
 	}
 
 }

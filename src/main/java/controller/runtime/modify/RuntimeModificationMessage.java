@@ -1,10 +1,8 @@
 package controller.runtime.modify;
 
-import ivisObject.AttributeValuePair;
-
 /**
  * Java representation of a runtime manipulation message, which is sent by
- * clients to manipulate data (create new data, or modify existing data).
+ * clients to manipulate existing data instances.
  * 
  * @author Christian Danowski
  *
