@@ -2,12 +2,15 @@
 var SERVER_SIDE_VISUALIZATION_ENDPOINT = '/initial/visualize';
 var RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/runtime/visualizeAdditionalData';
 var RUNTIME_MODIFY_ENDPOINT = '/runtime/modify';
+var RUNTIME_NEW_OBJECT_ENDPOINT = '/runtime/new';
 
 // STOMP ENDPOINTS
 var STOMP_SERVER_SIDE_IVIS_ENDPOINT = '/user/queue'
 		+ SERVER_SIDE_VISUALIZATION_ENDPOINT;
 var STOMP_RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/user/queue'
 		+ RUNTIME_ADDITIONAL_DATA_ENDPOINT;
+var STOMP_RUNTIME_MODIFY_ENDPOINT = RUNTIME_MODIFY_ENDPOINT;
+var STOMP_RUNTIME_NEW_OBJECT_ENDPOINT = RUNTIME_NEW_OBJECT_ENDPOINT;
 var STOMP_SYNCHRONIZE_ENDPOINT = '/topic/synchronize';
 
 // send message endpoints with prefix
@@ -15,14 +18,26 @@ var SEND_SERVER_SIDE_VISUALIZATION_ENDPOINT = '/ivisApp'
 		+ SERVER_SIDE_VISUALIZATION_ENDPOINT;
 var SEND_RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/ivisApp'
 		+ RUNTIME_ADDITIONAL_DATA_ENDPOINT;
-var SEND_RUNTIME_MODIFY_ENDPOINT = '/ivisApp' + RUNTIME_MODIFY_ENDPOINT;
+var SEND_RUNTIME_MODIFY_ENDPOINT = '/ivisApp'
+	+ RUNTIME_MODIFY_ENDPOINT;
+var SEND_RUNTIME_NEW_OBJECT_ENDPOINT = '/ivisApp'
+	+ RUNTIME_NEW_OBJECT_ENDPOINT;
 
 var APPLICATION_TEMPLATE_IDENTIFIER = "bookstoreApplicationTemplate";
 
 // stomp client variable that holds the connection to server
 var stompClient = null;
 
+//global y-translation value needed to properly insert additional objects
+var translation_y = -5;
+
 var objectModalReference = "#objectModal";
+var lastClickedObject;
+
+var newStockValueReference = "#newStockValue";
+var newStockValue;
+
+var bookMetadataReference = "#bookMetadata";
 
 $(document).ready(function() {
 	// establish WebSocket connection
@@ -60,6 +75,17 @@ function connect() {
 
 					integrateSceneIntoDOM_runtime(additionalObjects);
 				});
+		
+		// runtime user triggered modification
+		stompClient.subscribe(STOMP_RUNTIME_MODIFY_ENDPOINT,
+				function(object) {
+
+					var runtimeModificationMessage = JSON.parse(object.body);
+
+					var modifiedObject = runtimeModificationMessage.responseVisualizationObject;
+
+					integrateSceneIntoDOM_runtime(modifiedObject);
+				});
 
 		// synchronization updates
 		stompClient.subscribe(STOMP_SYNCHRONIZE_ENDPOINT, function(object) {
@@ -83,13 +109,13 @@ function applyUpdate(object) {
 function visualizeBookStocks() {
 	// create and send request to fetch initial scene!
 
-	var serverSideVisualizationMessage = createServerSideVisualizationRequest();
+	var serverSideVisualizationMessage = createServerSideVisualizationMessage();
 
 	stompClient.send(SEND_SERVER_SIDE_VISUALIZATION_ENDPOINT, {}, JSON
 			.stringify(serverSideVisualizationMessage));
 }
 
-function createServerSideVisualizationRequest() {
+function createServerSideVisualizationMessage() {
 
 	var serverSideVisualizationMessage = {};
 
@@ -192,8 +218,7 @@ function reloadAndZoomScene(){
 	});
 }
 
-//global y-translation value needed to properly insert additional objects
-var translation_y = -5;
+
 
 function integrateSceneIntoDOM_runtime(additionalObjects){
 	/*
@@ -336,9 +361,6 @@ function resetScene(){
 
 // RUNTIME
 
-var newStockValueReference = "#newStockValue";
-var bookMetadataReference = "#bookMetadata";
-
 /**
  * 
  * @param clickedObject is a transform node that groups all subelements of the visual object; 
@@ -348,7 +370,7 @@ var bookMetadataReference = "#bookMetadata";
  */
 function handleSingleClick(clickedObject){
 	
-	// div reference: bookMetadata
+	lastClickedObject = clickedObject;
 	
 	/**
 	 * create a table with entries for each MetadataString element in DOM subtree
@@ -419,14 +441,93 @@ function createTableFromMetadataElements(metadataElements){
 }
 
 function changeStockValue(){
-	var newStockValue = $(newStockValueReference).val();
+	newStockValue = $(newStockValueReference).val();
+	
+	// create and send request to fetch initial scene!
 	
 	/*
-	 * TODO create RuntimeMessage and send to server!
+	 * selector must point to the property of the global schema, which is modified
 	 */
+	var propertySelector_globalSchema = 'bookstore/book/@stock';
+
+	var runtimeModificationMessage = createRuntimeModificationMessage(propertySelector_globalSchema, newStockValue);
+
+	stompClient.send(SEND_RUNTIME_MODIFY_ENDPOINT, {}, JSON
+			.stringify(runtimeModificationMessage));
 	
 	// hide modal
 	$(objectModalReference).modal('hide');
 	resetObjectModal();
+}
+
+function createRuntimeModificationMessage(propertySelector_globalSchema, newStockValue) {
+
+	// need the last clicked object
+	lastClickedObject;
+	
+	/*
+	 * message has following properties:
+	 * 
+	 * public String applicationTemplateIdentifier;
+	 * 
+	 * public ModificationType modificationType;
+
+	   public String wrapperReference;
+	   
+	   public String objectId;
+
+	   public String propertySelector_globalSchema;
+
+	   public Object newPropertyValue;
+
+	   public Object responseVisualizationObject;
+	 */
+	
+	var runtimeModificationMessage = {};
+
+	runtimeModificationMessage.applicationTemplateIdentifier = APPLICATION_TEMPLATE_IDENTIFIER;
+	
+	/*
+	 * here we modify an existing data instance!
+	 */
+	runtimeModificationMessage.modificationType = 'MODIFY_EXISTING_OBJECT';
+
+	/*
+	 * the following properties are all defined by "MetadataString" elements 
+	 * have an attribute with a certain name (according to the global schema)
+	 */
+	
+	/*
+	 * wrapperReference is an exception: it is not included in the global schema,
+	 * but set when the object is extracted by the wrapper
+	 */
+	runtimeModificationMessage.wrapperReference = $(lastClickedObject).find('MetadataString[name="wrapperReference"]').attr('value');
+	
+	runtimeModificationMessage.objectId = 
+	
+	runtimeModificationMessage.propertySelector_globalSchema = propertySelector_globalSchema;
+	
+	runtimeModificationMessage.newPropertyValue = newStockValue;
+	
+	runtimeModificationMessage.query = {};
+	runtimeModificationMessage.query.selector = "bookstore/book";
+	runtimeModificationMessage.query.filters = [];
+	runtimeModificationMessage.query.filterStrategy = "AND";
+
+	/*
+	 * filter for property id --> to filter the target object!
+	 */
+	var idFilter = {};
+	idFilter.selector = "bookstore/book/@id";
+	idFilter.filterValue = $(lastClickedObject).find('MetadataString[name="id"]').attr('value');;
+	idFilter.filterType = "EQUAL";
+	
+	runtimeModificationMessage.query.filters.push(idFilter);
+	
+	/*
+	 * responseVisualizationObject is not created by client, but by server!
+	 */
+	
+	return runtimeModificationMessage;
 }
 
