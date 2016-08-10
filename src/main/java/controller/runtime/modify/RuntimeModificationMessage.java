@@ -7,23 +7,7 @@ package controller.runtime.modify;
  * @author Christian Danowski
  *
  */
-public class RuntimeModificationMessage {
-
-	/*
-	 * identifier for the application template
-	 */
-	public String applicationTemplateIdentifier;
-
-	/*
-	 * type of modification method
-	 */
-	public ModificationType modificationType;
-
-	/*
-	 * wrapper reference comprises the name of the wrapper, that manages the
-	 * source file of this object.
-	 */
-	public String wrapperReference;
+public class RuntimeModificationMessage extends AbstractRuntimeManipulationMessage {
 
 	/*
 	 * to identify the object
@@ -41,18 +25,37 @@ public class RuntimeModificationMessage {
 	 */
 	public Object newPropertyValue;
 
-	/*
-	 * in case of a new object: the complete object with all attributes must be
-	 * transmitted to be stored at the datasource! How could that be made
-	 * generic?
-	 */
-	public Object newObject;
+	public String getObjectId() {
+		return objectId;
+	}
 
-	/*
-	 * this object represents the server response object. It is the
-	 * visualization object that has been generated as consequence of the
-	 * modification request.
-	 */
-	public Object responseVisualizationObject;
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
+	}
+
+	public String getPropertySelector_globalSchema() {
+		return propertySelector_globalSchema;
+	}
+
+	public void setPropertySelector_globalSchema(String propertySelector_globalSchema) {
+		this.propertySelector_globalSchema = propertySelector_globalSchema;
+	}
+
+	public Object getNewPropertyValue() {
+		return newPropertyValue;
+	}
+
+	public void setNewPropertyValue(Object newPropertyValue) {
+		this.newPropertyValue = newPropertyValue;
+	}
+
+	@Override
+	public String toString() {
+		return "RuntimeModificationMessage [objectId=" + objectId + ", propertySelector_globalSchema="
+				+ propertySelector_globalSchema + ", newPropertyValue=" + newPropertyValue + ", modificationType="
+				+ modificationType + ", wrapperReference=" + wrapperReference + ", responseVisualizationObject="
+				+ responseVisualizationObject + ", applicationTemplateIdentifier=" + applicationTemplateIdentifier
+				+ "]";
+	}
 
 }

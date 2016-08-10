@@ -1,5 +1,6 @@
 package controller.visualize;
 
+import controller.runtime.modify.AbstractMessage;
 import ivisQuery.IvisQuery;
 
 /**
@@ -9,11 +10,9 @@ import ivisQuery.IvisQuery;
  * @author Christian Danowski
  *
  */
-public class ServerSideVisualizationMessage {
+public class ServerSideVisualizationMessage extends AbstractMessage{
 	
 	public IvisQuery query;
-	
-	public String applicationTemplateIdentifier;
 	
 	public Object responseScene;
 
@@ -23,14 +22,6 @@ public class ServerSideVisualizationMessage {
 
 	public void setQuery(IvisQuery query) {
 		this.query = query;
-	}
-
-	public String getApplicationTemplateIdentifier() {
-		return applicationTemplateIdentifier;
-	}
-
-	public void setApplicationTemplateIdentifier(String applicationTemplateIdentifier) {
-		this.applicationTemplateIdentifier = applicationTemplateIdentifier;
 	}
 
 	public Object getResponseScene() {

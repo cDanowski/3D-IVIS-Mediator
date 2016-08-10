@@ -3,6 +3,7 @@ package controller.runtime.additional_data;
 import java.util.List;
 
 import application_template.impl.VisualizationObject;
+import controller.runtime.modify.AbstractMessage;
 import ivisQuery.IvisQuery;
 
 /**
@@ -12,12 +13,7 @@ import ivisQuery.IvisQuery;
  * @author Christian Danowski
  *
  */
-public class RuntimeRequestDataMessage {
-
-	/*
-	 * identifier for the application template
-	 */
-	public String applicationTemplateIdentifier;
+public class RuntimeRequestDataMessage extends AbstractMessage{
 
 	/*
 	 * query against the global schema
@@ -28,14 +24,6 @@ public class RuntimeRequestDataMessage {
 	 * the resulting scene content as X3DOM subtree
 	 */
 	public List<VisualizationObject> additionalObjects;
-
-	public String getApplicationTemplateIdentifier() {
-		return applicationTemplateIdentifier;
-	}
-
-	public void setApplicationTemplateIdentifier(String applicationTemplateIdentifier) {
-		this.applicationTemplateIdentifier = applicationTemplateIdentifier;
-	}
 
 	public IvisQuery getQuery() {
 		return query;
