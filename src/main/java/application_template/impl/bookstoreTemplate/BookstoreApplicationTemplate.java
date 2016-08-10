@@ -2,6 +2,7 @@ package application_template.impl.bookstoreTemplate;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import application_template.ApplicationTemplateInterface;
@@ -18,19 +19,6 @@ import ivisObject.IvisObject;
 public class BookstoreApplicationTemplate implements ApplicationTemplateInterface {
 
 	private String uniqueApplicationId = "bookstoreApplicationTemplate";
-
-	/**
-	 * attribute constants according to global schema
-	 */
-	private final String BOOK_STOCK = "stock";
-	private final String BOOK_REORDER_LEVEL = "reorderLevel";
-	private final String BOOK_REORDERED = "reordered";
-	private final String BOOK_LANGUAGE = "language";
-	private final String BOOK_TITLE = "title";
-	private final String BOOK_AUTHOR = "author";
-	private final String BOOK_CATEGORY = "category";
-	private final String BOOK_PRICE = "price";
-	private final String BOOK_CURRENCY = "title";
 
 	@Override
 	public String getUniqueIdentifier() {
@@ -64,6 +52,9 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 	 */
 	private List<StockBarWithLayer> transformIntoVisualizationObjects(List<IvisObject> dataToVisualize) {
 		List<StockBarWithLayer> visObjects = new ArrayList<StockBarWithLayer>();
+		
+		// sort elements depending on their current stock value
+		Collections.sort(dataToVisualize, new StockComparator());
 
 		// greyish marker color
 		Color markerColor = new Color(127, 127, 127);
@@ -82,10 +73,10 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 		 * extract all information according to the global schema and create a
 		 * new visualization object
 		 */
-		int stock = Integer.parseInt(String.valueOf(ivisObject.getValueForAttribute(BOOK_STOCK)));
-		int reorderLevel = Integer.parseInt(String.valueOf(ivisObject.getValueForAttribute(BOOK_REORDER_LEVEL)));
-		boolean isReordered = Boolean.parseBoolean(String.valueOf(ivisObject.getValueForAttribute(BOOK_REORDERED)));
-		String title = String.valueOf(ivisObject.getValueForAttribute(BOOK_TITLE));
+		int stock = Integer.parseInt(String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_STOCK)));
+		int reorderLevel = Integer.parseInt(String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_REORDER_LEVEL)));
+		boolean isReordered = Boolean.parseBoolean(String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_REORDERED)));
+		String title = String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_TITLE));
 
 		/*
 		 * determine color depending on stock and reordered attribute values
