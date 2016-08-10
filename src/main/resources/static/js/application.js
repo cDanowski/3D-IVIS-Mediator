@@ -250,6 +250,8 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 	for(var index=0; index < numberOfObjects; index++){
 		var currentAdditionalObject = additionalObjects[index];
 		
+		var currentId = currentAdditionalObject.id;
+		
 		// "_object" must be appended, since scene elements have this suffix!
 		var jqueryExpression = "#"+currentId + "_object";
 		
@@ -258,8 +260,6 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 			replaceModifiedObject_runtime(currentAdditionalObject);
 		}
 		else{
-			
-			var currentId = currentAdditionalObject.id;
 			var x3domString = currentAdditionalObject.visualizationObject;
 			
 			if(isEvenIndex){
