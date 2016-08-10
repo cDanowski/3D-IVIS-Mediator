@@ -35,9 +35,14 @@ public class IvisObject {
 		}
 		
 		/*
-		 * if nothing has been founf return null
+		 * if nothing has been found return null
 		 */
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "IvisObject [attributeValuePairs=" + attributeValuePairs + ", elementName=" + elementName + "]";
 	}
 
 }

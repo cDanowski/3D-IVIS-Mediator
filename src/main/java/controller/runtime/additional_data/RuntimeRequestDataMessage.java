@@ -53,4 +53,10 @@ public class RuntimeRequestDataMessage {
 		this.additionalObjects = additionalObjects;
 	}
 
+	@Override
+	public String toString() {
+		return "RuntimeRequestDataMessage [applicationTemplateIdentifier=" + applicationTemplateIdentifier + ", query="
+				+ query + ", additionalObjects=" + additionalObjects + "]";
+	}
+
 }

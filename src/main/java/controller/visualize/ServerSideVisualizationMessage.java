@@ -41,4 +41,10 @@ public class ServerSideVisualizationMessage {
 		this.responseScene = responseScene;
 	}
 
+	@Override
+	public String toString() {
+		return "ServerSideVisualizationMessage [query=" + query + ", applicationTemplateIdentifier="
+				+ applicationTemplateIdentifier + ", responseScene=" + responseScene + "]";
+	}
+
 }

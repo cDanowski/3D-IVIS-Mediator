@@ -17,8 +17,8 @@ import application_template.impl.bookstoreTemplate.BookstoreApplicationTemplate;
 import mediator_wrapper.mediation.impl.IvisMediator;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
-import mediator_wrapper.wrapper.impl.CsvWrapper;
-import mediator_wrapper.wrapper.impl.XmlWrapper;
+import mediator_wrapper.wrapper.impl.csv.CsvWrapper;
+import mediator_wrapper.wrapper.impl.xml.XmlWrapper;
 import util.UrlConstants;
 
 @Configuration

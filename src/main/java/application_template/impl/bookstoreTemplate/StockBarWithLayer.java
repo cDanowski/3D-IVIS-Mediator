@@ -58,6 +58,26 @@ public class StockBarWithLayer {
 		return id;
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public double getHeight() {
+		return height;
+	}
+
+	public Color getRgbColor_bar() {
+		return rgbColor_bar;
+	}
+
+	public double getMarkerHeight() {
+		return markerHeight;
+	}
+
+	public Color getRgbColor_marker() {
+		return rgbColor_marker;
+	}
+
 	/**
 	 * creates a String representing the specified object in X3DOM
 	 * 
@@ -218,5 +238,11 @@ public class StockBarWithLayer {
 		builder.append(blue_0_1);
 
 		return builder.toString();
+	}
+
+	@Override
+	public String toString() {
+		return "StockBarWithLayer [id=" + id + ", displayName=" + displayName + ", height=" + height + ", rgbColor_bar="
+				+ rgbColor_bar + ", markerHeight=" + markerHeight + ", rgbColor_marker=" + rgbColor_marker + "]";
 	}
 }

@@ -42,4 +42,9 @@ public class IvisQuery {
 		this.filters = filters;
 	}
 
+	@Override
+	public String toString() {
+		return "IvisQuery [selector=" + selector + ", filters=" + filters + ", filterStrategy=" + filterStrategy + "]";
+	}
+
 }

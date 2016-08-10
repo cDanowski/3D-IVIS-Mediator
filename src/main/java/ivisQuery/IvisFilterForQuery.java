@@ -41,4 +41,10 @@ public class IvisFilterForQuery {
 		this.filterType = filterType;
 	}
 
+	@Override
+	public String toString() {
+		return "IvisFilterForQuery [selector=" + selector + ", filterValue=" + filterValue + ", filterType="
+				+ filterType + "]";
+	}
+
 }
