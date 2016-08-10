@@ -65,22 +65,25 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			List<String> subquerySelectors_globalSchema) throws IOException {
 
 		IvisQuery globalQuery = modificationMessage.getQuery();
+		
+		IvisQuery localQuery = (IvisQuery) this.transformToLocalQuery(globalQuery);
+		
 		Map<String, String> subqueries_global_and_local_schema = transformIntoGlobalAndLocalSubqueries(globalQuery,
 				subquerySelectors_globalSchema);
 
-		IvisQuery localQuery = (IvisQuery) this.transformToLocalQuery(globalQuery);
+		IvisObject modifiedIvisObject = executeDataInstanceModification(modificationMessage, localQuery,
+				subqueries_global_and_local_schema);
+
+		return modifiedIvisObject;
+	}
+
+	private IvisObject executeDataInstanceModification(RuntimeModificationMessage modificationMessage,
+			IvisQuery localQuery, Map<String, String> subqueries_global_and_local_schema)
+			throws UnsupportedEncodingException, FileNotFoundException, IOException {
 		
 		String propertySelector_localSchema = this.getSchemaMapping().get(modificationMessage.getPropertySelector_globalSchema());
 
-		String elementName = this.getNameFromXPathExpression(globalQuery.getSelector());
-
-		// TODO
-		/*
-		 * TODO do not read in all values at once...
-		 * 
-		 * http://stackoverflow.com/questions/34269510/read-in-big-csv-file-
-		 * validate-and-write-out-using-univocity-parser
-		 */
+		String elementName = this.getNameFromXPathExpression(modificationMessage.getQuery().getSelector());
 
 		IvisObject modifiedIvisObject = null;
 
@@ -91,6 +94,19 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		List<String[]> allRecords = csvRecords.getRows();
 
+		modifiedIvisObject = findAndModifyInstance(modificationMessage, localQuery, subqueries_global_and_local_schema,
+				propertySelector_localSchema, elementName, modifiedIvisObject, allRecords);
+
+		/*
+		 * write back
+		 */
+		persistRecords(allRecords);
+		return modifiedIvisObject;
+	}
+
+	private IvisObject findAndModifyInstance(RuntimeModificationMessage modificationMessage, IvisQuery localQuery,
+			Map<String, String> subqueries_global_and_local_schema, String propertySelector_localSchema,
+			String elementName, IvisObject modifiedIvisObject, List<String[]> allRecords) {
 		for (String[] currentRecord : allRecords) {
 			if (this.passesFilters(currentRecord, localQuery, this.csvHeaderIndicesMap)) {
 				/*
@@ -110,12 +126,6 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 				break;
 			}
 		}
-
-		/*
-		 * write back
-		 */
-		persistRecords(allRecords);
-
 		return modifiedIvisObject;
 	}
 
