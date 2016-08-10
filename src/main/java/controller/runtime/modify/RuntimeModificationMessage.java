@@ -1,5 +1,7 @@
 package controller.runtime.modify;
 
+import ivisObject.AttributeValuePair;
+
 /**
  * Java representation of a runtime manipulation message, which is sent by
  * clients to manipulate data (create new data, or modify existing data).
@@ -10,30 +12,49 @@ package controller.runtime.modify;
 public class RuntimeModificationMessage {
 
 	/*
-	 * e.g. NEW or UPDATE to indicate the type of manipulation method
+	 * identifier for the application template
 	 */
-	public String manipulationType;
+	public String applicationTemplateIdentifier;
 
 	/*
-	 * to identify the object, could be an XPath expression against the global
-	 * data schema!
+	 * type of modification method
+	 */
+	public ModificationType modificationType;
+
+	/*
+	 * wrapper reference comprises the name of the wrapper, that manages the
+	 * source file of this object.
+	 */
+	public String wrapperReference;
+
+	/*
+	 * to identify the object
 	 */
 	public String objectId;
 
 	/*
-	 * TODO in case of a new object: the complete object with all attributes
-	 * must be transmitted to be stored at the datasource! How could that be
-	 * made generic?
+	 * XPath selector against the global schema to identify, which
+	 * attribute/property shall be updated
 	 */
-	public Object object;
+	public String propertySelector_globalSchema;
 
 	/*
-	 * where should the new content be embedded within the running scene
+	 * stores the name and value of the modified property;
 	 */
-	public String appendLocation;
+	public Object newPropertyValue;
 
 	/*
-	 * TODO what else is needed?
+	 * in case of a new object: the complete object with all attributes must be
+	 * transmitted to be stored at the datasource! How could that be made
+	 * generic?
 	 */
+	public Object newObject;
+
+	/*
+	 * this object represents the server response object. It is the
+	 * visualization object that has been generated as consequence of the
+	 * modification request.
+	 */
+	public Object responseVisualizationObject;
 
 }
