@@ -34,7 +34,7 @@ public abstract class AbstractIvisWrapper {
 	 * @return equivalent subqueries against the local schema in a map with the
 	 *         global equivalents as key
 	 */
-	protected abstract Map<String, String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+	protected abstract Map<String, String> transformIntoGlobalAndLocalSubqueries(IvisQuery globalQuery,
 			List<String> subquerySelectors_globalSchema);
 
 	/**

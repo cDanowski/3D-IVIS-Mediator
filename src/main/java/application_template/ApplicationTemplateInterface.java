@@ -52,9 +52,25 @@ public interface ApplicationTemplateInterface {
 	 * 
 	 * @param dataToVisualize
 	 *            the data that shall be transformed to visual shapes
-	 * @return the visual shapes as result of the IVIS transformation used on
+	 * @return the visual objects as result of the IVIS transformation used on
 	 *         'dataToVisualize'
 	 */
 	public List<VisualizationObject> visualizeData_runtime(List<IvisObject> dataToVisualize);
+
+	/**
+	 * Takes the given data and creates a visual object, which can be integrated
+	 * into an already running scene. Realizes the Runtime Information
+	 * Visualization, where clients may wish to visualize additional data. ALso
+	 * this method may be utilized to be called on a client-triggered update of
+	 * any data property, since this method could be called with the modified
+	 * data object, which will then be re-transformed into a modified visual
+	 * shape.
+	 * 
+	 * @param dataToVisualize
+	 *            the data that shall be transformed to visual shapes
+	 * @return the visual object as result of the IVIS transformation used on
+	 *         'dataToVisualize'
+	 */
+	public VisualizationObject visualizeData_runtime(IvisObject dataToVisualize);
 
 }

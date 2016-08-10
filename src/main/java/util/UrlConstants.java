@@ -16,7 +16,9 @@ public class UrlConstants {
 	 */
 	public static final String STOMP_CLIENT_SYNCHRONIZATION_ENDPOINT = "/topic/synchronize";
 	public static final String STOMP_CLIENT_SERVER_SIDE_IVIS_ENDPOINT = "/queue" + SERVER_SIDE_IVIS_ENDPOINT;
+	public static final String STOMP_CLIENT_RUNTIME_MODIFY_EXISTING_OBJECT_ENDPOINT = "/topic" + RUNTIME_MODIFY_EXISTING_OBJECT_ENDPOINT;
 	public static final String STOMP_CLIENT_RUNTIME_ADDITIONAL_DATA_ENDPOINT = "/queue" + RUNTIME_ADDITIONAL_DATA_ENDPOINT;
+	
 	public static final String APPLICATION_PREFIX = "/ivisApp";
 	public static final String APPLICATION_USER_PREFIX = "/user";
 

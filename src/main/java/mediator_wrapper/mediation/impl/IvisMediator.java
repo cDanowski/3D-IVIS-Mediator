@@ -1,6 +1,8 @@
 package mediator_wrapper.mediation.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,13 +12,11 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.jaxen.JaxenException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import controller.runtime.modify.RuntimeModificationMessage;
 import controller.runtime.modify.RuntimeNewObjectMessage;
 import ivisObject.IvisObject;
-import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.IvisMediatorInterface;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
@@ -39,7 +39,7 @@ public class IvisMediator implements IvisMediatorInterface {
 	private List<IvisWrapperInterface> availableWrappers;
 
 	private Map<String, List<IvisWrapperInterface>> wrapperMapping;
-	
+
 	private SubqueryGenerator subqueryGenerator;
 
 	/**
@@ -62,11 +62,11 @@ public class IvisMediator implements IvisMediatorInterface {
 	 */
 
 	@Autowired
-	public IvisMediator(List<IvisWrapperInterface> wrappers, String pathToWrapperMappingFile, 
+	public IvisMediator(List<IvisWrapperInterface> wrappers, String pathToWrapperMappingFile,
 			SubqueryGenerator subqueryGenerator) throws DocumentException {
 
 		this.availableWrappers = wrappers;
-		
+
 		this.subqueryGenerator = subqueryGenerator;
 
 		this.instantiate(pathToWrapperMappingFile);
@@ -187,28 +187,29 @@ public class IvisMediator implements IvisMediatorInterface {
 		 * collect and return results (all queried objects!)
 		 */
 		List<IvisObject> retrievedItems = new ArrayList<IvisObject>();
-		
+
 		String selector_globalSchema = query.getSelector();
-		
+
 		/*
-		 * create all subqueries identifying possible child nodes and 
-		 * attributes of the selected element of the global schema
+		 * create all subqueries identifying possible child nodes and attributes
+		 * of the selected element of the global schema
 		 */
 		List<String> subquerySelectors = this.subqueryGenerator.findSubquerySelectors(query);
-		
+
 		/*
-		 * find all wrapper instances, that offer data for the selected element of the global schema
+		 * find all wrapper instances, that offer data for the selected element
+		 * of the global schema
 		 */
 		List<IvisWrapperInterface> wrappersForSelector = this.wrapperMapping.get(selector_globalSchema);
-		
+
 		/*
-		 * now forward the initial query object and the identified subquerySelectors 
-		 * to each found wrapper instance and collect its data 
+		 * now forward the initial query object and the identified
+		 * subquerySelectors to each found wrapper instance and collect its data
 		 */
 		for (IvisWrapperInterface wrapper : wrappersForSelector) {
 
 			List<IvisObject> retrievedObjectsForWrapper = wrapper.queryData(query, subquerySelectors);
-			
+
 			retrievedItems.addAll(retrievedObjectsForWrapper);
 		}
 
@@ -217,7 +218,7 @@ public class IvisMediator implements IvisMediatorInterface {
 	}
 
 	@Override
-	public Object modifyDataInstance(RuntimeModificationMessage modificationMessage) {
+	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage) throws UnsupportedEncodingException, DocumentException, IOException {
 
 		this.isCurrentlyModifying = true;
 
@@ -229,15 +230,31 @@ public class IvisMediator implements IvisMediatorInterface {
 		 * collect and return results (new visualization object!)
 		 */
 
+		IvisObject modifiedObject = null;
+
+		/*
+		 * create all subqueries identifying possible child nodes and attributes
+		 * of the selected element of the global schema
+		 */
+		List<String> subquerySelectors_globalSchema = this.subqueryGenerator
+				.findSubquerySelectors(modificationMessage.getQuery());
+
+		String wrapperReference = modificationMessage.getWrapperReference();
+
+		for (IvisWrapperInterface wrapper : availableWrappers) {
+			if (wrapper.getClass().getSimpleName().equalsIgnoreCase(wrapperReference))
+				modifiedObject = wrapper.modifyDataInstance(modificationMessage, subquerySelectors_globalSchema);
+		}
+
 		this.isCurrentlyModifying = false;
 
-		return null;
+		return modifiedObject;
 
 	}
-	
+
 	@Override
-	public Object insertNewObject(RuntimeNewObjectMessage runtimeNewObjectMessage) {
-		
+	public IvisObject insertNewObject(RuntimeNewObjectMessage runtimeNewObjectMessage) {
+
 		this.isCurrentlyModifying = true;
 
 		/*
@@ -251,7 +268,7 @@ public class IvisMediator implements IvisMediatorInterface {
 		this.isCurrentlyModifying = false;
 
 		return null;
-		
+
 	}
 
 }

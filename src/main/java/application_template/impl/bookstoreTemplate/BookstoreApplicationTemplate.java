@@ -52,7 +52,7 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 	 */
 	private List<StockBarWithLayer> transformIntoVisualizationObjects(List<IvisObject> dataToVisualize) {
 		List<StockBarWithLayer> visObjects = new ArrayList<StockBarWithLayer>();
-		
+
 		// sort elements depending on their current stock value
 		Collections.sort(dataToVisualize, new StockComparator());
 
@@ -68,14 +68,27 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 		return visObjects;
 	}
 
+	private StockBarWithLayer transformIntoVisualizationObject(IvisObject dataToVisualize) {
+
+		// greyish marker color
+		Color markerColor = new Color(127, 127, 127);
+
+		StockBarWithLayer visObject = transformToVisualizationObject(markerColor, dataToVisualize);
+
+		return visObject;
+	}
+
 	private StockBarWithLayer transformToVisualizationObject(Color markerColor, IvisObject ivisObject) {
 		/*
 		 * extract all information according to the global schema and create a
 		 * new visualization object
 		 */
-		int stock = Integer.parseInt(String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_STOCK)));
-		int reorderLevel = Integer.parseInt(String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_REORDER_LEVEL)));
-		boolean isReordered = Boolean.parseBoolean(String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_REORDERED)));
+		int stock = Integer
+				.parseInt(String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_STOCK)));
+		int reorderLevel = Integer.parseInt(
+				String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_REORDER_LEVEL)));
+		boolean isReordered = Boolean.parseBoolean(
+				String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_REORDERED)));
 		String title = String.valueOf(ivisObject.getValueForAttribute(BookstoreApplicationConstants.BOOK_TITLE));
 
 		/*
@@ -98,12 +111,12 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 		}
 
 		StockBarWithLayer visObject = new StockBarWithLayer(title, title, stock, barColor, markerColor, reorderLevel);
-		
+
 		/*
 		 * add all attributeValue pairs to visObject for metadata purposes
 		 */
 		visObject.setMetadata(ivisObject.getAttributeValuePairs());
-		
+
 		return visObject;
 	}
 
@@ -127,37 +140,38 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 		int translation_x_negative = -7;
 		// row translation
 		int translation_y = 0;
-		
+
 		// rotation about 90°
 		String rotation_z_left = "0 0 1 1.57";
 		String rotation_z_right = "0 0 1 -1.57";
 
 		int translationIncrement = 5;
-		
+
 		boolean isEvenIndex = false;
 
 		for (StockBarWithLayer visObject : visObjects) {
-			
-			if(isEvenIndex){
+
+			if (isEvenIndex) {
 				// translation to right of the scene
-				stringBuilder.append("<transform translation='" + translation_x_positive + " " + translation_y + " 0 '>");
+				stringBuilder
+						.append("<transform translation='" + translation_x_positive + " " + translation_y + " 0 '>");
 				stringBuilder.append("	<transform rotation='" + rotation_z_right + "' >");
 				stringBuilder.append(visObject.writeToX3DOM());
 				stringBuilder.append("	</transform>");
 				stringBuilder.append("</transform>");
-				
+
 				// after each second object increase y-translation
 				translation_y = translation_y + translationIncrement;
 				isEvenIndex = false;
-			}
-			else{
+			} else {
 				// translation to left of the scene
-				stringBuilder.append("<transform translation='" + translation_x_negative + " " + translation_y + " 0 '>");
+				stringBuilder
+						.append("<transform translation='" + translation_x_negative + " " + translation_y + " 0 '>");
 				stringBuilder.append("	<transform rotation='" + rotation_z_left + "' >");
 				stringBuilder.append(visObject.writeToX3DOM());
 				stringBuilder.append("	</transform>");
 				stringBuilder.append("</transform>");
-				
+
 				isEvenIndex = true;
 			}
 
@@ -188,26 +202,42 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 		return createX3DOMObjects(visObjects);
 	}
 
+	@Override
+	public VisualizationObject visualizeData_runtime(IvisObject dataToVisualize) {
+
+		StockBarWithLayer visObject = transformIntoVisualizationObject(dataToVisualize);
+
+		return createX3DOMObject(visObject);
+	}
+
 	private List<VisualizationObject> createX3DOMObjects(List<StockBarWithLayer> visObjects) {
-		List<VisualizationObject> visualizationObjectsForClient= new ArrayList<VisualizationObject>();
-		
+		List<VisualizationObject> visualizationObjectsForClient = new ArrayList<VisualizationObject>();
+
 		for (StockBarWithLayer visObject : visObjects) {
 
-			String x3domString = visObject.writeToX3DOM();
-			
-			String id = visObject.getId();
-			
-			/*
-			 * create new object mapping the id to the x3dom string reporesenting that object
-			 * 
-			 * client will know what to do with it!
-			 */
-			VisualizationObject newObjectForCLient = new VisualizationObject(id, x3domString);
-			
+			VisualizationObject newObjectForCLient = this.createX3DOMObject(visObject);
+
 			visualizationObjectsForClient.add(newObjectForCLient);
 		}
 
 		return visualizationObjectsForClient;
+	}
+
+	private VisualizationObject createX3DOMObject(StockBarWithLayer visObject) {
+
+		String x3domString = visObject.writeToX3DOM();
+
+		String id = visObject.getId();
+
+		/*
+		 * create new object mapping the id to the x3dom string reporesenting
+		 * that object
+		 * 
+		 * client will know what to do with it!
+		 */
+		VisualizationObject newObjectForClient = new VisualizationObject(id, x3domString);
+
+		return newObjectForClient;
 	}
 
 }

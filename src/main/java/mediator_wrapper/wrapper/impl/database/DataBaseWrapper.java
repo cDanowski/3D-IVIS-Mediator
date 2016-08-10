@@ -24,7 +24,8 @@ public class DataBaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	}
 
 	@Override
-	public Object applyModification(RuntimeModificationMessage modificationMessage) {
+	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage,
+			List<String> subquerySelectors_globalSchema) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -36,7 +37,7 @@ public class DataBaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	}
 
 	@Override
-	protected Map<String, String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+	protected Map<String, String> transformIntoGlobalAndLocalSubqueries(IvisQuery globalQuery,
 			List<String> subquerySelectors_globalSchema) {
 		// TODO Auto-generated method stub
 		return null;

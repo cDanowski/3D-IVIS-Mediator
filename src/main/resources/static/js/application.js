@@ -9,7 +9,7 @@ var STOMP_SERVER_SIDE_IVIS_ENDPOINT = '/user/queue'
 		+ SERVER_SIDE_VISUALIZATION_ENDPOINT;
 var STOMP_RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/user/queue'
 		+ RUNTIME_ADDITIONAL_DATA_ENDPOINT;
-var STOMP_RUNTIME_MODIFY_ENDPOINT = RUNTIME_MODIFY_ENDPOINT;
+var STOMP_RUNTIME_MODIFY_ENDPOINT = '/topic' + RUNTIME_MODIFY_ENDPOINT;
 var STOMP_RUNTIME_NEW_OBJECT_ENDPOINT = RUNTIME_NEW_OBJECT_ENDPOINT;
 var STOMP_SYNCHRONIZE_ENDPOINT = '/topic/synchronize';
 
@@ -84,7 +84,9 @@ function connect() {
 
 					var modifiedObject = runtimeModificationMessage.responseVisualizationObject;
 
-					integrateSceneIntoDOM_runtime(modifiedObject);
+					replaceModifiedObject_runtime(modifiedObject);
+					
+					reloadAndZoomScene();
 				});
 
 		// synchronization updates
@@ -246,29 +248,17 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 	for(var index=0; index < numberOfObjects; index++){
 		var currentAdditionalObject = additionalObjects[index];
 		
-		var currentId = currentAdditionalObject.id;
-		var x3domString = currentAdditionalObject.visualizationObject;
-		
 		// "_object" must be appended, since scene elements have this suffix!
 		var jqueryExpression = "#"+currentId + "_object";
 		
 		if($(jqueryExpression).length > 0){
 			// replace the existing object
-			
-			/*
-			 * get parent element
-			 * 
-			 * delete all child elements (including the target object)
-			 * 
-			 * append new child elements (with our new object)
-			 */
-			var parentElement = $(jqueryExpression).parent();
-			
-			parentElement.empty();
-			
-			parentElement.append(x3domString);
+			replaceModifiedObject_runtime(currentAdditionalObject);
 		}
 		else{
+			
+			var currentId = currentAdditionalObject.id;
+			var x3domString = currentAdditionalObject.visualizationObject;
 			
 			if(isEvenIndex){
 				// translation to right of the scene
@@ -301,6 +291,29 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 	}
 	
 	reloadAndZoomScene();
+}
+
+function replaceModifiedObject_runtime(modifiedObject){
+	// replace the existing object
+	
+	var id = modifiedObject.id;
+	var x3domString = modifiedObject.visualizationObject;
+	
+	// "_object" must be appended, since scene elements have this suffix!
+	var jqueryExpression = "#" + id + "_object";
+	
+	/*
+	 * get parent element
+	 * 
+	 * delete all child elements (including the target object)
+	 * 
+	 * append new child elements (with our new object)
+	 */
+	var parentElement = $(jqueryExpression).parent();
+	
+	parentElement.empty();
+	
+	parentElement.append(x3domString);
 }
 
 function onEnableFiltersChange() {
@@ -486,11 +499,6 @@ function createRuntimeModificationMessage(propertySelector_globalSchema, newStoc
 	var runtimeModificationMessage = {};
 
 	runtimeModificationMessage.applicationTemplateIdentifier = APPLICATION_TEMPLATE_IDENTIFIER;
-	
-	/*
-	 * here we modify an existing data instance!
-	 */
-	runtimeModificationMessage.modificationType = 'MODIFY_EXISTING_OBJECT';
 
 	/*
 	 * the following properties are all defined by "MetadataString" elements 

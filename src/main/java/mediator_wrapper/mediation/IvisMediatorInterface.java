@@ -1,7 +1,10 @@
 package mediator_wrapper.mediation;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.dom4j.DocumentException;
 import org.jaxen.JaxenException;
 
 import controller.runtime.modify.RuntimeModificationMessage;
@@ -42,8 +45,11 @@ public interface IvisMediatorInterface {
 	 *            a message-object that contains all necessary information to
 	 *            identify the data object and update it with new information.
 	 * @return new visualization object or error message
+	 * @throws IOException 
+	 * @throws DocumentException 
+	 * @throws UnsupportedEncodingException 
 	 */
-	public Object modifyDataInstance(RuntimeModificationMessage modificationMessage);
+	public Object modifyDataInstance(RuntimeModificationMessage modificationMessage) throws UnsupportedEncodingException, DocumentException, IOException;
 
 	/**
 	 * Analyzes the message and creates a new data instance (if possible). To do

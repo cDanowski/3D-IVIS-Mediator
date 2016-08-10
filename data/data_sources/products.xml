@@ -1,190 +1,174 @@
-﻿<books>
+<?xml version="1.0" encoding="UTF-8"?>
 
-	<book id="1" reorderLevel="5" isReordered="false">
-		<title lang="DE">Die Elfen</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>13</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>10.00</price>
-		</cost>
-	</book>
-	
-	<book id="2" reorderLevel="7" isReordered="true">
-		<title lang="DE">Elfenwinter</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>0</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>10.00</price>
-		</cost>
-	</book>
-	
-	<book id="3" reorderLevel="7" isReordered="true">
-		<title lang="DE">Elfenlicht</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>5</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>12.00</price>
-		</cost>
-	</book>
-	
-	<book id="4" reorderLevel="10" isReordered="false">
-		<title lang="DE">Elfenkönigin</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>12</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>12.00</price>
-		</cost>
-	</book>
-	
-	<book id="5" reorderLevel="10" isReordered="false">
-		<title lang="DE">Drachenelfen</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>7</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>15.99</price>
-		</cost>
-	</book>
-	
-	<book id="6" reorderLevel="10" isReordered="true">
-		<title lang="DE">Drachenelfen - Die Windgängerin</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>2</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>15.99</price>
-		</cost>
-	</book>
-	
-	<book id="7" reorderLevel="10" isReordered="true">
-		<title lang="DE">Drachenelfen - Die gefesselte Göttin</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>3</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>16.99</price>
-		</cost>
-	</book>
-	
-	<book id="8" reorderLevel="10" isReordered="false">
-		<title lang="DE">Drachenelfen - Die letzten Eiskrieger</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>8</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>17.99</price>
-		</cost>
-	</book>
-	
-	<book id="9" reorderLevel="10" isReordered="true">
-		<title lang="DE">Drachenelfen - Himmel in Flammen</title>
-		<author>Bernhard Hennen</author>
-		<category>Fantasy</category>
-		<amountInStock>0</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>18.99</price>
-		</cost>
-	</book>
-	
-	<book id="10" reorderLevel="5" isReordered="false">
-		<title lang="EN">The Vegetarian</title>
-		<author>Han Kang</author>
-		<category>Thriller</category>
-		<amountInStock>5</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>11.95</price>
-		</cost>
-	</book>
-	
-	<book id="11" reorderLevel="6" isReordered="false">
-		<title lang="EN">Depraved Heart</title>
-		<author>Patricia Cornwell</author>
-		<category>Thriller</category>
-		<amountInStock>12</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>9.95</price>
-		</cost>
-	</book>
-	
-	<book id="12" reorderLevel="5" isReordered="false">
-		<title lang="EN">The Children Act</title>
-		<author>Ian McEwan</author>
-		<category>Thriller</category>
-		<amountInStock>5</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>9.95</price>
-		</cost>
-	</book>
-	
-	<book id="13" reorderLevel="10" isReordered="false">
-		<title lang="EN">Falling in Love</title>
-		<author>Donna Leon</author>
-		<category>Thriller</category>
-		<amountInStock>13</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>9.95</price>
-		</cost>
-	</book>
-	
-	<book id="14" reorderLevel="8" isReordered="false">
-		<title lang="EN">The Kept Woman</title>
-		<author>Karin Slaughter</author>
-		<category>Thriller</category>
-		<amountInStock>20</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>13.95</price>
-		</cost>
-	</book>
-	
-	<book id="15" reorderLevel="5" isReordered="true">
-		<title lang="EN">Finders Keepers</title>
-		<author>Stephen King</author>
-		<category>Thriller</category>
-		<amountInStock>5</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>10.95</price>
-		</cost>
-	</book>
-	
-	<book id="16" reorderLevel="10" isReordered="true">
-		<title lang="EN">The Complete Sherlock Holmes</title>
-		<author>Arthur Conan Doyle</author>
-		<category>Thriller</category>
-		<amountInStock>5</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>11.95</price>
-		</cost>
-	</book>
-	
-	<book id="17" reorderLevel="5" isReordered="true">
-		<title lang="EN">A Banquet of Consequences</title>
-		<author>Elizabeth George</author>
-		<category>Thriller</category>
-		<amountInStock>5</amountInStock>
-		<cost>
-			<currency>Euro</currency>
-			<price>8.95</price>
-		</cost>
-	</book>
-
-</books> 
+<books> 
+  <book id="1" reorderLevel="5" isReordered="false"> 
+    <title lang="DE">Die Elfen</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>13</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>10.00</price> 
+    </cost> 
+  </book>  
+  <book id="2" reorderLevel="7" isReordered="true"> 
+    <title lang="DE">Elfenwinter</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>1</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>10.00</price> 
+    </cost> 
+  </book>  
+  <book id="3" reorderLevel="7" isReordered="true"> 
+    <title lang="DE">Elfenlicht</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>5</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>12.00</price> 
+    </cost> 
+  </book>  
+  <book id="4" reorderLevel="10" isReordered="false"> 
+    <title lang="DE">Elfenkönigin</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>12</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>12.00</price> 
+    </cost> 
+  </book>  
+  <book id="5" reorderLevel="10" isReordered="false"> 
+    <title lang="DE">Drachenelfen</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>7</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>15.99</price> 
+    </cost> 
+  </book>  
+  <book id="6" reorderLevel="10" isReordered="true"> 
+    <title lang="DE">Drachenelfen - Die Windgängerin</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>2</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>15.99</price> 
+    </cost> 
+  </book>  
+  <book id="7" reorderLevel="10" isReordered="true"> 
+    <title lang="DE">Drachenelfen - Die gefesselte Göttin</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>3</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>16.99</price> 
+    </cost> 
+  </book>  
+  <book id="8" reorderLevel="10" isReordered="false"> 
+    <title lang="DE">Drachenelfen - Die letzten Eiskrieger</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>8</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>17.99</price> 
+    </cost> 
+  </book>  
+  <book id="9" reorderLevel="10" isReordered="true"> 
+    <title lang="DE">Drachenelfen - Himmel in Flammen</title>  
+    <author>Bernhard Hennen</author>  
+    <category>Fantasy</category>  
+    <amountInStock>0</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>18.99</price> 
+    </cost> 
+  </book>  
+  <book id="10" reorderLevel="5" isReordered="false"> 
+    <title lang="EN">The Vegetarian</title>  
+    <author>Han Kang</author>  
+    <category>Thriller</category>  
+    <amountInStock>5</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>11.95</price> 
+    </cost> 
+  </book>  
+  <book id="11" reorderLevel="6" isReordered="false"> 
+    <title lang="EN">Depraved Heart</title>  
+    <author>Patricia Cornwell</author>  
+    <category>Thriller</category>  
+    <amountInStock>12</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>9.95</price> 
+    </cost> 
+  </book>  
+  <book id="12" reorderLevel="5" isReordered="false"> 
+    <title lang="EN">The Children Act</title>  
+    <author>Ian McEwan</author>  
+    <category>Thriller</category>  
+    <amountInStock>5</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>9.95</price> 
+    </cost> 
+  </book>  
+  <book id="13" reorderLevel="10" isReordered="false"> 
+    <title lang="EN">Falling in Love</title>  
+    <author>Donna Leon</author>  
+    <category>Thriller</category>  
+    <amountInStock>13</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>9.95</price> 
+    </cost> 
+  </book>  
+  <book id="14" reorderLevel="8" isReordered="false"> 
+    <title lang="EN">The Kept Woman</title>  
+    <author>Karin Slaughter</author>  
+    <category>Thriller</category>  
+    <amountInStock>20</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>13.95</price> 
+    </cost> 
+  </book>  
+  <book id="15" reorderLevel="5" isReordered="true"> 
+    <title lang="EN">Finders Keepers</title>  
+    <author>Stephen King</author>  
+    <category>Thriller</category>  
+    <amountInStock>5</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>10.95</price> 
+    </cost> 
+  </book>  
+  <book id="16" reorderLevel="10" isReordered="true"> 
+    <title lang="EN">The Complete Sherlock Holmes</title>  
+    <author>Arthur Conan Doyle</author>  
+    <category>Thriller</category>  
+    <amountInStock>5</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>11.95</price> 
+    </cost> 
+  </book>  
+  <book id="17" reorderLevel="5" isReordered="true"> 
+    <title lang="EN">A Banquet of Consequences</title>  
+    <author>Elizabeth George</author>  
+    <category>Thriller</category>  
+    <amountInStock>5</amountInStock>  
+    <cost> 
+      <currency>Euro</currency>  
+      <price>8.95</price> 
+    </cost> 
+  </book> 
+</books>

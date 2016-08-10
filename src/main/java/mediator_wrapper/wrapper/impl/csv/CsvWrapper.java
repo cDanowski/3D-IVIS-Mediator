@@ -46,7 +46,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	@Override
 	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors_globalSchema)
 			throws Exception {
-		Map<String, String> subqueries_global_and_local_schema = transformIntoLocalSubqueries(queryAgainstGlobalSchema,
+		Map<String, String> subqueries_global_and_local_schema = transformIntoGlobalAndLocalSubqueries(queryAgainstGlobalSchema,
 				subquerySelectors_globalSchema);
 
 		IvisQuery localQuery = (IvisQuery) this.transformToLocalQuery(queryAgainstGlobalSchema);
@@ -55,7 +55,8 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	public Object applyModification(RuntimeModificationMessage modificationMessage) {
+	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage,
+			List<String> subquerySelectors_globalSchema) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -97,7 +98,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	protected Map<String, String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+	protected Map<String, String> transformIntoGlobalAndLocalSubqueries(IvisQuery globalQuery,
 			List<String> subquerySelectors_globalSchema) {
 
 		Map<String, String> subqueries_global_and_local_schema = new HashMap<String, String>();

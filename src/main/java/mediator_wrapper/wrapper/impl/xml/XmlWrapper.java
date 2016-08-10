@@ -1,5 +1,9 @@
 package mediator_wrapper.wrapper.impl.xml;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,7 +14,9 @@ import java.util.Map.Entry;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 import controller.runtime.modify.RuntimeModificationMessage;
 import ivisObject.AttributeValuePair;
@@ -36,8 +42,6 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors_globalSchema)
 			throws DocumentException {
 		/*
-		 * TODO
-		 * 
 		 * queryAgainstGlobalScheme has selector of elements that shall be
 		 * retrieved.
 		 * 
@@ -49,16 +53,16 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * that comprises all subquery-properties
 		 */
 
-		Map<String, String> subquerySelectors_localSchema = transformIntoLocalSubqueries(queryAgainstGlobalSchema,
-				subquerySelectors_globalSchema);
+		Map<String, String> subquerySelectors_global_and_localSchema = transformIntoGlobalAndLocalSubqueries(
+				queryAgainstGlobalSchema, subquerySelectors_globalSchema);
 
 		String localQuery = (String) this.transformToLocalQuery(queryAgainstGlobalSchema);
 
-		return this.executeLocalQuery(localQuery, subquerySelectors_localSchema, queryAgainstGlobalSchema);
+		return this.executeLocalQuery(localQuery, subquerySelectors_global_and_localSchema, queryAgainstGlobalSchema);
 	}
 
 	@Override
-	protected Map<String, String> transformIntoLocalSubqueries(IvisQuery globalQuery,
+	protected Map<String, String> transformIntoGlobalAndLocalSubqueries(IvisQuery globalQuery,
 			List<String> subquerySelectors_globalSchema) {
 		String selector_globalSchema = globalQuery.getSelector();
 		String selector_localSchema = this.getSchemaMapping().get(selector_globalSchema);
@@ -71,17 +75,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			/*
 			 * now cut off the part that is equal with the selector_localSchema
 			 */
-			if (subquery_localSchema.contains(selector_localSchema)) {
-				String[] subqueryElements = subquery_localSchema.split(selector_localSchema);
-
-				subquery_localSchema = subqueryElements[subqueryElements.length - 1];
-
-				/*
-				 * eliminate a leading '/'
-				 */
-				if (subquery_localSchema.startsWith("/"))
-					subquery_localSchema = subquery_localSchema.substring(1);
-			}
+			subquery_localSchema = removeSelector_localSchema(selector_localSchema, subquery_localSchema);
 
 			subqueries_global_and_local_schema.put(subquery_globalSchema, subquery_localSchema);
 		}
@@ -89,8 +83,24 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		return subqueries_global_and_local_schema;
 	}
 
-	private List<IvisObject> retrieveDataFromXml(String localQuery, Map<String, String> subquerySelectors_global_and_local_schema,
-			IvisQuery globalQuery) throws DocumentException {
+	private String removeSelector_localSchema(String selector_localSchema, String propertySelector) {
+		if (propertySelector.contains(selector_localSchema)) {
+			String[] subqueryElements = propertySelector.split(selector_localSchema);
+
+			propertySelector = subqueryElements[subqueryElements.length - 1];
+
+			/*
+			 * eliminate a leading '/'
+			 */
+			if (propertySelector.startsWith("/"))
+				propertySelector = propertySelector.substring(1);
+		}
+		return propertySelector;
+	}
+
+	private List<IvisObject> retrieveDataFromXml(String localQuery,
+			Map<String, String> subquerySelectors_global_and_local_schema, IvisQuery globalQuery)
+			throws DocumentException {
 
 		List<IvisObject> ivisObjects = new ArrayList<IvisObject>();
 
@@ -131,22 +141,25 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	 *            the name of the object
 	 * @return new instance of {@link IvisObject}
 	 */
-	private IvisObject createIvisObject(Node node, Map<String, String> subquerySelectors_global_and_local_schema, String elementName) {
+	private IvisObject createIvisObject(Node node, Map<String, String> subquerySelectors_global_and_local_schema,
+			String elementName) {
 
-		List<AttributeValuePair> attributeValuePairs = new ArrayList<AttributeValuePair>(subquerySelectors_global_and_local_schema.size());
+		List<AttributeValuePair> attributeValuePairs = new ArrayList<AttributeValuePair>(
+				subquerySelectors_global_and_local_schema.size());
 
-		Iterator<Entry<String, String>> subqueryIterator = subquerySelectors_global_and_local_schema.entrySet().iterator();
-		
-		while(subqueryIterator.hasNext()){
+		Iterator<Entry<String, String>> subqueryIterator = subquerySelectors_global_and_local_schema.entrySet()
+				.iterator();
+
+		while (subqueryIterator.hasNext()) {
 			Entry<String, String> subqueryEntry = subqueryIterator.next();
-			
+
 			String name = getNameFromXPathExpression(subqueryEntry.getKey());
 
 			Object value = node.selectSingleNode(subqueryEntry.getValue()).getText();
 
 			attributeValuePairs.add(new AttributeValuePair(name, value));
 		}
-		
+
 		addWrapperReference(attributeValuePairs);
 
 		IvisObject newIvisObject = new IvisObject(elementName, attributeValuePairs);
@@ -168,16 +181,62 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	protected List<IvisObject> executeLocalQuery(Object localQuery, Map<String, String> subquerySelectors_localSchema,
-			IvisQuery globalQuery) throws DocumentException {
+	protected List<IvisObject> executeLocalQuery(Object localQuery,
+			Map<String, String> subquerySelectors_global_and_localSchema, IvisQuery globalQuery)
+			throws DocumentException {
 		// we know that in this class the localQuery is of type String!
-		return this.retrieveDataFromXml((String) localQuery, subquerySelectors_localSchema, globalQuery);
+		return this.retrieveDataFromXml((String) localQuery, subquerySelectors_global_and_localSchema, globalQuery);
 	}
 
 	@Override
-	public Object applyModification(RuntimeModificationMessage modificationMessage) {
-		// TODO Auto-generated method stub
-		return null;
+	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage,
+			List<String> subquerySelectors_globalSchema) throws DocumentException, IOException {
+
+		/*
+		 * local query is an xPath expression! Hence, String
+		 */
+		String localQuery = (String) transformToLocalQuery(modificationMessage.getQuery());
+
+		Map<String, String> subquerySelectors_global_and_localSchema = transformIntoGlobalAndLocalSubqueries(
+				modificationMessage.getQuery(), subquerySelectors_globalSchema);
+
+		IvisObject modifiedIvisObject = executeDataInstanceModification(modificationMessage, localQuery,
+				subquerySelectors_global_and_localSchema);
+
+		return modifiedIvisObject;
+	}
+
+	private IvisObject executeDataInstanceModification(RuntimeModificationMessage modificationMessage,
+			String localQuery, Map<String, String> subquerySelectors_global_and_localSchema)
+			throws DocumentException, UnsupportedEncodingException, FileNotFoundException, IOException {
+		IvisObject modifiedIvisObject = null;
+
+		String selector_localSchema = this.getSchemaMapping().get(modificationMessage.getQuery().getSelector());
+
+		String propertySelector_globalSchema = modificationMessage.getPropertySelector_globalSchema();
+		String propertySelector_localSchema = this.getSchemaMapping().get(propertySelector_globalSchema);
+		propertySelector_localSchema = removeSelector_localSchema(selector_localSchema, propertySelector_localSchema);
+
+		String newPropertyValue = String.valueOf(modificationMessage.getNewPropertyValue());
+
+		SAXReader reader = new SAXReader();
+		Document document = reader.read(this.getSourceFile());
+
+		// target object instance
+		Node node = document.selectSingleNode(localQuery);
+
+		// target property
+		node.selectSingleNode(propertySelector_localSchema).setText(newPropertyValue);
+
+		String elementName = this.getNameFromXPathExpression(modificationMessage.getQuery().getSelector());
+		modifiedIvisObject = this.createIvisObject(node, subquerySelectors_global_and_localSchema, elementName);
+
+		// Pretty print the document to System.out
+		OutputFormat format = OutputFormat.createPrettyPrint();
+		XMLWriter writer;
+		writer = new XMLWriter(new FileOutputStream(this.getSourceFile()), format);
+		writer.write(document);
+		return modifiedIvisObject;
 	}
 
 }

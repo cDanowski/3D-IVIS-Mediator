@@ -1,5 +1,7 @@
 package mediator_wrapper.wrapper;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.dom4j.DocumentException;
@@ -37,15 +39,25 @@ public interface IvisWrapperInterface {
 	 *            as in queryAgainstGlobalSchema, then there are no such sub
 	 *            elements
 	 * @return the data objects which were queried
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors) throws Exception;
+	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors)
+			throws Exception;
 
 	/**
+	 * Modifies a certain data instance.
 	 * 
 	 * @param modificationMessage
-	 * @return
+	 *            contains all necessary information to identify the target
+	 *            object and modify the target property
+	 * @param subquerySelectors_globalSchema
+	 *            references to all object properties
+	 * @return the modified object
+	 * @throws DocumentException 
+	 * @throws UnsupportedEncodingException 
+	 * @throws IOException 
 	 */
-	public Object applyModification(RuntimeModificationMessage modificationMessage);
+	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage,
+			List<String> subquerySelectors_globalSchema) throws DocumentException, UnsupportedEncodingException, IOException;
 
 }
