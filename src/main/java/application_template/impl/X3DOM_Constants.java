@@ -10,4 +10,6 @@ public class X3DOM_Constants {
 	public static final String ID_SUFFIX_OBJECT = "_object";
 	
 	public static final String ID_SUFFIX_MATERIAL = "_material";
+
+	public static final String ID_SUFFIX_SHAPE = "_shape";
 }

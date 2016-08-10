@@ -114,7 +114,7 @@ public class StockBarWithLayer {
 		// bar has to be translated about half the height to have all bars on
 		// the same ground level.
 		builder.append("	<transform translation='0 " + this.height / 2 + " 0'>");
-		builder.append("		<shape>");
+		builder.append("		<shape id='" + this.id + X3DOM_Constants.ID_SUFFIX_SHAPE + "'>");
 
 		/*
 		 * append metadata!
