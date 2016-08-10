@@ -29,7 +29,8 @@ var APPLICATION_TEMPLATE_IDENTIFIER = "bookstoreApplicationTemplate";
 var stompClient = null;
 
 //global y-translation value needed to properly insert additional objects
-var translation_y = -5;
+var translation_y = -0;
+var translationIncrement = 5;
 
 var objectModalReference = "#objectModal";
 var lastClickedObject;
@@ -233,6 +234,8 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 	 * if it is a new object insert it into the scene in front of the existing ones
 	 */
 	
+	translation_y = translation_y - translationIncrement;
+	
 	var numberOfObjects = additionalObjects.length;
 
 	// column translation
@@ -242,8 +245,6 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 	// rotation about 90°
 	var rotation_z_left = "0 0 1 1.57";
 	var rotation_z_right = "0 0 1 -1.57";
-
-	var translationIncrement = 5;
 	
 	var isEvenIndex = false;
 	
@@ -370,7 +371,7 @@ function resetScene(){
 	$('.runtime').prop("disabled", true);
 	
 	// also reset translation value to initial value
-	translation_y = -5;
+	translation_y = -0;
 	
 }
 
