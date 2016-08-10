@@ -3,6 +3,8 @@ package mediator_wrapper.wrapper.impl.csv;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -16,8 +18,11 @@ import java.util.Map.Entry;
 import org.dom4j.DocumentException;
 
 import com.univocity.parsers.common.processor.RowListProcessor;
+import com.univocity.parsers.common.processor.RowProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import com.univocity.parsers.csv.CsvWriter;
+import com.univocity.parsers.csv.CsvWriterSettings;
 
 import controller.runtime.modify.RuntimeModificationMessage;
 import ivisObject.AttributeValuePair;
@@ -37,7 +42,8 @@ import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
  */
 public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperInterface {
 
-	
+	private Map<String, Integer> csvHeaderIndicesMap;
+	private String[] headers;
 
 	public CsvWrapper(String pathToSourcefile, String pathToSchemaMappingFile) throws DocumentException {
 		super(pathToSourcefile, pathToSchemaMappingFile);
@@ -46,8 +52,8 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	@Override
 	public List<IvisObject> queryData(IvisQuery queryAgainstGlobalSchema, List<String> subquerySelectors_globalSchema)
 			throws Exception {
-		Map<String, String> subqueries_global_and_local_schema = transformIntoGlobalAndLocalSubqueries(queryAgainstGlobalSchema,
-				subquerySelectors_globalSchema);
+		Map<String, String> subqueries_global_and_local_schema = transformIntoGlobalAndLocalSubqueries(
+				queryAgainstGlobalSchema, subquerySelectors_globalSchema);
 
 		IvisQuery localQuery = (IvisQuery) this.transformToLocalQuery(queryAgainstGlobalSchema);
 
@@ -56,9 +62,100 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 	@Override
 	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage,
-			List<String> subquerySelectors_globalSchema) {
-		// TODO Auto-generated method stub
-		return null;
+			List<String> subquerySelectors_globalSchema) throws IOException {
+
+		IvisQuery globalQuery = modificationMessage.getQuery();
+		Map<String, String> subqueries_global_and_local_schema = transformIntoGlobalAndLocalSubqueries(globalQuery,
+				subquerySelectors_globalSchema);
+
+		IvisQuery localQuery = (IvisQuery) this.transformToLocalQuery(globalQuery);
+		
+		String propertySelector_localSchema = this.getSchemaMapping().get(modificationMessage.getPropertySelector_globalSchema());
+
+		String elementName = this.getNameFromXPathExpression(globalQuery.getSelector());
+
+		// TODO
+		/*
+		 * TODO do not read in all values at once...
+		 * 
+		 * http://stackoverflow.com/questions/34269510/read-in-big-csv-file-
+		 * validate-and-write-out-using-univocity-parser
+		 */
+
+		IvisObject modifiedIvisObject = null;
+
+		/*
+		 * use univocity parser to parse CSV file
+		 */
+		CsvRecords csvRecords = this.parseAllCsvRecords();
+
+		List<String[]> allRecords = csvRecords.getRows();
+
+		for (String[] currentRecord : allRecords) {
+			if (this.passesFilters(currentRecord, localQuery, this.csvHeaderIndicesMap)) {
+				/*
+				 * modify row
+				 * 
+				 * +
+				 * 
+				 * create IvisObject from Row
+				 */
+
+				currentRecord = modifyRecord(currentRecord, propertySelector_localSchema,
+						modificationMessage.getNewPropertyValue());
+
+				modifiedIvisObject = this.createIvisObject(currentRecord, subqueries_global_and_local_schema,
+						elementName, this.csvHeaderIndicesMap);
+
+				break;
+			}
+		}
+
+		/*
+		 * write back
+		 */
+		persistRecords(allRecords);
+
+		return modifiedIvisObject;
+	}
+
+	private void persistRecords(List<String[]> allRecords) throws IOException {
+
+		CsvWriterSettings writerSettings = new CsvWriterSettings();
+
+		CsvWriter writer = new CsvWriter(new FileWriter(this.getSourceFile()), writerSettings);
+
+		// Write the record headers of this file
+		writer.writeHeaders(this.headers);
+
+		// Here we just tell the writer to write everything and close the given
+		// output Writer instance.
+		writer.writeStringRowsAndClose(allRecords);
+
+	}
+
+	private String[] modifyRecord(String[] currentRecord, String selector_local, Object newPropertyValue) {
+		int recordIndex = csvHeaderIndicesMap.get(selector_local);
+
+		currentRecord[recordIndex] = String.valueOf(newPropertyValue);
+
+		return currentRecord;
+	}
+
+	private CsvParserSettings configureParserSettings(RowProcessor processor) {
+		CsvParserSettings parserSettings = new CsvParserSettings();
+
+		// configure the parser to automatically detect what line
+		// separator sequence is in the input
+		parserSettings.setLineSeparatorDetectionEnabled(true);
+
+		parserSettings.setRowProcessor(processor);
+
+		// Let's consider the first parsed row as the headers of each column in
+		// the file.
+		parserSettings.setHeaderExtractionEnabled(true);
+
+		return parserSettings;
 	}
 
 	@Override
@@ -73,7 +170,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		List<IvisFilterForQuery> globalFilters = globalQuery.getFilters();
 
 		List<IvisFilterForQuery> localFilters = new ArrayList<IvisFilterForQuery>();
-		
+
 		if (globalFilters != null && globalFilters.size() > 0) {
 
 			for (IvisFilterForQuery globalFilter : globalFilters) {
@@ -120,14 +217,15 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	protected List<IvisObject> executeLocalQuery(Object localQuery, Map<String, String> subqueries_global_and_local_schema,
-			IvisQuery globalQuery) throws Exception {
+	protected List<IvisObject> executeLocalQuery(Object localQuery,
+			Map<String, String> subqueries_global_and_local_schema, IvisQuery globalQuery) throws Exception {
 		// we know that in this class the localQuery is of type String!
 		return this.retrieveDataFromCsv((IvisQuery) localQuery, subqueries_global_and_local_schema, globalQuery);
 	}
 
-	private List<IvisObject> retrieveDataFromCsv(IvisQuery localQuery, Map<String, String> subqueries_global_and_local_schema,
-			IvisQuery globalQuery) throws UnsupportedEncodingException, FileNotFoundException {
+	private List<IvisObject> retrieveDataFromCsv(IvisQuery localQuery,
+			Map<String, String> subqueries_global_and_local_schema, IvisQuery globalQuery)
+			throws UnsupportedEncodingException, FileNotFoundException {
 
 		List<IvisObject> ivisObjects = new ArrayList<IvisObject>();
 
@@ -138,15 +236,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 */
 		CsvRecords csvRecords = this.parseAllCsvRecords();
 
-		String[] headers = csvRecords.getHeaders();
-
 		List<String[]> allRecords = csvRecords.getRows();
-
-		/*
-		 * create maps to map each filter column name and subquery selector
-		 * (column) name to the array index
-		 */
-		Map<String, Integer> csvHeaderIndicesMap = makeCsvHeaderIndicesMap(headers);
 
 		/*
 		 * for each row, check filter statements
@@ -157,36 +247,37 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			/*
 			 * check filters
 			 */
-			if (this.passesFilters(record, localQuery, csvHeaderIndicesMap))
-				ivisObjects.add(
-						this.createIvisObject(record, subqueries_global_and_local_schema, elementName, csvHeaderIndicesMap));
+			if (this.passesFilters(record, localQuery, this.csvHeaderIndicesMap))
+				ivisObjects.add(this.createIvisObject(record, subqueries_global_and_local_schema, elementName,
+						this.csvHeaderIndicesMap));
 
 		}
 
 		return ivisObjects;
 	}
 
-	private IvisObject createIvisObject(String[] record, Map<String, String> subqueries_global_and_local_schema, String elementName,
-			Map<String, Integer> csvHeaderIndicesMap) {
+	private IvisObject createIvisObject(String[] record, Map<String, String> subqueries_global_and_local_schema,
+			String elementName, Map<String, Integer> csvHeaderIndicesMap) {
 		List<AttributeValuePair> attributeValuePairs = new ArrayList<AttributeValuePair>(
 				subqueries_global_and_local_schema.size());
 
 		Iterator<Entry<String, String>> subqueryIterator = subqueries_global_and_local_schema.entrySet().iterator();
-		
-		while(subqueryIterator.hasNext()){
+
+		while (subqueryIterator.hasNext()) {
 			Entry<String, String> subqueryEntry = subqueryIterator.next();
-			
+
 			String name = getNameFromXPathExpression(subqueryEntry.getKey());
 
 			/*
-			 * in case of CSV, the value represents the header of the corresponding column
+			 * in case of CSV, the value represents the header of the
+			 * corresponding column
 			 */
 			Integer recordIndex = csvHeaderIndicesMap.get(subqueryEntry.getValue());
 			Object value = record[recordIndex];
 
 			attributeValuePairs.add(new AttributeValuePair(name, value));
 		}
-		
+
 		addWrapperReference(attributeValuePairs);
 
 		IvisObject newIvisObject = new IvisObject(elementName, attributeValuePairs);
@@ -195,17 +286,17 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	private boolean passesFilters(String[] record, IvisQuery localQuery, Map<String, Integer> csvHeaderIndicesMap) {
-		
+
 		/*
 		 * if there are no filters specified just return true!
 		 */
-		if(localQuery.getFilters() == null || localQuery.getFilters().size() == 0)
+		if (localQuery.getFilters() == null || localQuery.getFilters().size() == 0)
 			return true;
-		
+
 		/*
 		 * else check filters!
 		 */
-		
+
 		boolean passesFilters = false;
 
 		List<IvisFilterForQuery> localFilters = localQuery.getFilters();
@@ -257,13 +348,13 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		switch (filterType) {
 		case EQUAL:
-			if (objectValue.equalsIgnoreCase(String.valueOf( filterValue)))
+			if (objectValue.equalsIgnoreCase(String.valueOf(filterValue)))
 				passesFilter = true;
 			break;
 		case GREATER_THAN:
 			try {
 				double numericObjectValue = Double.parseDouble(objectValue);
-				double numericFilterValue = Double.parseDouble( String.valueOf( filterValue));
+				double numericFilterValue = Double.parseDouble(String.valueOf(filterValue));
 				if (numericObjectValue > numericFilterValue)
 					passesFilter = true;
 			} catch (Exception e) {
@@ -276,7 +367,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		case GREATER_THAN_OR_EQUAL_TO:
 			try {
 				double numericObjectValue = Double.parseDouble(objectValue);
-				double numericFilterValue = Double.parseDouble( String.valueOf( filterValue));
+				double numericFilterValue = Double.parseDouble(String.valueOf(filterValue));
 				if (numericObjectValue >= numericFilterValue)
 					passesFilter = true;
 			} catch (Exception e) {
@@ -289,7 +380,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		case LESS_THAN:
 			try {
 				double numericObjectValue = Double.parseDouble(objectValue);
-				double numericFilterValue = Double.parseDouble( String.valueOf( filterValue));
+				double numericFilterValue = Double.parseDouble(String.valueOf(filterValue));
 				if (numericObjectValue < numericFilterValue)
 					passesFilter = true;
 			} catch (Exception e) {
@@ -302,7 +393,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		case LESS_THAN_OR_EQUAL_TO:
 			try {
 				double numericObjectValue = Double.parseDouble(objectValue);
-				double numericFilterValue = Double.parseDouble( String.valueOf( filterValue));
+				double numericFilterValue = Double.parseDouble(String.valueOf(filterValue));
 				if (numericObjectValue <= numericFilterValue)
 					passesFilter = true;
 			} catch (Exception e) {
@@ -313,7 +404,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			}
 			break;
 		case NOT_EQUAL:
-			if (!objectValue.equalsIgnoreCase(String.valueOf( filterValue)))
+			if (!objectValue.equalsIgnoreCase(String.valueOf(filterValue)))
 				passesFilter = true;
 			break;
 
@@ -337,23 +428,10 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	private CsvRecords parseAllCsvRecords() throws UnsupportedEncodingException, FileNotFoundException {
-		/*
-		 * use univocity parser to parse CSV file
-		 */
-		CsvParserSettings parserSettings = new CsvParserSettings();
-
-		// configure the parser to automatically detect what line
-		// separator sequence is in the input
-		parserSettings.setLineSeparatorDetectionEnabled(true);
-
 		// A RowListProcessor stores each parsed row in a List.
 		RowListProcessor rowProcessor = new RowListProcessor();
 
-		parserSettings.setRowProcessor(rowProcessor);
-
-		// Let's consider the first parsed row as the headers of each column in
-		// the file.
-		parserSettings.setHeaderExtractionEnabled(true);
+		CsvParserSettings parserSettings = configureParserSettings(rowProcessor);
 
 		// creates a parser instance with the given settings
 		CsvParser parser = new CsvParser(parserSettings);
@@ -363,10 +441,17 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		parser.parse(getReader(this.getSourceFile()));
 
 		// get the parsed records from the RowListProcessor here.
-		String[] headers = rowProcessor.getHeaders();
 		List<String[]> rows = rowProcessor.getRows();
 
-		return new CsvRecords(headers, rows);
+		this.headers = rowProcessor.getHeaders();
+
+		/*
+		 * create maps to map each filter column name and subquery selector
+		 * (column) name to the array index
+		 */
+		this.csvHeaderIndicesMap = makeCsvHeaderIndicesMap(headers);
+
+		return new CsvRecords(this.headers, rows);
 	}
 
 	private Reader getReader(File resource) throws UnsupportedEncodingException, FileNotFoundException {
