@@ -46,7 +46,7 @@
 				</div>
 
 				<div class="form-group">
-					<label>Filter Strategy:</label> <select class="form-control"
+					<label>Filter Strategy:</label> <select class="form-control filter"
 						id="filter_strategy" disabled>
 						<option title="queried objects have to pass ALL filters">AND</option>
 						<option title="queried objects have to pass at least ONE filter">OR</option>
@@ -55,7 +55,7 @@
 
 				<div class="form-group">
 					<label>Author (only one author can be specified)</label> <select
-						class="form-control" id="filter_author_comparison" disabled>
+						class="form-control filter" id="filter_author_comparison" disabled>
 						<option title="queried objects have the specified author value">EQUAL</option>
 						<option
 							title="queried objects have NOT the specified author value">NOT_EQUAL</option>
@@ -63,12 +63,12 @@
 					
 					<p></p>
 					
-					<input type="text" class="form-control" id="filter_author_value"
+					<input type="text" class="form-control  filter" id="filter_author_value"
 						placeholder="enter an author's full name..." disabled></input>
 				</div>
 
 				<div class="form-group">
-					<label>Price</label> <select class="form-control"
+					<label>Price</label> <select class="form-control filter"
 						id="filter_price_comparison" disabled>
 						<option title="queried objects have the specified price value">EQUAL</option>
 						<option title="queried objects have NOT the specified price value">NOT_EQUAL</option>
@@ -84,7 +84,7 @@
 					
 					<p></p>
 					
-					<input type="text" class="form-control" id="filter_price_value"
+					<input type="text" class="form-control filter" id="filter_price_value"
 						placeholder="enter price, e.g. '4.99'" disabled></input>
 				</div>
 

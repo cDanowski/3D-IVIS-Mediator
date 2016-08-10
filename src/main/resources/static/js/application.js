@@ -321,10 +321,10 @@ function replaceModifiedObject_runtime(modifiedObject){
 function onEnableFiltersChange() {
 	if ($("#filter_enableCheckbox").is(':checked')) {
 		// checked
-		$('.form-control').prop("disabled", false);
+		$('.filter').prop("disabled", false);
 	} else {
 		// unchecked
-		$('.form-control').prop("disabled", true);
+		$('.filter').prop("disabled", true);
 	}
 }
 
