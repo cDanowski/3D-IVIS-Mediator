@@ -39,8 +39,7 @@ public class RuntimeModificationMessage extends AbstractRuntimeManipulationMessa
 	@Override
 	public String toString() {
 		return "RuntimeModificationMessage [propertySelector_globalSchema="
-				+ propertySelector_globalSchema + ", newPropertyValue=" + newPropertyValue + ", modificationType="
-				+ modificationType + ", wrapperReference=" + wrapperReference + ", responseVisualizationObject="
+				+ propertySelector_globalSchema + ", newPropertyValue=" + newPropertyValue + ", wrapperReference=" + wrapperReference + ", responseVisualizationObject="
 				+ responseVisualizationObject + ", query=" + query + ", applicationTemplateIdentifier="
 				+ applicationTemplateIdentifier + "]";
 	}

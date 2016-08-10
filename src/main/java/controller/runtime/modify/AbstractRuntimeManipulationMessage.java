@@ -6,11 +6,6 @@ import ivisQuery.IvisQuery;
 public class AbstractRuntimeManipulationMessage extends AbstractMessage {
 
 	/*
-	 * type of modification method
-	 */
-	public ModificationType modificationType;
-
-	/*
 	 * wrapper reference comprises the name of the wrapper, that manages the
 	 * source file of this object.
 	 */
@@ -22,14 +17,6 @@ public class AbstractRuntimeManipulationMessage extends AbstractMessage {
 	 * modification request.
 	 */
 	public Object responseVisualizationObject;
-
-	public ModificationType getModificationType() {
-		return modificationType;
-	}
-
-	public void setModificationType(ModificationType modificationType) {
-		this.modificationType = modificationType;
-	}
 
 	public String getWrapperReference() {
 		return wrapperReference;

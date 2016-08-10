@@ -41,7 +41,7 @@ public class RuntimeNewObjectMessage extends AbstractRuntimeManipulationMessage 
 	@Override
 	public String toString() {
 		return "RuntimeNewObjectMessage [newObject=" + newObject + ", propertySelector_globalSchema="
-				+ propertySelector_globalSchema + ", modificationType=" + modificationType + ", wrapperReference="
+				+ propertySelector_globalSchema + ", wrapperReference="
 				+ wrapperReference + ", responseVisualizationObject=" + responseVisualizationObject + ", query=" + query
 				+ ", applicationTemplateIdentifier=" + applicationTemplateIdentifier + "]";
 	}
