@@ -15,7 +15,7 @@ public class ServerSideVisualizationMessage extends AbstractMessage{
 	/*
 	 * the complete response scene with all visualization objects
 	 */
-	public Object responseScene;
+	private Object responseScene;
 
 	public Object getResponseScene() {
 		return responseScene;
@@ -27,8 +27,8 @@ public class ServerSideVisualizationMessage extends AbstractMessage{
 
 	@Override
 	public String toString() {
-		return "ServerSideVisualizationMessage [query=" + query + ", applicationTemplateIdentifier="
-				+ applicationTemplateIdentifier + ", responseScene=" + responseScene + "]";
+		return "ServerSideVisualizationMessage [query=" + getQuery() + ", applicationTemplateIdentifier="
+				+ getApplicationTemplateIdentifier() + ", responseScene=" + responseScene + "]";
 	}
 
 }

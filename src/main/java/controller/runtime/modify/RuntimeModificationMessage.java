@@ -13,12 +13,12 @@ public class RuntimeModificationMessage extends AbstractRuntimeManipulationMessa
 	 * XPath selector against the global schema to identify, which
 	 * attribute/property shall be updated
 	 */
-	public String propertySelector_globalSchema;
+	private String propertySelector_globalSchema;
 
 	/*
 	 * stores the name and value of the modified property;
 	 */
-	public Object newPropertyValue;
+	private Object newPropertyValue;
 
 	public String getPropertySelector_globalSchema() {
 		return propertySelector_globalSchema;
@@ -38,10 +38,10 @@ public class RuntimeModificationMessage extends AbstractRuntimeManipulationMessa
 
 	@Override
 	public String toString() {
-		return "RuntimeModificationMessage [propertySelector_globalSchema="
-				+ propertySelector_globalSchema + ", newPropertyValue=" + newPropertyValue + ", wrapperReference=" + wrapperReference + ", responseVisualizationObject="
-				+ responseVisualizationObject + ", query=" + query + ", applicationTemplateIdentifier="
-				+ applicationTemplateIdentifier + "]";
+		return "RuntimeModificationMessage [propertySelector_globalSchema=" + propertySelector_globalSchema
+				+ ", newPropertyValue=" + newPropertyValue + ", wrapperReference=" + getWrapperReference()
+				+ ", responseVisualizationObject=" + getResponseVisualizationObject() + ", query=" + getQuery()
+				+ ", applicationTemplateIdentifier=" + getApplicationTemplateIdentifier() + "]";
 	}
 
 }

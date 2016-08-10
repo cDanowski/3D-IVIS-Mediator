@@ -30,8 +30,8 @@ public class RuntimeRequestDataMessage extends AbstractMessage{
 
 	@Override
 	public String toString() {
-		return "RuntimeRequestDataMessage [applicationTemplateIdentifier=" + applicationTemplateIdentifier + ", query="
-				+ query + ", additionalObjects=" + additionalObjects + "]";
+		return "RuntimeRequestDataMessage [applicationTemplateIdentifier=" + getApplicationTemplateIdentifier() + ", query="
+				+ getQuery() + ", additionalObjects=" + additionalObjects + "]";
 	}
 
 }

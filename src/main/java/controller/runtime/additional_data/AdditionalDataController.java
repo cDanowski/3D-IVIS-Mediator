@@ -36,7 +36,7 @@ public class AdditionalDataController {
 	public RuntimeRequestDataMessage requestAdditionalData(RuntimeRequestDataMessage runtimeMessage) {
 
 		try {
-			List<IvisObject> retrievedData = this.mediator.queryData(runtimeMessage.query);
+			List<IvisObject> retrievedData = this.mediator.queryData(runtimeMessage.getQuery());
 
 			/*
 			 * forward retrieved data to applicationTemplate to generate scene

@@ -50,7 +50,7 @@ public class ServerSideVisualizationController {
 			/*
 			 * forward query to mediator
 			 */
-			List<IvisObject> retrievedData = this.mediator.queryData(serverSideIvisMessage.query);
+			List<IvisObject> retrievedData = this.mediator.queryData(serverSideIvisMessage.getQuery());
 
 			/*
 			 * forward retrieved data to applicationTemplate to generate scene

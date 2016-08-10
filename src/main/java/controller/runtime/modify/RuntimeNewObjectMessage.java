@@ -14,13 +14,13 @@ public class RuntimeNewObjectMessage extends AbstractRuntimeManipulationMessage 
 	 * transmitted to be stored at the datasource! How could that be made
 	 * generic?
 	 */
-	public Object newObject;
+	private Object newObject;
 
 	/*
 	 * XPath selector against the global schema to identify, which
 	 * attribute/property shall be updated
 	 */
-	public String propertySelector_globalSchema;
+	private String propertySelector_globalSchema;
 
 	public Object getNewObject() {
 		return newObject;
@@ -41,9 +41,9 @@ public class RuntimeNewObjectMessage extends AbstractRuntimeManipulationMessage 
 	@Override
 	public String toString() {
 		return "RuntimeNewObjectMessage [newObject=" + newObject + ", propertySelector_globalSchema="
-				+ propertySelector_globalSchema + ", wrapperReference="
-				+ wrapperReference + ", responseVisualizationObject=" + responseVisualizationObject + ", query=" + query
-				+ ", applicationTemplateIdentifier=" + applicationTemplateIdentifier + "]";
+				+ propertySelector_globalSchema + ", wrapperReference=" + getWrapperReference()
+				+ ", responseVisualizationObject=" + getResponseVisualizationObject() + ", query=" + getQuery()
+				+ ", applicationTemplateIdentifier=" + getApplicationTemplateIdentifier() + "]";
 	}
 
 }

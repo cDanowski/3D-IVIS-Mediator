@@ -9,14 +9,14 @@ public class AbstractRuntimeManipulationMessage extends AbstractMessage {
 	 * wrapper reference comprises the name of the wrapper, that manages the
 	 * source file of this object.
 	 */
-	public String wrapperReference;
+	private String wrapperReference;
 
 	/*
 	 * this object represents the server response object. It is the
 	 * visualization object that has been generated as consequence of the
 	 * modification request.
 	 */
-	public Object responseVisualizationObject;
+	private Object responseVisualizationObject;
 
 	public String getWrapperReference() {
 		return wrapperReference;

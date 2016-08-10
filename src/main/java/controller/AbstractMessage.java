@@ -13,12 +13,12 @@ public class AbstractMessage {
 	/*
 	 * identifier for the application template
 	 */
-	public String applicationTemplateIdentifier;
+	private String applicationTemplateIdentifier;
 	
 	/*
 	 * query against the global schema
 	 */
-	public IvisQuery query;
+	private IvisQuery query;
 
 	public String getApplicationTemplateIdentifier() {
 		return applicationTemplateIdentifier;
