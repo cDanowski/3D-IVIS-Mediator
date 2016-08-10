@@ -10,11 +10,6 @@ package controller.runtime.modify;
 public class RuntimeModificationMessage extends AbstractRuntimeManipulationMessage {
 
 	/*
-	 * to identify the object
-	 */
-	public String objectId;
-
-	/*
 	 * XPath selector against the global schema to identify, which
 	 * attribute/property shall be updated
 	 */
@@ -24,14 +19,6 @@ public class RuntimeModificationMessage extends AbstractRuntimeManipulationMessa
 	 * stores the name and value of the modified property;
 	 */
 	public Object newPropertyValue;
-
-	public String getObjectId() {
-		return objectId;
-	}
-
-	public void setObjectId(String objectId) {
-		this.objectId = objectId;
-	}
 
 	public String getPropertySelector_globalSchema() {
 		return propertySelector_globalSchema;
@@ -51,7 +38,7 @@ public class RuntimeModificationMessage extends AbstractRuntimeManipulationMessa
 
 	@Override
 	public String toString() {
-		return "RuntimeModificationMessage [objectId=" + objectId + ", propertySelector_globalSchema="
+		return "RuntimeModificationMessage [propertySelector_globalSchema="
 				+ propertySelector_globalSchema + ", newPropertyValue=" + newPropertyValue + ", modificationType="
 				+ modificationType + ", wrapperReference=" + wrapperReference + ", responseVisualizationObject="
 				+ responseVisualizationObject + ", query=" + query + ", applicationTemplateIdentifier="
