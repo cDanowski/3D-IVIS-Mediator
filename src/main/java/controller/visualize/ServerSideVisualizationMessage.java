@@ -12,17 +12,10 @@ import ivisQuery.IvisQuery;
  */
 public class ServerSideVisualizationMessage extends AbstractMessage{
 	
-	public IvisQuery query;
-	
+	/*
+	 * the complete response scene with all visualization objects
+	 */
 	public Object responseScene;
-
-	public IvisQuery getQuery() {
-		return query;
-	}
-
-	public void setQuery(IvisQuery query) {
-		this.query = query;
-	}
 
 	public Object getResponseScene() {
 		return responseScene;

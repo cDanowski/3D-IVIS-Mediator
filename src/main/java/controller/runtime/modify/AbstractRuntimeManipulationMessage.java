@@ -1,6 +1,7 @@
 package controller.runtime.modify;
 
 import controller.AbstractMessage;
+import ivisQuery.IvisQuery;
 
 public class AbstractRuntimeManipulationMessage extends AbstractMessage {
 

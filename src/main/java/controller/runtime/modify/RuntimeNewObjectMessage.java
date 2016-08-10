@@ -42,7 +42,7 @@ public class RuntimeNewObjectMessage extends AbstractRuntimeManipulationMessage 
 	public String toString() {
 		return "RuntimeNewObjectMessage [newObject=" + newObject + ", propertySelector_globalSchema="
 				+ propertySelector_globalSchema + ", modificationType=" + modificationType + ", wrapperReference="
-				+ wrapperReference + ", responseVisualizationObject=" + responseVisualizationObject
+				+ wrapperReference + ", responseVisualizationObject=" + responseVisualizationObject + ", query=" + query
 				+ ", applicationTemplateIdentifier=" + applicationTemplateIdentifier + "]";
 	}
 

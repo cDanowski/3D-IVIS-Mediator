@@ -16,22 +16,9 @@ import ivisQuery.IvisQuery;
 public class RuntimeRequestDataMessage extends AbstractMessage{
 
 	/*
-	 * query against the global schema
-	 */
-	public IvisQuery query;
-
-	/*
 	 * the resulting scene content as X3DOM subtree
 	 */
 	public List<VisualizationObject> additionalObjects;
-
-	public IvisQuery getQuery() {
-		return query;
-	}
-
-	public void setQuery(IvisQuery query) {
-		this.query = query;
-	}
 
 	public List<VisualizationObject> getAdditionalObjects() {
 		return additionalObjects;

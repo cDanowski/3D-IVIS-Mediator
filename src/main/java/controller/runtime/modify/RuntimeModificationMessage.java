@@ -54,8 +54,8 @@ public class RuntimeModificationMessage extends AbstractRuntimeManipulationMessa
 		return "RuntimeModificationMessage [objectId=" + objectId + ", propertySelector_globalSchema="
 				+ propertySelector_globalSchema + ", newPropertyValue=" + newPropertyValue + ", modificationType="
 				+ modificationType + ", wrapperReference=" + wrapperReference + ", responseVisualizationObject="
-				+ responseVisualizationObject + ", applicationTemplateIdentifier=" + applicationTemplateIdentifier
-				+ "]";
+				+ responseVisualizationObject + ", query=" + query + ", applicationTemplateIdentifier="
+				+ applicationTemplateIdentifier + "]";
 	}
 
 }
