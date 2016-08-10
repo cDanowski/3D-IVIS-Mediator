@@ -13,6 +13,12 @@
 		<selector_localSchema>COMPLETE ROW</selector_localSchema>
 	</mapping>
 	
+	<!-- mapping for attribute id -->
+	<mapping>
+		<selector_globalSchema>bookstore/book/@id</selector_globalSchema>
+		<selector_localSchema>ID</selector_localSchema>
+	</mapping>
+	
 	<!-- mapping for attribute stock -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@stock</selector_globalSchema>

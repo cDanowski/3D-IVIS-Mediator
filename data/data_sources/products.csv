@@ -1,8 +1,8 @@
-﻿Title,Author,Language,Category,NumberInStock,Price,Currency,ReorderLevel,IsReordered
-Das Almased-Kochbuch,Andrea Stensitzky-Thielemans,DE,cookbook,13,12.99,Euro,10,false
-Das Kochbuch,Yotam Ottolenghi,DE,cookbook,2,24.95,Euro,7,true
-Weber's Grillbibel,Jamie Purviance,DE,cookbook,12,24.95,Euro,10,false
-Kochen bis die Hose rutscht,Andreas Schweinbenz & Nancy-Nicole Krüger,DE,cookbook,13,15.90,Euro,3,false
-Genussvoll vegetarisch,Yotam Ottolenghi,DE,cookbook,13,24.95,Euro,10,false
-Clean Eating,Katharina Kraatz,DE,cookbook,20,17.99,Euro,4,false
-Kochen für Babys,Sonja Sammüller,DE,cookbook,23,5.00,Euro,8,false
+ID,﻿Title,Author,Language,Category,NumberInStock,Price,Currency,ReorderLevel,IsReordered
+1,Das Almased-Kochbuch,Andrea Stensitzky-Thielemans,DE,cookbook,13,12.99,Euro,10,false
+2,Das Kochbuch,Yotam Ottolenghi,DE,cookbook,2,24.95,Euro,7,true
+3,Weber's Grillbibel,Jamie Purviance,DE,cookbook,12,24.95,Euro,10,false
+4,Kochen bis die Hose rutscht,Andreas Schweinbenz & Nancy-Nicole Krüger,DE,cookbook,13,15.90,Euro,3,false
+5,Genussvoll vegetarisch,Yotam Ottolenghi,DE,cookbook,13,24.95,Euro,10,false
+6,Clean Eating,Katharina Kraatz,DE,cookbook,20,17.99,Euro,4,false
+7,Kochen für Babys,Sonja Sammüller,DE,cookbook,23,5.00,Euro,8,false

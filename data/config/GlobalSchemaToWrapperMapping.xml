@@ -13,6 +13,15 @@
 		</wrappers>
 	</mapping>
 	
+	<!-- mapping for attribute id -->
+	<mapping>
+		<selector>bookstore/book/@id</selector>
+		<wrappers>
+			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+		</wrappers>
+	</mapping>
+	
 	<!-- mapping for attribute stock -->
 	<mapping>
 		<selector>bookstore/book/@stock</selector>

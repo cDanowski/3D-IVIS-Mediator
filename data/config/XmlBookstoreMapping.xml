@@ -10,6 +10,12 @@
 		<selector_localSchema>books/book</selector_localSchema>
 	</mapping>
 	
+	<!-- mapping for attribute id -->
+	<mapping>
+		<selector_globalSchema>bookstore/book/@id</selector_globalSchema>
+		<selector_localSchema>books/book/@id</selector_localSchema>
+	</mapping>
+	
 	<!-- mapping for attribute stock -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@stock</selector_globalSchema>
