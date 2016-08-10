@@ -2,8 +2,10 @@ package application_template.impl.bookstoreTemplate;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
+import java.util.List;
 
 import application_template.impl.X3DOM_Constants;
+import ivisObject.AttributeValuePair;
 
 /**
  * Java representation of a visualization object of a colored and extruded bar
@@ -25,6 +27,8 @@ public class StockBarWithLayer {
 	private double markerHeight;
 
 	private Color rgbColor_marker;
+
+	private List<AttributeValuePair> metadata;
 
 	/**
 	 * Constructor
@@ -78,6 +82,14 @@ public class StockBarWithLayer {
 		return rgbColor_marker;
 	}
 
+	public List<AttributeValuePair> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(List<AttributeValuePair> attributeValuePairs) {
+		this.metadata = attributeValuePairs;
+	}
+
 	/**
 	 * creates a String representing the specified object in X3DOM
 	 * 
@@ -103,6 +115,25 @@ public class StockBarWithLayer {
 		// the same ground level.
 		builder.append("	<transform translation='0 " + this.height / 2 + " 0'>");
 		builder.append("		<shape>");
+
+		/*
+		 * append metadata!
+		 * 
+		 * <MetadataSet name='sample data' reference='
+		 * http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/
+		 * components/core.html#MetadataSet ' containerField='metadata'>
+		 * <MetadataString DEF='MetadataSetValue5' containerField='value'
+		 * value='"string1" "string2"'/> </MetadataSet>
+		 */
+		builder.append("			<MetadataSet metadata='X3DMetadataObject' name='metadataSet' value='x3dom.nodeTypes.X3DMetadataObject'>");
+		
+		for (AttributeValuePair attributeValuePair : metadata) {
+			String metadataName = attributeValuePair.getName();
+			String metadataValue = String.valueOf(attributeValuePair.getValue());
+			builder.append("			<MetadataString metadata='X3DMetadataObject' name='" + metadataName + "' value='" + metadataValue + "' ></MetadataString>");
+		}
+		
+		builder.append("			</MetadataSet>");
 
 		builder.append("			<appearance>");
 		builder.append("				<material id='" + this.id + X3DOM_Constants.ID_SUFFIX_MATERIAL
@@ -160,7 +191,7 @@ public class StockBarWithLayer {
 		builder.append("				</text>");
 
 		builder.append("			</shape>");
-		
+
 		builder.append("		</billboard>");
 
 		builder.append("	</transform>");
@@ -190,17 +221,17 @@ public class StockBarWithLayer {
 
 		while (index < numberOfWords) {
 			builder.append("\"");
-			
+
 			builder.append(allWords[index]);
-			
+
 			index++;
-			
-			if(index < numberOfWords){
+
+			if (index < numberOfWords) {
 				builder.append(" " + allWords[index]);
 			}
 
 			builder.append("\"");
-			
+
 			index++;
 		}
 
@@ -245,4 +276,5 @@ public class StockBarWithLayer {
 		return "StockBarWithLayer [id=" + id + ", displayName=" + displayName + ", height=" + height + ", rgbColor_bar="
 				+ rgbColor_bar + ", markerHeight=" + markerHeight + ", rgbColor_marker=" + rgbColor_marker + "]";
 	}
+
 }

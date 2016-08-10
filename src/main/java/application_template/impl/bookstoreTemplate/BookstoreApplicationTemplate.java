@@ -98,6 +98,12 @@ public class BookstoreApplicationTemplate implements ApplicationTemplateInterfac
 		}
 
 		StockBarWithLayer visObject = new StockBarWithLayer(title, title, stock, barColor, markerColor, reorderLevel);
+		
+		/*
+		 * add all attributeValue pairs to visObject for metadata purposes
+		 */
+		visObject.setMetadata(ivisObject.getAttributeValuePairs());
+		
 		return visObject;
 	}
 
