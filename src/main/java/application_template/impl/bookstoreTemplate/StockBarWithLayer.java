@@ -106,16 +106,9 @@ public class StockBarWithLayer {
 		 * write complete object consisting of three subelements (bar, marker,
 		 * text)
 		 */
-		builder.append("<transform id='" + this.id + X3DOM_Constants.ID_SUFFIX_OBJECT + "'>");
-
-		/*
-		 * write bar
-		 */
-		// bar has to be translated about half the height to have all bars on
-		// the same ground level.
-		builder.append("	<transform translation='0 " + this.height / 2 + " 0'>");
-		builder.append("		<shape id='" + this.id + X3DOM_Constants.ID_SUFFIX_SHAPE + "'>");
-
+		builder.append("<transform id='" + this.id + X3DOM_Constants.ID_SUFFIX_OBJECT + "' class='"
+				+ X3DOM_Constants.TRANSFORM_OBJECT_CLASS_ATTRIBUTE + "' >");
+		
 		/*
 		 * append metadata!
 		 * 
@@ -125,15 +118,25 @@ public class StockBarWithLayer {
 		 * <MetadataString DEF='MetadataSetValue5' containerField='value'
 		 * value='"string1" "string2"'/> </MetadataSet>
 		 */
-		builder.append("			<MetadataSet metadata='X3DMetadataObject' name='metadataSet' value='x3dom.nodeTypes.X3DMetadataObject'>");
-		
+		builder.append(
+				"	<MetadataSet metadata='X3DMetadataObject' name='metadataSet' value='x3dom.nodeTypes.X3DMetadataObject'>");
+
 		for (AttributeValuePair attributeValuePair : metadata) {
 			String metadataName = attributeValuePair.getName();
 			String metadataValue = String.valueOf(attributeValuePair.getValue());
-			builder.append("			<MetadataString metadata='X3DMetadataObject' name='" + metadataName + "' value='" + metadataValue + "' ></MetadataString>");
+			builder.append("		<MetadataString metadata='X3DMetadataObject' name='" + metadataName
+					+ "' value='" + metadataValue + "' ></MetadataString>");
 		}
-		
-		builder.append("			</MetadataSet>");
+
+		builder.append("	</MetadataSet>");
+
+		/*
+		 * write bar
+		 */
+		// bar has to be translated about half the height to have all bars on
+		// the same ground level.
+		builder.append("	<transform translation='0 " + this.height / 2 + " 0'>");
+		builder.append("		<shape id='" + this.id + X3DOM_Constants.ID_SUFFIX_SHAPE + "'>");
 
 		builder.append("			<appearance>");
 		builder.append("				<material id='" + this.id + X3DOM_Constants.ID_SUFFIX_MATERIAL

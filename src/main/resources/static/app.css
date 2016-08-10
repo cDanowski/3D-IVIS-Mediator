@@ -18,4 +18,10 @@
 
 #scene {
 	height: 100%;
-}  
+}
+
+#bookMetadata {
+	height: auto !important;
+	max-height: 450px;
+	overflow-y: scroll;
+}

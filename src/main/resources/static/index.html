@@ -109,6 +109,60 @@
 		</div>
 
 		<div class="col-sm-9" id="scene"></div>
+		
+		<!-- Modal -->
+		<div id="objectModal" class="modal fade" role="dialog">
+  			<div class="modal-dialog">
+
+   			 <!-- Modal content-->
+    			<div class="modal-content">
+      			<div class="modal-header">
+       			 <button type="button" class="close" data-dismiss="modal">&times;</button>
+       			 <h4 class="modal-title">Book Information</h4>
+     			 </div>
+     			 <div class="modal-body">
+     			   <p>Here, you can see metadata of the clicked book and also 
+     			   <b>manipulate the stock value</b> as an example for runtime manipulation of objects.</p>
+     			   
+     			   <div>
+     			   
+     			   		<h4>Book Metadata</h4>
+     			   		
+     			   		<div id="bookMetadata">
+     			   			<!-- content will be added programmatically for the clicked book -->
+     			   		</div>
+
+     			   </div>
+     			   
+     			   <div>
+     			   
+     			   		<h4>Change Stock Value</h4>
+
+							<div id="changeStock">
+
+									<div class="form-group">
+										<label for="email">New Stock Value:</label> 
+										
+										<input type="text"
+											class="form-control" id="newStockValue" oninput="onNewStockValueChange()" onpropertychange="onNewStockValueChange()" placeholder="enter new integer stock value ...">
+									</div>
+
+									<button id="changeStockValueButton" class="btn btn-info" 
+									onClick="changeStockValue()" disabled>Change Stock Value</button>
+
+							</div>
+
+						</div>
+     			   
+     			   
+     			 </div>
+     			 <div class="modal-footer">
+     			   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+     			 </div>
+   			 </div>
+
+  			</div>
+		</div>
 	</div>
 </body>
 </html>

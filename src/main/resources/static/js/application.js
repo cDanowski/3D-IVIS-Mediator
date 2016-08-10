@@ -22,9 +22,13 @@ var APPLICATION_TEMPLATE_IDENTIFIER = "bookstoreApplicationTemplate";
 // stomp client variable that holds the connection to server
 var stompClient = null;
 
+var objectModalReference = "#objectModal";
+
 $(document).ready(function() {
 	// establish WebSocket connection
 	connect();
+	
+	$(objectModalReference).modal({ show: false})
 });
 
 function connect() {
@@ -180,6 +184,12 @@ function reloadAndZoomScene(){
 	// zoom/fit to all elements of the scene
 	var sceneElement = $('x3d').get(0);
 	sceneElement.runtime.showAll();
+	
+	//Add a onclick callback to every node with class='ivis_visualizationObject'.
+	$(".ivis_visualizationObject").each(function() {
+		$(this).attr("onclick", "handleSingleClick(this)");
+
+	});
 }
 
 //global y-translation value needed to properly insert additional objects
@@ -278,6 +288,18 @@ function onEnableFiltersChange() {
 	}
 }
 
+function onNewStockValueChange() {
+	var newStockValue = $(newStockValueReference).val();
+	
+	if (!isNaN(newStockValue) && parseInt(Number(newStockValue)) == newStockValue && !isNaN(parseInt(newStockValue, 10))) {
+		// valid integer input
+		$('#changeStockValueButton').prop("disabled", false);
+	} else {
+		// no integer input
+		$('#changeStockValueButton').prop("disabled", true);
+	}
+}
+
 function visualizeBookStocks_runtime(){
 	// create and send request to fetch additional scene objects!
 
@@ -309,4 +331,102 @@ function resetScene(){
 	
 	// also reset translation value to initial value
 	translation_y = -5;
+	
 }
+
+// RUNTIME
+
+var newStockValueReference = "#newStockValue";
+var bookMetadataReference = "#bookMetadata";
+
+/**
+ * 
+ * @param clickedObject is a transform node that groups all subelements of the visual object; 
+ * 			also should have a child node 'MetadataSet' 
+ * 			that comprises multiple 'MetadataString' elements holding object metadata
+ * @returns
+ */
+function handleSingleClick(clickedObject){
+	
+	// div reference: bookMetadata
+	
+	/**
+	 * create a table with entries for each MetadataString element in DOM subtree
+	 */
+	var metadataElements = $(clickedObject).find("MetadataString");
+	
+	var newTableDomString = createTableFromMetadataElements(metadataElements);
+	
+	/**
+	 * now delete previous table at target div and append new table
+	 */
+	resetObjectModal();
+	
+	$(bookMetadataReference).append(newTableDomString);
+	
+	$(objectModalReference).modal('show');
+	
+}
+
+function resetObjectModal(){
+	/**
+	 * delete table and stock value
+	 */
+	$(bookMetadataReference).empty();
+	$(newStockValueReference).val('');
+}
+
+function createTableFromMetadataElements(metadataElements){
+	
+	var tableString = "<table class='table table-striped'>";
+	
+	tableString += '	<thead>'
+		
+	tableString += '		<tr>'
+		
+	tableString += '			<th>Attribute Name</th>'
+	tableString += '			<th>Attribute Value</th>'
+		
+	tableString += '		</tr>'
+	
+	tableString += '	</thead>'
+		
+	tableString += '	<tbody>'	
+		
+	// now append all entries	
+	for (var i=0; i< metadataElements.length; i++){
+		/**
+		 * the metadata element has two attributes: 'name' and 'value'
+		 */
+		var metadata = metadataElements[i];
+		
+		var name = metadata.name;
+		var value = metadata.value;
+		
+		tableString += '		<tr>'
+			
+		tableString += '			<td>' + name + '</th>'
+		tableString += '			<td>' + value +'</th>'
+				
+		tableString += '		</tr>'
+	}
+		
+	tableString += '	</tbody>'
+	
+	tableString += '</table>';
+	
+	return tableString;
+}
+
+function changeStockValue(){
+	var newStockValue = $(newStockValueReference).val();
+	
+	/*
+	 * TODO create RuntimeMessage and send to server!
+	 */
+	
+	// hide modal
+	$(objectModalReference).modal('hide');
+	resetObjectModal();
+}
+
