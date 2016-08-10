@@ -146,6 +146,8 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 			attributeValuePairs.add(new AttributeValuePair(name, value));
 		}
+		
+		addWrapperReference(attributeValuePairs);
 
 		IvisObject newIvisObject = new IvisObject(elementName, attributeValuePairs);
 

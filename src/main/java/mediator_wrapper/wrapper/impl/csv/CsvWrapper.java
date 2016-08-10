@@ -37,6 +37,8 @@ import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
  */
 public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperInterface {
 
+	
+
 	public CsvWrapper(String pathToSourcefile, String pathToSchemaMappingFile) throws DocumentException {
 		super(pathToSourcefile, pathToSchemaMappingFile);
 	}
@@ -183,6 +185,8 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 			attributeValuePairs.add(new AttributeValuePair(name, value));
 		}
+		
+		addWrapperReference(attributeValuePairs);
 
 		IvisObject newIvisObject = new IvisObject(elementName, attributeValuePairs);
 
