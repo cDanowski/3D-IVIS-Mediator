@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -83,18 +84,14 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	@Override
 	public List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
 			List<String> subquerySelectors_globalSchema) throws IOException {
-		Object query_localSchema = this.transformToLocalQuery(query_globalSchema);
+		IvisQuery query_localSchema = (IvisQuery) this.transformToLocalQuery(query_globalSchema);
 
 		Map<String, String> subqueries_global_and_local_schema = this
 				.transformIntoGlobalAndLocalSubqueries(query_globalSchema, subquerySelectors_globalSchema);
 
 		String elementName = this.getNameFromXPathExpression(query_globalSchema.getSelector());
 
-		/*
-		 * parse the whole file and compare its contents to shadow copy file
-		 * contents
-		 */
-		CsvRecords allRecords = this.parseAllCsvRecords(this.getSourceFile());
+		List<String[]> records = getRecordsForFilter(query_localSchema, this.getSourceFile());
 
 		/*
 		 * shadow copy contains all elements BEFORE the modification happened!
@@ -102,21 +99,48 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * hence, we can compare allRecords against the shadowCopyRecords to
 		 * identify modifications
 		 */
-		CsvRecords allRecords_shadowCopy = this.parseAllCsvRecords(this.getShadowCopyFile());
+		List<String[]> records_shadowCopy = getRecordsForFilter(query_localSchema, this.getShadowCopyFile());
 
-		List<IvisObject> modifiedInstances = identifyModifiedOrNewInstances(allRecords, allRecords_shadowCopy,
+		List<IvisObject> modifiedInstances = identifyModifiedOrNewInstances(records, records_shadowCopy,
 				subqueries_global_and_local_schema, elementName);
 
 		return modifiedInstances;
 	}
 
-	private List<IvisObject> identifyModifiedOrNewInstances(CsvRecords allRecords, CsvRecords allRecords_shadowCopy,
+	private List<String[]> getRecordsForFilter(IvisQuery query_localSchema, File file)
+			throws UnsupportedEncodingException, FileNotFoundException {
+		/*
+		 * parse document
+		 */
+		CsvRecords csvRecords = this.parseAllCsvRecords(file);
+
+		List<String[]> records = csvRecords.getRows();
+
+		/*
+		 * for each row, check filter statements
+		 * 
+		 * if record doe not pass the filters, then remove it
+		 */
+		ListIterator<String[]> listIterator = records.listIterator();
+		while (listIterator.hasNext()) {
+			String[] record = listIterator.next();
+			
+			/*
+			 * check filters
+			 */
+			if (! this.passesFilters(record, query_localSchema, this.csvHeaderIndicesMap))
+				listIterator.remove();
+		}
+		return records;
+	}
+
+	private List<IvisObject> identifyModifiedOrNewInstances(List<String[]> records, List<String[]> records_shadowCopy,
 			Map<String, String> subqueries_global_and_local_schema, String elementName) throws IOException {
 		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
 
 		int idHeaderIndex = 0;
 
-		Map<String, String[]> idForCsvRecordMap = createIdForCsvRecordMap(allRecords_shadowCopy, idHeaderIndex);
+		Map<String, String[]> idForCsvRecordMap = createIdForCsvRecordMap(records_shadowCopy, idHeaderIndex);
 
 		/*
 		 * for each record, find the corresponding shadowCopy
@@ -126,7 +150,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * if existing is found --> compare each property for equality
 		 */
 
-		for (String[] csvRecord : allRecords.getRows()) {
+		for (String[] csvRecord : records) {
 			String recordId = csvRecord[idHeaderIndex];
 
 			if (!idForCsvRecordMap.containsKey(recordId)) {
@@ -169,10 +193,10 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		return false;
 	}
 
-	private Map<String, String[]> createIdForCsvRecordMap(CsvRecords allRecords_shadowCopy, int idHeaderIndex) {
+	private Map<String, String[]> createIdForCsvRecordMap(List<String[]> records_shadowCopy, int idHeaderIndex) {
 		Map<String, String[]> idForCsvRecordMap = new HashMap<>();
 
-		for (String[] csvRecord : allRecords_shadowCopy.getRows()) {
+		for (String[] csvRecord : records_shadowCopy) {
 			String idValue = csvRecord[idHeaderIndex];
 
 			idForCsvRecordMap.put(idValue, csvRecord);

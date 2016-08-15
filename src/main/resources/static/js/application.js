@@ -135,6 +135,8 @@ function sendSynchronizationRequest(dataSourceIdentifier){
 	syncMessage.query = {};
 	syncMessage.query.selector = 'bookstore/book';
 	
+	syncMessage = configureFilters(syncMessage);
+	
 	stompClient.send(SEND_SYNCHRONIZE_ENDPOINT, {}, JSON
 			.stringify(syncMessage));
 }
@@ -187,7 +189,7 @@ function createServerSideVisualizationMessage() {
 	return serverSideVisualizationMessage;
 }
 
-function configureFilters(serverSideVisualizationMessage) {
+function configureFilters(message) {
 	if ($("#filter_enableCheckbox").is(':checked')) {
 		// checked
 
@@ -198,7 +200,7 @@ function configureFilters(serverSideVisualizationMessage) {
 		var priceFilterComparisonMethod = $(
 				"#filter_price_comparison option:selected").text();
 
-		serverSideVisualizationMessage.query.filters = [];
+		message.query.filters = [];
 
 		if (authorFilterValue != undefined && authorFilterValue != "") {
 			/*
@@ -215,7 +217,7 @@ function configureFilters(serverSideVisualizationMessage) {
 			authorFilter.filterValue = authorFilterValue;
 			authorFilter.filterType = authorFilterComparisonMethod;
 			
-			serverSideVisualizationMessage.query.filters.push(authorFilter);
+			message.query.filters.push(authorFilter);
 		}
 		
 		if (priceFilterValue != undefined && priceFilterValue != "") {
@@ -233,18 +235,18 @@ function configureFilters(serverSideVisualizationMessage) {
 			priceFilter.filterValue = priceFilterValue;
 			priceFilter.filterType = priceFilterComparisonMethod;
 			
-			serverSideVisualizationMessage.query.filters.push(priceFilter);
+			message.query.filters.push(priceFilter);
 		}
 
-		serverSideVisualizationMessage.query.filterStrategy = $(
+		message.query.filterStrategy = $(
 				"#filter_strategy option:selected").text();
 	} else {
 		// unchecked
-		serverSideVisualizationMessage.query.filters = undefined;
-		serverSideVisualizationMessage.query.filterStrategy = "AND";
+		message.query.filters = undefined;
+		message.query.filterStrategy = "AND";
 	}
 
-	return serverSideVisualizationMessage;
+	return message;
 }
 
 function integrateSceneIntoDOM(x3domSceneString) {
