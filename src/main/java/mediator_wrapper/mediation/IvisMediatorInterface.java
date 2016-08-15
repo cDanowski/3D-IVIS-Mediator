@@ -1,5 +1,6 @@
 package mediator_wrapper.mediation;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.jaxen.JaxenException;
 
 import controller.runtime.modify.RuntimeModificationMessage;
 import controller.runtime.modify.RuntimeNewObjectMessage;
+import controller.synchronize.SynchronizationMessage;
 import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
 
@@ -44,12 +46,13 @@ public interface IvisMediatorInterface {
 	 * @param modificationMessage
 	 *            a message-object that contains all necessary information to
 	 *            identify the data object and update it with new information.
-	 * @return new visualization object or error message
-	 * @throws IOException 
-	 * @throws DocumentException 
-	 * @throws UnsupportedEncodingException 
+	 * @return true, if modification was successful
+	 * @throws IOException
+	 * @throws DocumentException
+	 * @throws UnsupportedEncodingException
 	 */
-	public Object modifyDataInstance(RuntimeModificationMessage modificationMessage) throws UnsupportedEncodingException, DocumentException, IOException;
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage)
+			throws UnsupportedEncodingException, DocumentException, IOException;
 
 	/**
 	 * Analyzes the message and creates a new data instance (if possible). To do
@@ -61,5 +64,20 @@ public interface IvisMediatorInterface {
 	 * @return new visualization object or error message
 	 */
 	public Object insertNewObject(RuntimeNewObjectMessage runtimeNewObjectMessage);
+
+	/**
+	 * Is triggered when instances at data source level are modified. Then
+	 * initiates retrieval of the modified objects.
+	 * 
+	 * @param syncMessage
+	 *            instance of {@link SynchronizationMessage}
+	 * @return a list of {@link IvisObject} representing the modified instances
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 * @throws DocumentException
+	 */
+	List<IvisObject> onSynchronizationEvent(SynchronizationMessage syncMessage)
+			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException;
 
 }

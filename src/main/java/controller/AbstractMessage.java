@@ -19,6 +19,8 @@ public class AbstractMessage {
 	 * query against the global schema
 	 */
 	private IvisQuery query;
+	
+	private String responseInfoMessage;
 
 	public String getApplicationTemplateIdentifier() {
 		return applicationTemplateIdentifier;
@@ -34,6 +36,14 @@ public class AbstractMessage {
 
 	public void setQuery(IvisQuery query) {
 		this.query = query;
+	}
+
+	public String getResponseInfoMessage() {
+		return responseInfoMessage;
+	}
+
+	public void setResponseInfoMessage(String responseInfoMessage) {
+		this.responseInfoMessage = responseInfoMessage;
 	}
 
 }

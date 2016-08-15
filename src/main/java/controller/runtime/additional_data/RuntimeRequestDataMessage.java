@@ -18,7 +18,7 @@ public class RuntimeRequestDataMessage extends AbstractMessage{
 	/*
 	 * the resulting scene content as X3DOM subtree
 	 */
-	public List<VisualizationObject> additionalObjects;
+	private List<VisualizationObject> additionalObjects;
 
 	public List<VisualizationObject> getAdditionalObjects() {
 		return additionalObjects;

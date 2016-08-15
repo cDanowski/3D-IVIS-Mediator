@@ -57,7 +57,7 @@ public interface IvisWrapperInterface {
 	 * @throws UnsupportedEncodingException 
 	 * @throws IOException 
 	 */
-	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage,
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage,
 			List<String> subquerySelectors_globalSchema) throws DocumentException, UnsupportedEncodingException, IOException;
 
 }

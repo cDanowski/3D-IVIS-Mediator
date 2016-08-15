@@ -24,10 +24,10 @@ public class DataBaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	}
 
 	@Override
-	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage,
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage,
 			List<String> subquerySelectors_globalSchema) {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override
@@ -44,11 +44,10 @@ public class DataBaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	}
 
 	@Override
-	protected List<IvisObject> executeLocalQuery(Object localQuery, Map<String, String> subquerySelectors_global_and_local_schema,
-			IvisQuery globalQuery) throws Exception {
+	protected List<IvisObject> executeLocalQuery(Object localQuery,
+			Map<String, String> subquerySelectors_global_and_local_schema, IvisQuery globalQuery) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }

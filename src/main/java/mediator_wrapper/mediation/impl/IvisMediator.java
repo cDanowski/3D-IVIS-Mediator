@@ -1,8 +1,10 @@
 package mediator_wrapper.mediation.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,10 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import controller.runtime.modify.RuntimeModificationMessage;
 import controller.runtime.modify.RuntimeNewObjectMessage;
+import controller.synchronize.SynchronizationMessage;
 import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.IvisMediatorInterface;
+import mediator_wrapper.mediation.impl.sourceFilesMonitor.SourceFilesMonitor;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
+import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
+import mediator_wrapper.wrapper.abstract_types.AbstractIvisWebServiceWrapper;
 
 /**
  * Central mediator component of a Mediator-Wrapper architecture to offer a
@@ -42,6 +49,8 @@ public class IvisMediator implements IvisMediatorInterface {
 
 	private SubqueryGenerator subqueryGenerator;
 
+	private String sourceFilesDirectory;
+
 	/**
 	 * attribute shall indicate whether a user already performs a modification
 	 * request. Different Modifications should not happen at the same time.
@@ -49,6 +58,8 @@ public class IvisMediator implements IvisMediatorInterface {
 	 * Could return an info message, if another user already updates something
 	 */
 	private boolean isCurrentlyModifying = false;
+
+	private SourceFilesMonitor sourceFilesMonitor;
 
 	/*
 	 * TODO attribute that holds the global schema!
@@ -63,11 +74,14 @@ public class IvisMediator implements IvisMediatorInterface {
 
 	@Autowired
 	public IvisMediator(List<IvisWrapperInterface> wrappers, String pathToWrapperMappingFile,
-			SubqueryGenerator subqueryGenerator) throws DocumentException {
+			SubqueryGenerator subqueryGenerator, SourceFilesMonitor sourceFilesMonitor)
+			throws DocumentException, IOException, InterruptedException {
 
 		this.availableWrappers = wrappers;
 
 		this.subqueryGenerator = subqueryGenerator;
+
+		this.sourceFilesMonitor = sourceFilesMonitor;
 
 		this.instantiate(pathToWrapperMappingFile);
 	}
@@ -81,8 +95,11 @@ public class IvisMediator implements IvisMediatorInterface {
 	 * 
 	 * @param pathToWrapperMappingFile
 	 * @throws DocumentException
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
-	private void instantiate(String pathToWrapperMappingFile) throws DocumentException {
+	private void instantiate(String pathToWrapperMappingFile)
+			throws DocumentException, IOException, InterruptedException {
 
 		/*
 		 * parse document
@@ -119,7 +136,18 @@ public class IvisMediator implements IvisMediatorInterface {
 			 * add mapping to wrapperMapping map
 			 */
 			this.wrapperMapping.put(selector_globalSchema, wrappersForSelector);
+
+			this.initiateWatchService();
 		}
+
+	}
+
+	private void initiateWatchService() throws IOException, InterruptedException {
+
+		// this.sourceFilesMonitor = new
+		// SourceFilesMonitor(this.sourceFilesDirectory);
+
+		this.sourceFilesMonitor.startListening();
 
 	}
 
@@ -218,37 +246,40 @@ public class IvisMediator implements IvisMediatorInterface {
 	}
 
 	@Override
-	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage) throws UnsupportedEncodingException, DocumentException, IOException {
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage)
+			throws UnsupportedEncodingException, DocumentException, IOException {
 
-		this.isCurrentlyModifying = true;
+		boolean hasModified = false;
+		
+		if (!isCurrentlyModifying) {
+			this.isCurrentlyModifying = true;
 
-		/*
-		 * identify affected wrapper (data source, that has to be accessed)
-		 * 
-		 * forward information to wrapper to create new data instance
-		 * 
-		 * collect and return results (new visualization object!)
-		 */
+			/*
+			 * identify affected wrapper (data source, that has to be accessed)
+			 * 
+			 * forward information to wrapper to create new data instance
+			 * 
+			 * collect and return results (new visualization object!)
+			 */
 
-		IvisObject modifiedObject = null;
+			/*
+			 * create all subqueries identifying possible child nodes and
+			 * attributes of the selected element of the global schema
+			 */
+			List<String> subquerySelectors_globalSchema = this.subqueryGenerator
+					.findSubquerySelectors(modificationMessage.getQuery());
 
-		/*
-		 * create all subqueries identifying possible child nodes and attributes
-		 * of the selected element of the global schema
-		 */
-		List<String> subquerySelectors_globalSchema = this.subqueryGenerator
-				.findSubquerySelectors(modificationMessage.getQuery());
+			String wrapperReference = modificationMessage.getWrapperReference();
 
-		String wrapperReference = modificationMessage.getWrapperReference();
+			for (IvisWrapperInterface wrapper : availableWrappers) {
+				if (wrapper.getClass().getSimpleName().equalsIgnoreCase(wrapperReference))
+					hasModified = wrapper.modifyDataInstance(modificationMessage, subquerySelectors_globalSchema);
+			}
 
-		for (IvisWrapperInterface wrapper : availableWrappers) {
-			if (wrapper.getClass().getSimpleName().equalsIgnoreCase(wrapperReference))
-				modifiedObject = wrapper.modifyDataInstance(modificationMessage, subquerySelectors_globalSchema);
+			this.isCurrentlyModifying = false;
 		}
 
-		this.isCurrentlyModifying = false;
-
-		return modifiedObject;
+		return hasModified;
 
 	}
 
@@ -268,6 +299,50 @@ public class IvisMediator implements IvisMediatorInterface {
 		this.isCurrentlyModifying = false;
 
 		return null;
+
+	}
+
+	@Override
+	public List<IvisObject> onSynchronizationEvent(SynchronizationMessage syncMessage)
+			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException {
+
+		IvisQuery query_globalSchema = syncMessage.getQuery();
+
+		List<String> subquerySelectors_globalSchema = this.subqueryGenerator.findSubquerySelectors(query_globalSchema);
+
+		String dataSourceIdentifier = syncMessage.getDataSourceIdentifier();
+
+		List<IvisObject> modifiedInstances = null;
+
+		for (IvisWrapperInterface wrapper : availableWrappers) {
+			if (wrapper instanceof AbstractIvisFileWrapper) {
+				AbstractIvisFileWrapper fileWrapper = (AbstractIvisFileWrapper) wrapper;
+				/*
+				 * for file based data sources will be a java.nio.Path object
+				 */
+				String file = dataSourceIdentifier;
+				/*
+				 * wrapper for 'text' files
+				 * 
+				 * compare dataSourceIdentifier to file name of wrapper
+				 */
+				if (fileWrapper.getSourceFile().getName().equalsIgnoreCase(file.toString())) {
+					modifiedInstances = fileWrapper.onSourceFileChanged(query_globalSchema,
+							subquerySelectors_globalSchema);
+					break;
+				}
+			} else if (wrapper instanceof AbstractIvisDataBaseWrapper) {
+				AbstractIvisDataBaseWrapper databaseWrapper = (AbstractIvisDataBaseWrapper) wrapper;
+
+				// TODO
+			} else if (wrapper instanceof AbstractIvisWebServiceWrapper) {
+				AbstractIvisWebServiceWrapper webserviceWrapper = (AbstractIvisWebServiceWrapper) wrapper;
+
+				// TODO
+			}
+		}
+
+		return modifiedInstances;
 
 	}
 

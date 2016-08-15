@@ -3,14 +3,16 @@ var SERVER_SIDE_VISUALIZATION_ENDPOINT = '/initial/visualize';
 var RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/runtime/visualizeAdditionalData';
 var RUNTIME_MODIFY_ENDPOINT = '/runtime/modify';
 var RUNTIME_NEW_OBJECT_ENDPOINT = '/runtime/new';
+var SYNCHRONIZE_ENDPOINT = '/synchronize';
 
 // STOMP ENDPOINTS
 var STOMP_SERVER_SIDE_IVIS_ENDPOINT = '/user/queue'
 		+ SERVER_SIDE_VISUALIZATION_ENDPOINT;
 var STOMP_RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/user/queue'
 		+ RUNTIME_ADDITIONAL_DATA_ENDPOINT;
-var STOMP_RUNTIME_MODIFY_ENDPOINT = '/topic' + RUNTIME_MODIFY_ENDPOINT;
-var STOMP_RUNTIME_NEW_OBJECT_ENDPOINT = RUNTIME_NEW_OBJECT_ENDPOINT;
+var STOMP_RUNTIME_MODIFY_ENDPOINT = '/user/queue' + RUNTIME_MODIFY_ENDPOINT;
+var STOMP_RUNTIME_NEW_OBJECT_ENDPOINT = '/user/queue' + RUNTIME_NEW_OBJECT_ENDPOINT;
+var STOMP_DATA_SOURCE_CHANGE_ENDPOINT = '/topic/dataSourceChange';
 var STOMP_SYNCHRONIZE_ENDPOINT = '/topic/synchronize';
 
 // send message endpoints with prefix
@@ -22,6 +24,8 @@ var SEND_RUNTIME_MODIFY_ENDPOINT = '/ivisApp'
 	+ RUNTIME_MODIFY_ENDPOINT;
 var SEND_RUNTIME_NEW_OBJECT_ENDPOINT = '/ivisApp'
 	+ RUNTIME_NEW_OBJECT_ENDPOINT;
+var SEND_SYNCHRONIZE_ENDPOINT = '/ivisApp'
+	+ SYNCHRONIZE_ENDPOINT;
 
 var APPLICATION_TEMPLATE_IDENTIFIER = "bookstoreApplicationTemplate";
 
@@ -83,19 +87,33 @@ function connect() {
 
 					var runtimeModificationMessage = JSON.parse(object.body);
 
-					var modifiedObject = runtimeModificationMessage.responseVisualizationObject;
-
-					replaceModifiedObject_runtime(modifiedObject);
+					var infoMessage = runtimeModificationMessage.responseInfoMessage;
 					
-					reloadAndZoomScene();
+					alert(infoMessage);
 					
-					alert("The stock value of an object has been updated! \n\nThe object-id is: " + modifiedObject.id);
 				});
+		
+		// data source change event
+		stompClient.subscribe(STOMP_DATA_SOURCE_CHANGE_ENDPOINT, function(object) {
+			if($("x3d").length > 0){
+				var dataSourceChangeMessage = JSON.parse(object.body);
+				
+				sendSynchronizationRequest(dataSourceChangeMessage.dataSourceIdentifier);
+			}
+			
+		});
 
 		// synchronization updates
 		stompClient.subscribe(STOMP_SYNCHRONIZE_ENDPOINT, function(object) {
-			// TODO
-			applyUpdate(JSON.parse(object.body));
+
+			var syncMessage = JSON.parse(object.body);
+			
+			var modifiedObjects = syncMessage.responseVisualizationObjects;
+
+			replaceModifiedObjects_runtime(modifiedObjects);
+			
+			reloadAndZoomScene();
+			
 		});
 	});
 }
@@ -105,6 +123,20 @@ function disconnect() {
 		stompClient.disconnect();
 	}
 	console.log("Disconnected");
+}
+
+function sendSynchronizationRequest(dataSourceIdentifier){
+	
+	var syncMessage = {};
+	
+	syncMessage.dataSourceIdentifier = dataSourceIdentifier;
+	syncMessage.applicationTemplateIdentifier = APPLICATION_TEMPLATE_IDENTIFIER;
+	
+	syncMessage.query = {};
+	syncMessage.query.selector = 'bookstore/book';
+	
+	stompClient.send(SEND_SYNCHRONIZE_ENDPOINT, {}, JSON
+			.stringify(syncMessage));
 }
 
 function applyUpdate(object) {
@@ -296,6 +328,12 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 	reloadAndZoomScene();
 }
 
+function replaceModifiedObjects_runtime(modifiedObjects){
+	for (var i=0; i<modifiedObjects.length; i++){
+		replaceModifiedObject_runtime(modifiedObjects[i]);
+	}
+}
+
 function replaceModifiedObject_runtime(modifiedObject){
 	// replace the existing object
 	
@@ -305,18 +343,23 @@ function replaceModifiedObject_runtime(modifiedObject){
 	// "_object" must be appended, since scene elements have this suffix!
 	var jqueryExpression = "#" + id + "_object";
 	
-	/*
-	 * get parent element
-	 * 
-	 * delete all child elements (including the target object)
-	 * 
-	 * append new child elements (with our new object)
-	 */
-	var parentElement = $(jqueryExpression).parent();
+	if ($(jqueryExpression).length > 0){
+		/*
+		 * get parent element
+		 * 
+		 * delete all child elements (including the target object)
+		 * 
+		 * append new child elements (with our new object)
+		 */
+		var parentElement = $(jqueryExpression).parent();
+		
+		parentElement.empty();
+		
+		parentElement.append(x3domString);
+		
+		alert("The stock value of an object has been updated! \n\nThe object-id is: " + id);
+	}
 	
-	parentElement.empty();
-	
-	parentElement.append(x3domString);
 }
 
 function onEnableFiltersChange() {

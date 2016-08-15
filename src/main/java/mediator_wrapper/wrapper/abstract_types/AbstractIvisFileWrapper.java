@@ -1,6 +1,13 @@
 package mediator_wrapper.wrapper.abstract_types;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.CopyOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +16,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+
+import ivisObject.IvisObject;
+import ivisQuery.IvisQuery;
 
 /**
  * Abstract wrapper class that manages file-based data sources.
@@ -23,12 +33,16 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 	private static final String XPATH_EXPRESSION_SELECTOR_LOCAL_SCHEMA_ELEMENT = "selector_localSchema";
 
 	private File sourceFile;
+	private File shadowCopyFile;
 
 	private Map<String, String> schemaMapping;
 
-	public AbstractIvisFileWrapper(String pathToSourcefile, String pathToSchemaMappingFile) throws DocumentException {
+	public AbstractIvisFileWrapper(String pathToSourcefile, String pathToShadowCopyFile, String pathToSchemaMappingFile)
+			throws DocumentException {
 
 		this.sourceFile = new File(pathToSourcefile);
+
+		this.shadowCopyFile = new File(pathToShadowCopyFile);
 		/*
 		 * TODO instantiate wrapper properly!
 		 * 
@@ -89,10 +103,14 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 		return sourceFile;
 	}
 
+	public File getShadowCopyFile() {
+		return shadowCopyFile;
+	}
+
 	public Map<String, String> getSchemaMapping() {
 		return schemaMapping;
 	}
-	
+
 	/**
 	 * extracts the name of the given XPath selector.
 	 * 
@@ -120,10 +138,41 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 	}
 
 	/**
+	 * This method is called, when the source file of the wrapper is modified.
+	 * 
+	 * It then identifies which entries are modified for subsequent
+	 * transformation into visualization objects, which are sent to the client.
+	 * 
+	 * @param query_globalSchema
+	 *            query against the global schema that contains the selector
+	 *            indicating which objects to retrieve
+	 * @param subquerySelectors_globalSchema
+	 *            subqueires to indicate which properties shall be extracted
+	 * 
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
+	 * @throws DocumentException 
+	 */
+	public abstract List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
+			List<String> subquerySelectors_globalSchema)
+			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException;
+
+	/**
 	 * TODO generic methods to access, parse, modify a file?
 	 * 
 	 * does that make sense here? or do file types differ that much, that this
 	 * should be done in implementing classes?
 	 */
+	
+	protected void replaceShadowCopy() throws IOException {
+		Path FROM = Paths.get(this.getSourceFile().getAbsolutePath());
+		Path TO = Paths.get(this.getShadowCopyFile().getAbsolutePath());
+		CopyOption[] options = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,
+				StandardCopyOption.COPY_ATTRIBUTES };
+		java.nio.file.Files.copy(FROM, TO, options);
+
+	}
 
 }

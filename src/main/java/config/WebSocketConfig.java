@@ -1,5 +1,6 @@
 package config;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import application_template.ApplicationTemplateInterface;
 import application_template.impl.bookstoreTemplate.BookstoreApplicationTemplate;
 import mediator_wrapper.mediation.impl.IvisMediator;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
+import mediator_wrapper.mediation.impl.sourceFilesMonitor.SourceFilesMonitor;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.impl.csv.CsvWrapper;
 import mediator_wrapper.wrapper.impl.xml.XmlWrapper;
@@ -26,8 +28,15 @@ import util.UrlConstants;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
+	private static final String serviceURL = "http://localhost:8080";
+	
 	private String pathToWrapperMappingFile = "data/config/GlobalSchemaToWrapperMapping.xml";
 	private String pathToSubqueryMappingFile = "data/config/SubqueryMapping.xml";
+	private String sourceFilesDirectory = "data/data_sources";
+
+	public static String getServiceURL() {
+		return serviceURL;
+	}
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -41,7 +50,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		 * a global application prefix
 		 */
 		config.setApplicationDestinationPrefixes(UrlConstants.APPLICATION_PREFIX);
-		//config.setUserDestinationPrefix(UrlConstants.APPLICATION_USER_PREFIX);
+		// config.setUserDestinationPrefix(UrlConstants.APPLICATION_USER_PREFIX);
 	}
 
 	@Override
@@ -63,11 +72,22 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		registry.addEndpoint(UrlConstants.RUNTIME_ADDITIONAL_DATA_ENDPOINT).withSockJS();
 
 		/*
-		 * 2. endpoint: runtime request (from within a running visualization) to
+		 * 3. endpoint: runtime request (from within a running visualization) to
 		 * send data modifications to the server and apply them to the data
 		 * sources
 		 */
 		registry.addEndpoint(UrlConstants.RUNTIME_MODIFY_EXISTING_OBJECT_ENDPOINT).withSockJS();
+
+		/*
+		 * 4. endpoint: synchronization endpoint. Distributes data modifications
+		 * to all connected clients
+		 */
+		registry.addEndpoint(UrlConstants.SYNCHRONIZATION_ENDPOINT).withSockJS();
+		
+		/*
+		 * 5. endpoint: data source change event endpoint.
+		 */
+		registry.addEndpoint(UrlConstants.DATA_SOURCE_CHANGE_ENDPOINT).withSockJS();
 	}
 
 	/**
@@ -83,9 +103,10 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	@Bean
 	public XmlWrapper initializeXmlWrapper() throws DocumentException {
 		String fileLocation = "data/data_sources/products.xml";
+		String shadowCopyFileLocation = "data/data_sources_shadowCopies/products_shadowCopy.xml";
 		String localSchemaMappingLocation = "data/config/XmlBookstoreMapping.xml";
 
-		return new XmlWrapper(fileLocation, localSchemaMappingLocation);
+		return new XmlWrapper(fileLocation, shadowCopyFileLocation, localSchemaMappingLocation);
 	}
 
 	/**
@@ -97,9 +118,10 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	@Bean
 	public CsvWrapper initializeCsvWrapper() throws DocumentException {
 		String fileLocation = "data/data_sources/products.csv";
+		String shadowCopyFileLocation = "data/data_sources_shadowCopies/products_shadowCopy.csv";
 		String localSchemaMappingLocation = "data/config/CsvBookstoreMapping.xml";
 
-		return new CsvWrapper(fileLocation, localSchemaMappingLocation);
+		return new CsvWrapper(fileLocation, shadowCopyFileLocation, localSchemaMappingLocation);
 	}
 
 	/**
@@ -119,20 +141,29 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	 * 
 	 * @return
 	 * @throws DocumentException
+	 * @throws IOException
+	 * @throws InterruptedException
 	 */
 	@Bean
-	public IvisMediator initializeMediator() throws DocumentException {
+	public IvisMediator initializeMediator() throws DocumentException, IOException, InterruptedException {
 		List<IvisWrapperInterface> wrappers = new ArrayList<IvisWrapperInterface>();
 		wrappers.add(initializeXmlWrapper());
 		wrappers.add(initializeCsvWrapper());
 
 		SubqueryGenerator subqueryGenerator = subqueryGenerator();
 
-		IvisMediator mediator = new IvisMediator(wrappers, this.pathToWrapperMappingFile, subqueryGenerator);
+		IvisMediator mediator = new IvisMediator(wrappers, this.pathToWrapperMappingFile, subqueryGenerator,
+				getSourceFilesMonitor());
 
 		return mediator;
 	}
-	
+
+	@Bean
+	public SourceFilesMonitor getSourceFilesMonitor() throws IOException {
+		// TODO Auto-generated method stub
+		return new SourceFilesMonitor(sourceFilesDirectory);
+	}
+
 	/**
 	 * create instance of {@link BookstoreApplicationTemplate}
 	 * 
@@ -142,7 +173,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	@Bean
 	public ApplicationTemplateInterface bookstoreApplicationTemplate() throws DocumentException {
 
-		return new BookstoreApplicationTemplate() ;
+		return new BookstoreApplicationTemplate();
 	}
 
 }

@@ -45,8 +45,9 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	private Map<String, Integer> csvHeaderIndicesMap;
 	private String[] headers;
 
-	public CsvWrapper(String pathToSourcefile, String pathToSchemaMappingFile) throws DocumentException {
-		super(pathToSourcefile, pathToSchemaMappingFile);
+	public CsvWrapper(String pathToSourcefile, String pathToShadowCopyFile, String localSchemaMappingLocation)
+			throws DocumentException {
+		super(pathToSourcefile, pathToShadowCopyFile, localSchemaMappingLocation);
 	}
 
 	@Override
@@ -61,52 +62,163 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	public IvisObject modifyDataInstance(RuntimeModificationMessage modificationMessage,
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage,
 			List<String> subquerySelectors_globalSchema) throws IOException {
 
+		boolean hasModified = false;
+
 		IvisQuery globalQuery = modificationMessage.getQuery();
-		
+
 		IvisQuery localQuery = (IvisQuery) this.transformToLocalQuery(globalQuery);
-		
+
 		Map<String, String> subqueries_global_and_local_schema = transformIntoGlobalAndLocalSubqueries(globalQuery,
 				subquerySelectors_globalSchema);
 
-		IvisObject modifiedIvisObject = executeDataInstanceModification(modificationMessage, localQuery,
+		hasModified = executeDataInstanceModification(modificationMessage, localQuery,
 				subqueries_global_and_local_schema);
 
-		return modifiedIvisObject;
+		return hasModified;
 	}
 
-	private IvisObject executeDataInstanceModification(RuntimeModificationMessage modificationMessage,
+	@Override
+	public List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
+			List<String> subquerySelectors_globalSchema) throws IOException {
+		Object query_localSchema = this.transformToLocalQuery(query_globalSchema);
+
+		Map<String, String> subqueries_global_and_local_schema = this
+				.transformIntoGlobalAndLocalSubqueries(query_globalSchema, subquerySelectors_globalSchema);
+
+		String elementName = this.getNameFromXPathExpression(query_globalSchema.getSelector());
+
+		/*
+		 * parse the whole file and compare its contents to shadow copy file
+		 * contents
+		 */
+		CsvRecords allRecords = this.parseAllCsvRecords(this.getSourceFile());
+
+		/*
+		 * shadow copy contains all elements BEFORE the modification happened!
+		 * 
+		 * hence, we can compare allRecords against the shadowCopyRecords to
+		 * identify modifications
+		 */
+		CsvRecords allRecords_shadowCopy = this.parseAllCsvRecords(this.getShadowCopyFile());
+
+		List<IvisObject> modifiedInstances = identifyModifiedOrNewInstances(allRecords, allRecords_shadowCopy,
+				subqueries_global_and_local_schema, elementName);
+
+		return modifiedInstances;
+	}
+
+	private List<IvisObject> identifyModifiedOrNewInstances(CsvRecords allRecords, CsvRecords allRecords_shadowCopy,
+			Map<String, String> subqueries_global_and_local_schema, String elementName) throws IOException {
+		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
+
+		int idHeaderIndex = 0;
+
+		Map<String, String[]> idForCsvRecordMap = createIdForCsvRecordMap(allRecords_shadowCopy, idHeaderIndex);
+
+		/*
+		 * for each record, find the corresponding shadowCopy
+		 * 
+		 * if none is found --> new object!
+		 * 
+		 * if existing is found --> compare each property for equality
+		 */
+
+		for (String[] csvRecord : allRecords.getRows()) {
+			String recordId = csvRecord[idHeaderIndex];
+
+			if (!idForCsvRecordMap.containsKey(recordId)) {
+				/*
+				 * new object
+				 */
+				modifiedObjects.add(createIvisObject(csvRecord, subqueries_global_and_local_schema, elementName,
+						csvHeaderIndicesMap));
+			}
+
+			else {
+				// compare to shadow copy
+
+				String[] shadowCopy = idForCsvRecordMap.get(recordId);
+
+				if (hasModifiedProperties(csvRecord, shadowCopy)) {
+					/*
+					 * modified object
+					 */
+					modifiedObjects.add(createIvisObject(csvRecord, subqueries_global_and_local_schema, elementName,
+							csvHeaderIndicesMap));
+				}
+			}
+		}
+
+		/*
+		 * now create new shadow copy file from current main file!
+		 */
+		this.replaceShadowCopy();
+
+		return modifiedObjects;
+
+	}
+
+	private boolean hasModifiedProperties(String[] csvRecord, String[] shadowCopy) {
+		for (int i = 0; i < csvRecord.length; i++) {
+			if (!csvRecord[i].equals(shadowCopy[i]))
+				return true;
+		}
+		return false;
+	}
+
+	private Map<String, String[]> createIdForCsvRecordMap(CsvRecords allRecords_shadowCopy, int idHeaderIndex) {
+		Map<String, String[]> idForCsvRecordMap = new HashMap<>();
+
+		for (String[] csvRecord : allRecords_shadowCopy.getRows()) {
+			String idValue = csvRecord[idHeaderIndex];
+
+			idForCsvRecordMap.put(idValue, csvRecord);
+		}
+
+		return idForCsvRecordMap;
+	}
+
+	private boolean executeDataInstanceModification(RuntimeModificationMessage modificationMessage,
 			IvisQuery localQuery, Map<String, String> subqueries_global_and_local_schema)
 			throws UnsupportedEncodingException, FileNotFoundException, IOException {
-		
-		String propertySelector_localSchema = this.getSchemaMapping().get(modificationMessage.getPropertySelector_globalSchema());
+
+		String propertySelector_localSchema = this.getSchemaMapping()
+				.get(modificationMessage.getPropertySelector_globalSchema());
 
 		String elementName = this.getNameFromXPathExpression(modificationMessage.getQuery().getSelector());
 
-		IvisObject modifiedIvisObject = null;
+		boolean hasModified = false;
 
-		/*
-		 * use univocity parser to parse CSV file
-		 */
-		CsvRecords csvRecords = this.parseAllCsvRecords();
+		try {
+			/*
+			 * use univocity parser to parse CSV file
+			 */
+			CsvRecords csvRecords = this.parseAllCsvRecords(this.getSourceFile());
 
-		List<String[]> allRecords = csvRecords.getRows();
+			List<String[]> allRecords = csvRecords.getRows();
 
-		modifiedIvisObject = findAndModifyInstance(modificationMessage, localQuery, subqueries_global_and_local_schema,
-				propertySelector_localSchema, elementName, modifiedIvisObject, allRecords);
+			allRecords = findAndModifyInstance(modificationMessage, localQuery, subqueries_global_and_local_schema,
+					propertySelector_localSchema, elementName, allRecords);
 
-		/*
-		 * write back
-		 */
-		persistRecords(allRecords);
-		return modifiedIvisObject;
+			/*
+			 * write back
+			 */
+			persistRecords(allRecords);
+			
+			hasModified = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return hasModified;
 	}
 
-	private IvisObject findAndModifyInstance(RuntimeModificationMessage modificationMessage, IvisQuery localQuery,
+	private List<String[]> findAndModifyInstance(RuntimeModificationMessage modificationMessage, IvisQuery localQuery,
 			Map<String, String> subqueries_global_and_local_schema, String propertySelector_localSchema,
-			String elementName, IvisObject modifiedIvisObject, List<String[]> allRecords) {
+			String elementName, List<String[]> allRecords) {
 		for (String[] currentRecord : allRecords) {
 			if (this.passesFilters(currentRecord, localQuery, this.csvHeaderIndicesMap)) {
 				/*
@@ -120,13 +232,11 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 				currentRecord = modifyRecord(currentRecord, propertySelector_localSchema,
 						modificationMessage.getNewPropertyValue());
 
-				modifiedIvisObject = this.createIvisObject(currentRecord, subqueries_global_and_local_schema,
-						elementName, this.csvHeaderIndicesMap);
-
 				break;
 			}
 		}
-		return modifiedIvisObject;
+		
+		return allRecords;
 	}
 
 	private void persistRecords(List<String[]> allRecords) throws IOException {
@@ -244,7 +354,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		/*
 		 * parse document
 		 */
-		CsvRecords csvRecords = this.parseAllCsvRecords();
+		CsvRecords csvRecords = this.parseAllCsvRecords(this.getSourceFile());
 
 		List<String[]> allRecords = csvRecords.getRows();
 
@@ -274,18 +384,22 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		Iterator<Entry<String, String>> subqueryIterator = subqueries_global_and_local_schema.entrySet().iterator();
 
 		while (subqueryIterator.hasNext()) {
-			Entry<String, String> subqueryEntry = subqueryIterator.next();
+			try {
+				Entry<String, String> subqueryEntry = subqueryIterator.next();
 
-			String name = getNameFromXPathExpression(subqueryEntry.getKey());
+				String name = getNameFromXPathExpression(subqueryEntry.getKey());
 
-			/*
-			 * in case of CSV, the value represents the header of the
-			 * corresponding column
-			 */
-			Integer recordIndex = csvHeaderIndicesMap.get(subqueryEntry.getValue());
-			Object value = record[recordIndex];
+				/*
+				 * in case of CSV, the value represents the header of the
+				 * corresponding column
+				 */
+				Integer recordIndex = csvHeaderIndicesMap.get(subqueryEntry.getValue());
+				Object value = record[recordIndex];
 
-			attributeValuePairs.add(new AttributeValuePair(name, value));
+				attributeValuePairs.add(new AttributeValuePair(name, value));
+			} catch (Exception e) {
+				continue;
+			}
 		}
 
 		addWrapperReference(attributeValuePairs);
@@ -437,7 +551,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		return csvHeaderIndicesMap;
 	}
 
-	private CsvRecords parseAllCsvRecords() throws UnsupportedEncodingException, FileNotFoundException {
+	private CsvRecords parseAllCsvRecords(File file) throws UnsupportedEncodingException, FileNotFoundException {
 		// A RowListProcessor stores each parsed row in a List.
 		RowListProcessor rowProcessor = new RowListProcessor();
 
@@ -448,7 +562,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		// the 'parse' method will parse the file and delegate each parsed row
 		// to the RowProcessor
-		parser.parse(getReader(this.getSourceFile()));
+		parser.parse(getReader(file));
 
 		// get the parsed records from the RowListProcessor here.
 		List<String[]> rows = rowProcessor.getRows();
