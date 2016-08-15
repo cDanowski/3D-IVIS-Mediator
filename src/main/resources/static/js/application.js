@@ -33,7 +33,7 @@ var APPLICATION_TEMPLATE_IDENTIFIER = "bookstoreApplicationTemplate";
 var stompClient = null;
 
 //global y-translation value needed to properly insert additional objects
-var translation_y = -0;
+var translation_y = -5;
 var translationIncrement = 5;
 
 var objectModalReference = "#objectModal";
@@ -110,7 +110,7 @@ function connect() {
 			
 			var modifiedObjects = syncMessage.responseVisualizationObjects;
 
-			replaceModifiedObjects_runtime(modifiedObjects);
+			synchronizeSceneContents(modifiedObjects);
 			
 			reloadAndZoomScene();
 			
@@ -139,8 +139,30 @@ function sendSynchronizationRequest(dataSourceIdentifier){
 			.stringify(syncMessage));
 }
 
-function applyUpdate(object) {
-	// TODO
+function synchronizeSceneContents(modifiedObjects){
+	
+	/*
+	 * if an object already exists, then replace it!
+	 * 
+	 * if it is a new object, integrate it into scene!
+	 */
+	
+	for (var i=0; i<modifiedObjects.length; i++){
+		
+		var object = modifiedObjects[i];
+		
+		// "_object" must be appended, since scene elements have this suffix!
+		var jqueryExpression = "#" + object.id + "_object";
+		
+		if($(jqueryExpression).length > 0)
+			replaceModifiedObject_runtime(object);
+		else{
+			alert("New content is available and added to the scene!");
+			
+			integrateIntoScene_runtime(object);
+		}
+			
+	}
 }
 
 function visualizeBookStocks() {
@@ -255,7 +277,15 @@ function reloadAndZoomScene(){
 	});
 }
 
+//column translation
+var translation_x_positive = 7;
+var translation_x_negative = -7;
 
+// rotation about 90°
+var rotation_z_left = "0 0 1 1.57";
+var rotation_z_right = "0 0 1 -1.57";
+
+var isEvenIndex = false;
 
 function integrateSceneIntoDOM_runtime(additionalObjects){
 	/*
@@ -265,20 +295,8 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 	 * 
 	 * if it is a new object insert it into the scene in front of the existing ones
 	 */
-	
-	translation_y = translation_y - translationIncrement;
-	
-	var numberOfObjects = additionalObjects.length;
 
-	// column translation
-	var translation_x_positive = 7;
-	var translation_x_negative = -7;
-	
-	// rotation about 90°
-	var rotation_z_left = "0 0 1 1.57";
-	var rotation_z_right = "0 0 1 -1.57";
-	
-	var isEvenIndex = false;
+	var numberOfObjects = additionalObjects.length;
 	
 	for(var index=0; index < numberOfObjects; index++){
 		var currentAdditionalObject = additionalObjects[index];
@@ -293,39 +311,43 @@ function integrateSceneIntoDOM_runtime(additionalObjects){
 			replaceModifiedObject_runtime(currentAdditionalObject);
 		}
 		else{
-			var x3domString = currentAdditionalObject.visualizationObject;
-			
-			if(isEvenIndex){
-				// translation to right of the scene
-				var newX3domString = "<transform translation='" + translation_x_positive + " " + translation_y + " 0 '>";
-				newX3domString = newX3domString + "	<transform rotation='" + rotation_z_right + "' >";
-				newX3domString = newX3domString + x3domString;
-				newX3domString = newX3domString + "	</transform>";
-				newX3domString = newX3domString + "</transform>";
-				
-				// after each second object decrease y-translation
-				translation_y = translation_y - translationIncrement;
-				isEvenIndex = false;
-			}
-			else{
-				// translation to left of the scene
-				var newX3domString = "<transform translation='" + translation_x_negative + " " + translation_y + " 0 '>";
-				newX3domString = newX3domString + "	<transform rotation='" + rotation_z_left + "' >";
-				newX3domString = newX3domString + x3domString;
-				newX3domString = newX3domString + "	</transform>";
-				newX3domString = newX3domString + "</transform>";
-				
-				isEvenIndex = true;
-			}
-			
-			/*
-			 * append new object to the "scene" element of the x3dom scene
-			 */
-			$("scene").append(newX3domString);
+			integrateIntoScene_runtime(currentAdditionalObject);
 		}
 	}
 	
 	reloadAndZoomScene();
+}
+
+function integrateIntoScene_runtime(object){
+	var x3domString = object.visualizationObject;
+	
+	if(isEvenIndex){
+		// translation to right of the scene
+		var newX3domString = "<transform translation='" + translation_x_positive + " " + translation_y + " 0 '>";
+		newX3domString = newX3domString + "	<transform rotation='" + rotation_z_right + "' >";
+		newX3domString = newX3domString + x3domString;
+		newX3domString = newX3domString + "	</transform>";
+		newX3domString = newX3domString + "</transform>";
+		
+		// after each second object decrease y-translation
+		translation_y = translation_y - translationIncrement;
+		isEvenIndex = false;
+	}
+	else{
+		// translation to left of the scene
+		var newX3domString = "<transform translation='" + translation_x_negative + " " + translation_y + " 0 '>";
+		newX3domString = newX3domString + "	<transform rotation='" + rotation_z_left + "' >";
+		newX3domString = newX3domString + x3domString;
+		newX3domString = newX3domString + "	</transform>";
+		newX3domString = newX3domString + "</transform>";
+		
+		isEvenIndex = true;
+	}
+	
+	/*
+	 * append new object to the "scene" element of the x3dom scene
+	 */
+	$("scene").append(newX3domString);
 }
 
 function replaceModifiedObjects_runtime(modifiedObjects){
