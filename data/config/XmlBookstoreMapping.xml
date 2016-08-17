@@ -69,5 +69,10 @@
 		<selector_globalSchema>bookstore/book/price/@currency</selector_globalSchema>
 		<selector_localSchema>books/book/cost/currency</selector_localSchema>
 	</mapping>
+	
+	<id-mapping>
+		<selector_globalSchema>bookstore/book/@id</selector_globalSchema>
+		<selector_localSchema>books/book/@id</selector_localSchema>
+	</id-mapping>
 
 </wrapperSpecificMapping>
