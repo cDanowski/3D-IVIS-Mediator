@@ -270,7 +270,6 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		/*
 		 * shadow copy contains all elements BEFORE the modification happened!
 		 * 
-		 * hence, we can compare allRecords against the shadowCopyRecords to
 		 * identify modifications
 		 */
 		List<Node> selectedNodes_shadowCopy = retrieveAllNodesForQuery(query_localSchema, shadowCopyFile);
@@ -287,7 +286,15 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
 
-		String idProperty = "@id";
+		/*
+		 * id property has the complete XPath expression to identify the id
+		 * 
+		 * but we only need the last bit after the final slash!
+		 */
+		String id_property_localSchema = this.getIdProperty().getSelector_localSchema();
+		
+		String[] split = id_property_localSchema.split("/");
+		String idProperty = split[split.length - 1];
 
 		Map<String, Node> idForXmlRecordMap = createIdForXmlRecordMap(selectedNodes_shadowCopy, idProperty);
 

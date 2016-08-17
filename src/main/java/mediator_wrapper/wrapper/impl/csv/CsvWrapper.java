@@ -133,7 +133,9 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			Map<String, String> subqueries_global_and_local_schema, String elementName) throws IOException {
 		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
 
-		int idHeaderIndex = 0;
+		String csv_id_column = this.getIdProperty().getSelector_localSchema();
+		
+		int idHeaderIndex = this.csvHeaderIndicesMap.get(csv_id_column);
 
 		Map<String, String[]> idForCsvRecordMap = createIdForCsvRecordMap(records_shadowCopy, idHeaderIndex);
 
