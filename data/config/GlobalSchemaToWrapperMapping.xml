@@ -10,6 +10,7 @@
 			<!-- multiple wrappers might offer data for that specific element -->
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -19,6 +20,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -28,6 +30,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -37,6 +40,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -46,6 +50,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -55,6 +60,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -64,6 +70,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -73,6 +80,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -82,6 +90,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -91,6 +100,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 	
@@ -100,6 +110,7 @@
 		<wrappers>
 			<wrapper localSchemaMappingFile="data/config/XmlBookstoreMapping.xml">XmlWrapper</wrapper>
 			<wrapper localSchemaMappingFile="data/config/CsvBookstoreMapping.xml">CsvWrapper</wrapper>
+			<wrapper localSchemaMappingFile="data/config/DatabaseBookstoreMapping.xml">DatabaseWrapper</wrapper>
 		</wrappers>
 	</mapping>
 

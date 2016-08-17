@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +47,6 @@ public class IvisMediator implements IvisMediatorInterface {
 	private Map<String, List<IvisWrapperInterface>> wrapperMapping;
 
 	private SubqueryGenerator subqueryGenerator;
-
-	private String sourceFilesDirectory;
 
 	/**
 	 * attribute shall indicate whether a user already performs a modification
@@ -236,9 +233,14 @@ public class IvisMediator implements IvisMediatorInterface {
 		 */
 		for (IvisWrapperInterface wrapper : wrappersForSelector) {
 
-			List<IvisObject> retrievedObjectsForWrapper = wrapper.queryData(query, subquerySelectors);
+			try {
+				List<IvisObject> retrievedObjectsForWrapper = wrapper.queryData(query, subquerySelectors);
 
-			retrievedItems.addAll(retrievedObjectsForWrapper);
+				retrievedItems.addAll(retrievedObjectsForWrapper);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return retrievedItems;
@@ -250,7 +252,7 @@ public class IvisMediator implements IvisMediatorInterface {
 			throws UnsupportedEncodingException, DocumentException, IOException {
 
 		boolean hasModified = false;
-		
+
 		if (!isCurrentlyModifying) {
 			this.isCurrentlyModifying = true;
 

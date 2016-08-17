@@ -20,6 +20,7 @@ import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.mediation.impl.sourceFilesMonitor.SourceFilesMonitor;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.impl.csv.CsvWrapper;
+import mediator_wrapper.wrapper.impl.database.DatabaseWrapper;
 import mediator_wrapper.wrapper.impl.xml.XmlWrapper;
 import util.UrlConstants;
 
@@ -29,7 +30,7 @@ import util.UrlConstants;
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 	private static final String serviceURL = "http://localhost:8080";
-	
+
 	private String pathToWrapperMappingFile = "data/config/GlobalSchemaToWrapperMapping.xml";
 	private String pathToSubqueryMappingFile = "data/config/SubqueryMapping.xml";
 	private String sourceFilesDirectory = "data/data_sources";
@@ -83,7 +84,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		 * to all connected clients
 		 */
 		registry.addEndpoint(UrlConstants.SYNCHRONIZATION_ENDPOINT).withSockJS();
-		
+
 		/*
 		 * 5. endpoint: data source change event endpoint.
 		 */
@@ -125,6 +126,27 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	}
 
 	/**
+	 * configure database wrapper instance
+	 * 
+	 * @return
+	 * @throws DocumentException
+	 */
+	@Bean
+	public DatabaseWrapper initializeDatabaseWrapper() throws DocumentException {
+		// JDBC driver name and database URL
+		String jdbc_driver = "org.postgresql.Driver";
+		String db_url = "jdbc:postgresql://127.0.0.1:5432/bookstore";
+
+		// Database credentials
+		String user = "bookUser";
+		String password = "bookPassword";
+
+		String localSchemaMappingLocation = "data/config/DatabaseBookstoreMapping.xml";
+
+		return new DatabaseWrapper(jdbc_driver, db_url, user, password, localSchemaMappingLocation);
+	}
+
+	/**
 	 * create instance of SubqueryGenerator
 	 * 
 	 * @return
@@ -149,6 +171,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		List<IvisWrapperInterface> wrappers = new ArrayList<IvisWrapperInterface>();
 		wrappers.add(initializeXmlWrapper());
 		wrappers.add(initializeCsvWrapper());
+		wrappers.add(initializeDatabaseWrapper());
 
 		SubqueryGenerator subqueryGenerator = subqueryGenerator();
 
