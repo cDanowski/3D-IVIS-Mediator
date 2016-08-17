@@ -98,7 +98,7 @@ function connect() {
 			if($("x3d").length > 0){
 				var dataSourceChangeMessage = JSON.parse(object.body);
 				
-				sendSynchronizationRequest(dataSourceChangeMessage.dataSourceIdentifier);
+				sendSynchronizationRequest(dataSourceChangeMessage);
 			}
 			
 		});
@@ -125,11 +125,17 @@ function disconnect() {
 	console.log("Disconnected");
 }
 
-function sendSynchronizationRequest(dataSourceIdentifier){
+function sendSynchronizationRequest(dataSourceChangeMessage){
+	
+	var dataSourceIdentifier = dataSourceChangeMessage.dataSourceIdentifier;
+	
+	// might be unset!
+	var idOfModifiedRecord = dataSourceChangeMessage.recordId;
 	
 	var syncMessage = {};
 	
 	syncMessage.dataSourceIdentifier = dataSourceIdentifier;
+	syncMessage.recordId = idOfModifiedRecord;
 	syncMessage.applicationTemplateIdentifier = APPLICATION_TEMPLATE_IDENTIFIER;
 	
 	syncMessage.query = {};

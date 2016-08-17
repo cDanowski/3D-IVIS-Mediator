@@ -10,8 +10,10 @@ import java.util.List;
 import org.dom4j.DocumentException;
 
 import ivisObject.AttributeValuePair;
+import ivisObject.IvisObject;
 import ivisQuery.FilterStrategy;
 import ivisQuery.FilterType;
+import ivisQuery.IvisQuery;
 import mediator_wrapper.wrapper.impl.database.WhereClause;
 
 /**
@@ -38,7 +40,7 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 		this.db_url = db_url;
 		this.user = user;
 		this.password = password;
-		
+
 		this.instantiateSchemaMapping(localSchemaMappingLocation);
 
 	}
@@ -109,7 +111,7 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 
 		return sqlStatement;
 	}
-	
+
 	public void executeUpdateStatement(String tableName, AttributeValuePair columnToUpdate,
 			List<WhereClause> whereClauses, FilterStrategy filterStrategy) throws SQLException {
 
@@ -124,7 +126,7 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 			List<WhereClause> whereClauses, FilterStrategy filterStrategy) {
 
 		String whereClause = buildWhereClause(whereClauses, filterStrategy);
-		
+
 		String setColumnString = buildSetColumnString(columnToUpdate);
 
 		StringBuilder builder = new StringBuilder();
@@ -157,13 +159,13 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 		builder.append(columnToUpdate.getName());
 		builder.append("\"");
 		builder.append(" = ");
-		
+
 		Object newValue = columnToUpdate.getValue();
-		
+
 		/*
 		 * if newValue is a textual value, wrap it in single quotes
 		 */
-		if(newValue instanceof String)
+		if (newValue instanceof String)
 			builder.append("'" + newValue + "'");
 		else
 			builder.append(newValue);
@@ -271,7 +273,7 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 		StringBuilder builder = new StringBuilder();
 
 		// append first entry
-		builder.append("\"" + columnsToSelect.get(0) +"\"");
+		builder.append("\"" + columnsToSelect.get(0) + "\"");
 
 		// append all other entries and separating comma
 		for (int i = 1; i < columnsToSelect.size(); i++) {
@@ -303,6 +305,22 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Called to find modified instances within the database.
+	 * 
+	 * (Via a database trigger, the ID of a modified object should be available
+	 * in the property 'recordId')
+	 * 
+	 * @param query_globalSchema
+	 * @param subquerySelectors_globalSchema
+	 * @param recordId
+	 *            should be set to the ID of the modified instance
+	 * @return the modified instance as 
+	 * @throws Exception 
+	 */
+	public abstract List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
+			List<String> subquerySelectors_globalSchema, String recordId) throws Exception;
 
 	/*
 	 * TODO common database parameters and access methods can be implemented

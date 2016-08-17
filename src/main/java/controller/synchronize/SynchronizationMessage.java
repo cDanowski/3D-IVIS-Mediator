@@ -6,19 +6,21 @@ import application_template.impl.VisualizationObject;
 import controller.AbstractMessage;
 
 /**
- * Java representation of a synchronize message sent to clients! The message must
- * contain all necessary information to update/embed scene content into a
+ * Java representation of a synchronize message sent to clients! The message
+ * must contain all necessary information to update/embed scene content into a
  * running scene.
  * 
  * @author Christian Danowski
  *
  */
-public class SynchronizationMessage extends AbstractMessage{
-	
+public class SynchronizationMessage extends AbstractMessage {
+
 	/*
 	 * identifier of the data source
 	 */
 	private String dataSourceIdentifier;
+
+	private String recordId;
 
 	/*
 	 * computed by system; all modified/changed objects
@@ -33,6 +35,14 @@ public class SynchronizationMessage extends AbstractMessage{
 		this.dataSourceIdentifier = dataSourceIdentifier;
 	}
 
+	public String getRecordId() {
+		return recordId;
+	}
+
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
+	}
+
 	public List<VisualizationObject> getResponseVisualizationObjects() {
 		return responseVisualizationObjects;
 	}
@@ -43,10 +53,8 @@ public class SynchronizationMessage extends AbstractMessage{
 
 	@Override
 	public String toString() {
-		return "SynchronizationMessage [dataSourceIdentifier=" + dataSourceIdentifier
-				+ ", responseVisualizationObjects=" + responseVisualizationObjects
-				+ ", getApplicationTemplateIdentifier()=" + getApplicationTemplateIdentifier() + ", getQuery()="
-				+ getQuery() + ", getResponseInfoMessage()=" + getResponseInfoMessage() + "]";
+		return "SynchronizationMessage [dataSourceIdentifier=" + dataSourceIdentifier + ", recordId=" + recordId
+				+ ", responseVisualizationObjects=" + responseVisualizationObjects + "]";
 	}
 
 }

@@ -1,6 +1,7 @@
 package config;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.mediation.impl.sourceFilesMonitor.SourceFilesMonitor;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.impl.csv.CsvWrapper;
+import mediator_wrapper.wrapper.impl.database.DatabaseListener;
 import mediator_wrapper.wrapper.impl.database.DatabaseWrapper;
 import mediator_wrapper.wrapper.impl.xml.XmlWrapper;
 import util.UrlConstants;
@@ -88,7 +90,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		/*
 		 * 5. endpoint: data source change event endpoint.
 		 */
-		registry.addEndpoint(UrlConstants.DATA_SOURCE_CHANGE_ENDPOINT).withSockJS();
+		// registry.addEndpoint(UrlConstants.DATA_SOURCE_CHANGE_ENDPOINT).withSockJS();
 	}
 
 	/**
@@ -130,9 +132,12 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	 * 
 	 * @return
 	 * @throws DocumentException
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 * @throws IOException 
 	 */
 	@Bean
-	public DatabaseWrapper initializeDatabaseWrapper() throws DocumentException {
+	public DatabaseWrapper initializeDatabaseWrapper() throws DocumentException, ClassNotFoundException, SQLException, IOException {
 		// JDBC driver name and database URL
 		String jdbc_driver = "org.postgresql.Driver";
 		String db_url = "jdbc:postgresql://127.0.0.1:5432/bookstore";
@@ -143,7 +148,8 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 		String localSchemaMappingLocation = "data/config/DatabaseBookstoreMapping.xml";
 
-		return new DatabaseWrapper(jdbc_driver, db_url, user, password, localSchemaMappingLocation);
+		return new DatabaseWrapper(jdbc_driver, db_url, user, password, localSchemaMappingLocation,
+				getDatabaseListener());
 	}
 
 	/**
@@ -165,9 +171,12 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	 * @throws DocumentException
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
 	 */
 	@Bean
-	public IvisMediator initializeMediator() throws DocumentException, IOException, InterruptedException {
+	public IvisMediator initializeMediator()
+			throws DocumentException, IOException, InterruptedException, ClassNotFoundException, SQLException {
 		List<IvisWrapperInterface> wrappers = new ArrayList<IvisWrapperInterface>();
 		wrappers.add(initializeXmlWrapper());
 		wrappers.add(initializeCsvWrapper());
@@ -185,6 +194,12 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	public SourceFilesMonitor getSourceFilesMonitor() throws IOException {
 		// TODO Auto-generated method stub
 		return new SourceFilesMonitor(sourceFilesDirectory);
+	}
+
+	@Bean
+	public DatabaseListener getDatabaseListener() throws IOException {
+		// TODO Auto-generated method stub
+		return new DatabaseListener();
 	}
 
 	/**

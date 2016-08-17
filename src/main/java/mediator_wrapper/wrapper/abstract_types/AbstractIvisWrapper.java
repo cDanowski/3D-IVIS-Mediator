@@ -17,18 +17,24 @@ import ivisQuery.IvisQuery;
 public abstract class AbstractIvisWrapper {
 
 	protected static final String WRAPPER_REFERENCE = "wrapperReference";
-	
+
 	private static final String XPATH_EXPRESSION_MAPPING_ELEMENT = "//mapping";
 	private static final String XPATH_EXPRESSION_SELECTOR_GLOBAL_SCHEMA_ELEMENT = "selector_globalSchema";
 	private static final String XPATH_EXPRESSION_SELECTOR_LOCAL_SCHEMA_ELEMENT = "selector_localSchema";
-	
+	private static final String XPATH_EXPRESSION_ID_MAPPING_ELEMENT = "//id-mapping";
+
 	private Map<String, String> schemaMapping;
-	
+
+	private IdProperty idProperty;
 
 	public Map<String, String> getSchemaMapping() {
 		return schemaMapping;
 	}
-	
+
+	public IdProperty getIdProperty() {
+		return idProperty;
+	}
+
 	/**
 	 * extracts the name of the given XPath selector.
 	 * 
@@ -54,7 +60,7 @@ public abstract class AbstractIvisWrapper {
 		} else
 			return xPathSelector;
 	}
-	
+
 	/**
 	 * instantiates the schemaMapping map by parsing the mapping file and adding
 	 * a pair of String (selector of global schema, selector of local schema)
@@ -100,6 +106,23 @@ public abstract class AbstractIvisWrapper {
 			 */
 			this.schemaMapping.put(selector_globalSchema, selector_localSchema);
 		}
+
+		/*
+		 * if property
+		 */
+		Node idMappingNode = document.selectSingleNode(XPATH_EXPRESSION_ID_MAPPING_ELEMENT);
+
+		String id_selector_globalSchema = idMappingNode
+				.selectSingleNode(XPATH_EXPRESSION_SELECTOR_GLOBAL_SCHEMA_ELEMENT).getText();
+
+		String id_selector_localSchema = idMappingNode.selectSingleNode(XPATH_EXPRESSION_SELECTOR_LOCAL_SCHEMA_ELEMENT)
+				.getText();
+
+
+		/*
+		 * new instance of idMapping
+		 */
+		this.idProperty = new IdProperty(id_selector_globalSchema, id_selector_localSchema);
 
 	}
 

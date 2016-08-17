@@ -1,7 +1,6 @@
 package mediator_wrapper.mediation.impl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -298,14 +297,18 @@ public class IvisMediator implements IvisMediatorInterface {
 	}
 
 	@Override
-	public List<IvisObject> onSynchronizationEvent(SynchronizationMessage syncMessage)
-			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException {
+	public List<IvisObject> onSynchronizationEvent(SynchronizationMessage syncMessage) throws Exception {
 
 		IvisQuery query_globalSchema = syncMessage.getQuery();
 
 		List<String> subquerySelectors_globalSchema = this.subqueryGenerator.findSubquerySelectors(query_globalSchema);
 
 		String dataSourceIdentifier = syncMessage.getDataSourceIdentifier();
+
+		/*
+		 * recordId could be unset! It is not guaranteed to be set
+		 */
+		String recordId = syncMessage.getRecordId();
 
 		List<IvisObject> modifiedInstances = null;
 
@@ -328,6 +331,23 @@ public class IvisMediator implements IvisMediatorInterface {
 				}
 			} else if (wrapper instanceof AbstractIvisDataBaseWrapper) {
 				AbstractIvisDataBaseWrapper databaseWrapper = (AbstractIvisDataBaseWrapper) wrapper;
+
+				/*
+				 * find the appropriate wrapper by comparing
+				 * 'dataSourceIdentifier' to the class name of the wrapper!
+				 */
+
+				String className = dataSourceIdentifier;
+				/*
+				 * wrapper for databases
+				 * 
+				 * compare dataSourceIdentifier to class name of wrapper
+				 */
+				if (databaseWrapper.getClass().toString().equalsIgnoreCase(className)) {
+					modifiedInstances = databaseWrapper.onSourceFileChanged(query_globalSchema,
+							subquerySelectors_globalSchema, recordId);
+					break;
+				}
 
 				// TODO
 			} else if (wrapper instanceof AbstractIvisWebServiceWrapper) {

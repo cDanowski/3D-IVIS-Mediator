@@ -76,8 +76,9 @@ public interface IvisMediatorInterface {
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 * @throws DocumentException
+	 * @throws Exception
 	 */
 	List<IvisObject> onSynchronizationEvent(SynchronizationMessage syncMessage)
-			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException;
+			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException, Exception;
 
 }

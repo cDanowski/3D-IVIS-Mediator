@@ -15,61 +15,66 @@
 	<!-- mapping for attribute id -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@id</selector_globalSchema>
-		<selector_localSchema>Book:ID</selector_localSchema>
+		<selector_localSchema>Book:id</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for attribute stock -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@stock</selector_globalSchema>
-		<selector_localSchema>Book:AmountInStock</selector_localSchema>
+		<selector_localSchema>Book:amount_in_stock</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for attribute reorder level -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@reorderLevel</selector_globalSchema>
-		<selector_localSchema>Book:ReorderValue</selector_localSchema>
+		<selector_localSchema>Book:reorder_value</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for attribute reordered -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@reordered</selector_globalSchema>
-		<selector_localSchema>Book:IsReordered</selector_localSchema>
+		<selector_localSchema>Book:is_reordered</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for attribute language -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@language</selector_globalSchema>
-		<selector_localSchema>Book:Language</selector_localSchema>
+		<selector_localSchema>Book:language</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for element title-->
 	<mapping>
 		<selector_globalSchema>bookstore/book/title</selector_globalSchema>
-		<selector_localSchema>Book:Title</selector_localSchema>
+		<selector_localSchema>Book:title</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for element author-->
 	<mapping>
 		<selector_globalSchema>bookstore/book/author</selector_globalSchema>
-		<selector_localSchema>Book:Author</selector_localSchema>
+		<selector_localSchema>Book:author</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for element category-->
 	<mapping>
 		<selector_globalSchema>bookstore/book/category</selector_globalSchema>
-		<selector_localSchema>Book:Category</selector_localSchema>
+		<selector_localSchema>Book:category</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for element price-->
 	<mapping>
 		<selector_globalSchema>bookstore/book/price</selector_globalSchema>
-		<selector_localSchema>Book:Price</selector_localSchema>
+		<selector_localSchema>Book:price</selector_localSchema>
 	</mapping>
 	
 	<!-- mapping for attribute currency-->
 	<mapping>
 		<selector_globalSchema>bookstore/book/price/@currency</selector_globalSchema>
-		<selector_localSchema>Book:Currency</selector_localSchema>
+		<selector_localSchema>Book:currency</selector_localSchema>
 	</mapping>
+	
+	<id-mapping>
+		<selector_globalSchema>bookstore/book/@id</selector_globalSchema>
+		<selector_localSchema>Book:id</selector_localSchema>
+	</id-mapping>
 
 </wrapperSpecificMapping>

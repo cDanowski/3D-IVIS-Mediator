@@ -1,6 +1,7 @@
 package mediator_wrapper.wrapper.impl.database;
 
-import java.io.FileOutputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,16 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.Node;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import controller.runtime.modify.RuntimeModificationMessage;
 import ivisObject.AttributeValuePair;
 import ivisObject.IvisObject;
+import ivisQuery.FilterType;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
@@ -33,7 +31,11 @@ import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
  */
 public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements IvisWrapperInterface {
 
+	private static final String IVIS_APP_NOTIFICATION = "ivisnotification";
+
 	private static final String TABLE_COLUMN_SEPARATOR = ":";
+
+	private DatabaseListener databaseListener;
 
 	/*
 	 * TODO wenn ich von der Datenbank aus meine Anwendung erreichen will, so
@@ -47,9 +49,30 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	 * IvisQuery, java.util.List)
 	 */
 
+	@Autowired
 	public DatabaseWrapper(String jdbc_driver, String db_url, String user, String password,
-			String localSchemaMappingLocation) throws DocumentException {
+			String localSchemaMappingLocation, DatabaseListener databaseListener) throws DocumentException, ClassNotFoundException, SQLException {
 		super(jdbc_driver, db_url, user, password, localSchemaMappingLocation);
+		
+		this.databaseListener = databaseListener;
+
+		initiateListening();
+	}
+
+	private void initiateListening() throws SQLException, ClassNotFoundException {
+		Class.forName(this.getJdbc_driver());
+		String url = this.getDb_url();
+
+		Connection lConn = DriverManager.getConnection(url, getUser(), getPassword());
+
+		// Create two threads, one to issue notifications and
+		// the other to receive them.
+		this.databaseListener.setConn(lConn);
+		this.databaseListener.setChannelName(IVIS_APP_NOTIFICATION);
+		this.databaseListener.setWrapperReference(this.getClass().toString());
+		
+		this.databaseListener.start();
+
 	}
 
 	@Override
@@ -77,7 +100,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 
 	@Override
 	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage) {
-		
+
 		boolean hasModified = false;
 
 		IvisQuery localQuery = transformToLocalQuery(modificationMessage.getQuery());
@@ -90,7 +113,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	private boolean executeDataInstanceModification(RuntimeModificationMessage modificationMessage,
 			IvisQuery localQuery) {
 		boolean hasModified = false;
-		
+
 		/*
 		 * selectorLoalSchema stores tableName and propertyName separated by
 		 * ":", e.g. "tableName:propertyName"
@@ -111,8 +134,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 		try {
 			this.establishConnection();
 
-			this.executeUpdateStatement(tableName, columnToUpdate, whereClauses,
-					localQuery.getFilterStrategy());
+			this.executeUpdateStatement(tableName, columnToUpdate, whereClauses, localQuery.getFilterStrategy());
 
 			hasModified = true;
 		} catch (ClassNotFoundException | SQLException e) {
@@ -126,20 +148,20 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	}
 
 	private AttributeValuePair extractColumnsToUpdate(RuntimeModificationMessage modificationMessage) {
-		
+
 		String propertySelector_globalSchema = modificationMessage.getPropertySelector_globalSchema();
 		/*
-		 * propertySelector_localSchema stores tableName and
-		 * propertyName, separated by ":", e.g. "tableName:PropertyName"
+		 * propertySelector_localSchema stores tableName and propertyName,
+		 * separated by ":", e.g. "tableName:PropertyName"
 		 * 
 		 * we only need the propertyName here
 		 */
 		String propertySelector_localSchema = this.getSchemaMapping().get(propertySelector_globalSchema);
-		
+
 		String columnName = propertySelector_localSchema.split(TABLE_COLUMN_SEPARATOR)[1];
-		
+
 		Object newPropertyValue = modificationMessage.getNewPropertyValue();
-		
+
 		return new AttributeValuePair(columnName, newPropertyValue);
 	}
 
@@ -325,6 +347,79 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 		}
 
 		return columnsToSelect;
+	}
+
+	@Override
+	public List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
+			List<String> subquerySelectors_globalSchema, String recordId) throws Exception {
+
+		/*
+		 * 1. retrieve the modified instance!
+		 * 
+		 * Create a new localQuery_modifiedRecord
+		 */
+		IvisQuery query_localSchema = this.transformToLocalQuery(query_globalSchema);
+
+		Map<String, String> subqueries_global_and_local_schema = this
+				.transformIntoGlobalAndLocalSubqueries(query_globalSchema, subquerySelectors_globalSchema);
+
+		IvisQuery query_modifiedRecord = createQueryForModifiedRecord(recordId, query_localSchema);
+
+		List<IvisObject> results = this.executeLocalQuery(query_modifiedRecord, subqueries_global_and_local_schema,
+				query_globalSchema);
+
+		/*
+		 * since we filtered all records by one single ID, we know that results
+		 * only have one item, which is the modifiedRecord
+		 */
+		IvisObject modifiedRecord = results.get(0);
+
+		/*
+		 * 
+		 * TODO
+		 * 
+		 * 2. now check if that modified object is actually visualized by the
+		 * requesting client
+		 * 
+		 * that means check the original filter definitions of the original
+		 * query_localSchema
+		 * 
+		 * if NO FILTERS are defined, then he visualizes everything, including
+		 * modifiedRecord
+		 * 
+		 * else if defined filters include modifiedRecord, then he also
+		 * visualizes it
+		 */
+
+		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
+
+		modifiedObjects.add(modifiedRecord);
+
+		return modifiedObjects;
+
+	}
+
+	private IvisQuery createQueryForModifiedRecord(String recordId, IvisQuery query_localSchema) {
+		IvisQuery query_modifiedRecord = new IvisQuery();
+		query_modifiedRecord.setSelector(query_localSchema.getSelector());
+
+		/*
+		 * add one filter: where id=recordId
+		 */
+		IvisFilterForQuery idFilter = new IvisFilterForQuery();
+		idFilter.setSelector(this.getIdProperty().getSelector_localSchema());
+		/*
+		 * recordId looks like "id=5"
+		 * 
+		 * hence, we have to split string by "=" and use second value
+		 */
+		idFilter.setFilterValue(recordId.split("=")[1]);
+		idFilter.setFilterType(FilterType.EQUAL);
+		List<IvisFilterForQuery> filters = new ArrayList<IvisFilterForQuery>();
+		filters.add(idFilter);
+
+		query_modifiedRecord.setFilters(filters);
+		return query_modifiedRecord;
 	}
 
 }
