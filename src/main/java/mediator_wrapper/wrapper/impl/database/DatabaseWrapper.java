@@ -1,5 +1,6 @@
 package mediator_wrapper.wrapper.impl.database;
 
+import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,7 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.Node;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 
 import controller.runtime.modify.RuntimeModificationMessage;
 import ivisObject.AttributeValuePair;
@@ -26,6 +32,8 @@ import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
  *
  */
 public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements IvisWrapperInterface {
+
+	private static final String TABLE_COLUMN_SEPARATOR = ":";
 
 	/*
 	 * TODO wenn ich von der Datenbank aus meine Anwendung erreichen will, so
@@ -68,10 +76,71 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	}
 
 	@Override
-	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage,
-			List<String> subquerySelectors_globalSchema) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage) {
+		
+		boolean hasModified = false;
+
+		IvisQuery localQuery = transformToLocalQuery(modificationMessage.getQuery());
+
+		hasModified = executeDataInstanceModification(modificationMessage, localQuery);
+
+		return hasModified;
+	}
+
+	private boolean executeDataInstanceModification(RuntimeModificationMessage modificationMessage,
+			IvisQuery localQuery) {
+		boolean hasModified = false;
+		
+		/*
+		 * selectorLoalSchema stores tableName and propertyName separated by
+		 * ":", e.g. "tableName:propertyName"
+		 */
+		String selector_localSchema = localQuery.getSelector();
+		String tableName = selector_localSchema.split(TABLE_COLUMN_SEPARATOR)[0];
+
+		/*
+		 * columns and values to update!
+		 */
+		AttributeValuePair columnToUpdate = extractColumnsToUpdate(modificationMessage);
+
+		/*
+		 * whereClauses are extracted from filters!
+		 */
+		List<WhereClause> whereClauses = extractWhereClauses(localQuery.getFilters());
+
+		try {
+			this.establishConnection();
+
+			this.executeUpdateStatement(tableName, columnToUpdate, whereClauses,
+					localQuery.getFilterStrategy());
+
+			hasModified = true;
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			this.cleanupConnection();
+		}
+
+		return hasModified;
+	}
+
+	private AttributeValuePair extractColumnsToUpdate(RuntimeModificationMessage modificationMessage) {
+		
+		String propertySelector_globalSchema = modificationMessage.getPropertySelector_globalSchema();
+		/*
+		 * propertySelector_localSchema stores tableName and
+		 * propertyName, separated by ":", e.g. "tableName:PropertyName"
+		 * 
+		 * we only need the propertyName here
+		 */
+		String propertySelector_localSchema = this.getSchemaMapping().get(propertySelector_globalSchema);
+		
+		String columnName = propertySelector_localSchema.split(TABLE_COLUMN_SEPARATOR)[1];
+		
+		Object newPropertyValue = modificationMessage.getNewPropertyValue();
+		
+		return new AttributeValuePair(columnName, newPropertyValue);
 	}
 
 	@Override
@@ -126,7 +195,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 			 */
 			String subquerySelector_localSchema = this.getSchemaMapping().get(subquerySelector_globalSchema);
 
-			String[] split = subquerySelector_localSchema.split(":");
+			String[] split = subquerySelector_localSchema.split(TABLE_COLUMN_SEPARATOR);
 
 			String columnHeader = split[1];
 
@@ -154,7 +223,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 		 * ":", e.g. "tableName:propertyName"
 		 */
 		String selector_localSchema = localQuery.getSelector();
-		String tableName = selector_localSchema.split(":")[0];
+		String tableName = selector_localSchema.split(TABLE_COLUMN_SEPARATOR)[0];
 
 		/*
 		 * columns to select are stored in subqueries!
@@ -239,7 +308,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 			 * table as selector_localSchema
 			 */
 			String filterSelector_localSchema = filter.getSelector();
-			String columnIdentifier = filterSelector_localSchema.split(":")[1];
+			String columnIdentifier = filterSelector_localSchema.split(TABLE_COLUMN_SEPARATOR)[1];
 
 			WhereClause clause = new WhereClause(columnIdentifier, filter.getFilterValue(), filter.getFilterType());
 			whereClauses.add(clause);

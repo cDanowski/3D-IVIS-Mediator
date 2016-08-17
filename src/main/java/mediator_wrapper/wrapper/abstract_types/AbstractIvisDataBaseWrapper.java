@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.dom4j.DocumentException;
 
+import ivisObject.AttributeValuePair;
 import ivisQuery.FilterStrategy;
 import ivisQuery.FilterType;
 import mediator_wrapper.wrapper.impl.database.WhereClause;
@@ -69,7 +70,7 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 	public ResultSet executeSelectStatement(String tableName, List<String> columnsToSelect,
 			List<WhereClause> whereClauses, FilterStrategy filterStrategy) throws SQLException {
 
-		String sqlStatement = buildSqlStatement(tableName, columnsToSelect, whereClauses, filterStrategy);
+		String sqlStatement = buildSelectStatement(tableName, columnsToSelect, whereClauses, filterStrategy);
 
 		this.statement = this.connection.createStatement();
 
@@ -79,7 +80,7 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 
 	}
 
-	private String buildSqlStatement(String tableName, List<String> columnsToSelect, List<WhereClause> whereClauses,
+	private String buildSelectStatement(String tableName, List<String> columnsToSelect, List<WhereClause> whereClauses,
 			FilterStrategy filterStrategy) {
 		String selectItems = buildSelectItems(columnsToSelect);
 
@@ -107,6 +108,67 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 		String sqlStatement = builder.toString();
 
 		return sqlStatement;
+	}
+	
+	public void executeUpdateStatement(String tableName, AttributeValuePair columnToUpdate,
+			List<WhereClause> whereClauses, FilterStrategy filterStrategy) throws SQLException {
+
+		String sqlStatement = buildUpdateStatement(tableName, columnToUpdate, whereClauses, filterStrategy);
+
+		this.statement = this.connection.createStatement();
+
+		this.statement.executeUpdate(sqlStatement);
+	}
+
+	private String buildUpdateStatement(String tableName, AttributeValuePair columnToUpdate,
+			List<WhereClause> whereClauses, FilterStrategy filterStrategy) {
+
+		String whereClause = buildWhereClause(whereClauses, filterStrategy);
+		
+		String setColumnString = buildSetColumnString(columnToUpdate);
+
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("UPDATE");
+		builder.append(" ");
+		builder.append("\"" + tableName + "\"");
+		builder.append(" ");
+		builder.append("SET");
+		builder.append(" ");
+		builder.append(setColumnString);
+
+		if (whereClause != null && whereClause.length() > 0) {
+			builder.append(" ");
+			builder.append("WHERE");
+			builder.append(" ");
+			builder.append(whereClause);
+		}
+
+		builder.append(";");
+
+		String sqlStatement = builder.toString();
+
+		return sqlStatement;
+	}
+
+	private String buildSetColumnString(AttributeValuePair columnToUpdate) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("\"");
+		builder.append(columnToUpdate.getName());
+		builder.append("\"");
+		builder.append(" = ");
+		
+		Object newValue = columnToUpdate.getValue();
+		
+		/*
+		 * if newValue is a textual value, wrap it in single quotes
+		 */
+		if(newValue instanceof String)
+			builder.append("'" + newValue + "'");
+		else
+			builder.append(newValue);
+
+		return builder.toString();
 	}
 
 	private String buildWhereClause(List<WhereClause> whereClauses, FilterStrategy filterStrategy) {

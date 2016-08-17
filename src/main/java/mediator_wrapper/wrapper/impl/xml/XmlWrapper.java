@@ -191,8 +191,8 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage,
-			List<String> subquerySelectors_globalSchema) throws DocumentException, IOException {
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage)
+			throws DocumentException, IOException {
 
 		boolean hasModified = false;
 
@@ -201,17 +201,12 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 */
 		String localQuery = (String) transformToLocalQuery(modificationMessage.getQuery());
 
-		Map<String, String> subquerySelectors_global_and_localSchema = transformIntoGlobalAndLocalSubqueries(
-				modificationMessage.getQuery(), subquerySelectors_globalSchema);
-
-		hasModified = executeDataInstanceModification(modificationMessage, localQuery,
-				subquerySelectors_global_and_localSchema);
+		hasModified = executeDataInstanceModification(modificationMessage, localQuery);
 
 		return hasModified;
 	}
 
-	private boolean executeDataInstanceModification(RuntimeModificationMessage modificationMessage, String localQuery,
-			Map<String, String> subquerySelectors_global_and_localSchema)
+	private boolean executeDataInstanceModification(RuntimeModificationMessage modificationMessage, String localQuery)
 			throws DocumentException, UnsupportedEncodingException, FileNotFoundException, IOException {
 
 		boolean hasModified = false;

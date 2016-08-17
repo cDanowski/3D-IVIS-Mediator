@@ -237,7 +237,7 @@ public class IvisMediator implements IvisMediatorInterface {
 				List<IvisObject> retrievedObjectsForWrapper = wrapper.queryData(query, subquerySelectors);
 
 				retrievedItems.addAll(retrievedObjectsForWrapper);
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -264,18 +264,11 @@ public class IvisMediator implements IvisMediatorInterface {
 			 * collect and return results (new visualization object!)
 			 */
 
-			/*
-			 * create all subqueries identifying possible child nodes and
-			 * attributes of the selected element of the global schema
-			 */
-			List<String> subquerySelectors_globalSchema = this.subqueryGenerator
-					.findSubquerySelectors(modificationMessage.getQuery());
-
 			String wrapperReference = modificationMessage.getWrapperReference();
 
 			for (IvisWrapperInterface wrapper : availableWrappers) {
 				if (wrapper.getClass().getSimpleName().equalsIgnoreCase(wrapperReference))
-					hasModified = wrapper.modifyDataInstance(modificationMessage, subquerySelectors_globalSchema);
+					hasModified = wrapper.modifyDataInstance(modificationMessage);
 			}
 
 			this.isCurrentlyModifying = false;

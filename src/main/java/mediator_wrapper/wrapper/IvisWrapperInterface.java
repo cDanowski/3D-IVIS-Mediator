@@ -50,14 +50,12 @@ public interface IvisWrapperInterface {
 	 * @param modificationMessage
 	 *            contains all necessary information to identify the target
 	 *            object and modify the target property
-	 * @param subquerySelectors_globalSchema
-	 *            references to all object properties
 	 * @return the modified object
-	 * @throws DocumentException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws IOException 
+	 * @throws DocumentException
+	 * @throws UnsupportedEncodingException
+	 * @throws IOException
 	 */
-	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage,
-			List<String> subquerySelectors_globalSchema) throws DocumentException, UnsupportedEncodingException, IOException;
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage)
+			throws DocumentException, UnsupportedEncodingException, IOException;
 
 }

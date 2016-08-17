@@ -63,8 +63,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage,
-			List<String> subquerySelectors_globalSchema) throws IOException {
+	public boolean modifyDataInstance(RuntimeModificationMessage modificationMessage) throws IOException {
 
 		boolean hasModified = false;
 
@@ -72,11 +71,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		IvisQuery localQuery = (IvisQuery) this.transformToLocalQuery(globalQuery);
 
-		Map<String, String> subqueries_global_and_local_schema = transformIntoGlobalAndLocalSubqueries(globalQuery,
-				subquerySelectors_globalSchema);
-
-		hasModified = executeDataInstanceModification(modificationMessage, localQuery,
-				subqueries_global_and_local_schema);
+		hasModified = executeDataInstanceModification(modificationMessage, localQuery);
 
 		return hasModified;
 	}
@@ -124,11 +119,11 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		ListIterator<String[]> listIterator = records.listIterator();
 		while (listIterator.hasNext()) {
 			String[] record = listIterator.next();
-			
+
 			/*
 			 * check filters
 			 */
-			if (! this.passesFilters(record, query_localSchema, this.csvHeaderIndicesMap))
+			if (!this.passesFilters(record, query_localSchema, this.csvHeaderIndicesMap))
 				listIterator.remove();
 		}
 		return records;
@@ -206,8 +201,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	private boolean executeDataInstanceModification(RuntimeModificationMessage modificationMessage,
-			IvisQuery localQuery, Map<String, String> subqueries_global_and_local_schema)
-			throws UnsupportedEncodingException, FileNotFoundException, IOException {
+			IvisQuery localQuery) throws UnsupportedEncodingException, FileNotFoundException, IOException {
 
 		String propertySelector_localSchema = this.getSchemaMapping()
 				.get(modificationMessage.getPropertySelector_globalSchema());
@@ -224,14 +218,14 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 			List<String[]> allRecords = csvRecords.getRows();
 
-			allRecords = findAndModifyInstance(modificationMessage, localQuery, subqueries_global_and_local_schema,
-					propertySelector_localSchema, elementName, allRecords);
+			allRecords = findAndModifyInstance(modificationMessage, localQuery, propertySelector_localSchema,
+					elementName, allRecords);
 
 			/*
 			 * write back
 			 */
 			persistRecords(allRecords);
-			
+
 			hasModified = true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -241,8 +235,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	private List<String[]> findAndModifyInstance(RuntimeModificationMessage modificationMessage, IvisQuery localQuery,
-			Map<String, String> subqueries_global_and_local_schema, String propertySelector_localSchema,
-			String elementName, List<String[]> allRecords) {
+			String propertySelector_localSchema, String elementName, List<String[]> allRecords) {
 		for (String[] currentRecord : allRecords) {
 			if (this.passesFilters(currentRecord, localQuery, this.csvHeaderIndicesMap)) {
 				/*
@@ -259,7 +252,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 				break;
 			}
 		}
-		
+
 		return allRecords;
 	}
 
