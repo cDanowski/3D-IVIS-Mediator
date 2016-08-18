@@ -8,14 +8,9 @@ import java.nio.file.CopyOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
 
 import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
@@ -69,7 +64,7 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 * @throws IOException
-	 * @throws DocumentException 
+	 * @throws DocumentException
 	 */
 	public abstract List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
 			List<String> subquerySelectors_globalSchema)
@@ -81,13 +76,19 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 	 * does that make sense here? or do file types differ that much, that this
 	 * should be done in implementing classes?
 	 */
-	
-	protected void replaceShadowCopy() throws IOException {
+
+	protected void replaceShadowCopy() {
 		Path FROM = Paths.get(this.getSourceFile().getAbsolutePath());
 		Path TO = Paths.get(this.getShadowCopyFile().getAbsolutePath());
 		CopyOption[] options = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,
 				StandardCopyOption.COPY_ATTRIBUTES };
-		java.nio.file.Files.copy(FROM, TO, options);
+
+		try {
+			java.nio.file.Files.delete(TO);
+			java.nio.file.Files.copy(FROM, TO, options);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 

@@ -587,6 +587,8 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		List<String[]> rows = rowProcessor.getRows();
 
 		this.headers = rowProcessor.getHeaders();
+		
+		parser.stopParsing();
 
 		/*
 		 * create maps to map each filter column name and subquery selector

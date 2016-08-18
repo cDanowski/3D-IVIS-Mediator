@@ -373,6 +373,8 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * find all matching nodes
 		 */
 		List<Node> selectedNodes = document.selectNodes(query_localSchema);
+		
+		reader = null;
 		return selectedNodes;
 	}
 
