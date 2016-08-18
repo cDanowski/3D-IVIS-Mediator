@@ -12,6 +12,7 @@ import org.dom4j.io.SAXReader;
 
 import ivisObject.AttributeValuePair;
 import ivisObject.IvisObject;
+import ivisQuery.FilterType;
 import ivisQuery.IvisQuery;
 
 public abstract class AbstractIvisWrapper {
@@ -124,6 +125,78 @@ public abstract class AbstractIvisWrapper {
 		 */
 		this.idProperty = new IdProperty(id_selector_globalSchema, id_selector_localSchema);
 
+	}
+	
+	protected boolean passesFilter(String objectValue, Object filterValue, FilterType filterType) {
+		boolean passesFilter = false;
+
+		switch (filterType) {
+		case EQUAL:
+			if (objectValue.equalsIgnoreCase(String.valueOf(filterValue)))
+				passesFilter = true;
+			break;
+		case GREATER_THAN:
+			try {
+				double numericObjectValue = Double.parseDouble(objectValue);
+				double numericFilterValue = Double.parseDouble(String.valueOf(filterValue));
+				if (numericObjectValue > numericFilterValue)
+					passesFilter = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				/*
+				 * do nothing, passesFilter remains false
+				 */
+			}
+			break;
+		case GREATER_THAN_OR_EQUAL_TO:
+			try {
+				double numericObjectValue = Double.parseDouble(objectValue);
+				double numericFilterValue = Double.parseDouble(String.valueOf(filterValue));
+				if (numericObjectValue >= numericFilterValue)
+					passesFilter = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				/*
+				 * do nothing, passesFilter remains false
+				 */
+			}
+			break;
+		case LESS_THAN:
+			try {
+				double numericObjectValue = Double.parseDouble(objectValue);
+				double numericFilterValue = Double.parseDouble(String.valueOf(filterValue));
+				if (numericObjectValue < numericFilterValue)
+					passesFilter = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				/*
+				 * do nothing, passesFilter remains false
+				 */
+			}
+			break;
+		case LESS_THAN_OR_EQUAL_TO:
+			try {
+				double numericObjectValue = Double.parseDouble(objectValue);
+				double numericFilterValue = Double.parseDouble(String.valueOf(filterValue));
+				if (numericObjectValue <= numericFilterValue)
+					passesFilter = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+				/*
+				 * do nothing, passesFilter remains false
+				 */
+			}
+			break;
+		case NOT_EQUAL:
+			if (!objectValue.equalsIgnoreCase(String.valueOf(filterValue)))
+				passesFilter = true;
+			break;
+
+		default:
+			break;
+		}
+
+		return passesFilter;
 	}
 
 	/**
