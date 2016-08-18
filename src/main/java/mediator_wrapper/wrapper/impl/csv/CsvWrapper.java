@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +98,11 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		List<IvisObject> modifiedInstances = identifyModifiedOrNewInstances(records, records_shadowCopy,
 				subqueries_global_and_local_schema, elementName);
 
+		/*
+		 * now create new shadow copy file from current main file!
+		 */
+		this.replaceShadowCopy();
+
 		return modifiedInstances;
 	}
 
@@ -126,6 +130,13 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			if (!this.passesFilters(record, query_localSchema, this.csvHeaderIndicesMap))
 				listIterator.remove();
 		}
+
+		try {
+			file = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return records;
 	}
 
@@ -134,7 +145,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
 
 		String csv_id_column = this.getIdProperty().getSelector_localSchema();
-		
+
 		int idHeaderIndex = this.csvHeaderIndicesMap.get(csv_id_column);
 
 		Map<String, String[]> idForCsvRecordMap = createIdForCsvRecordMap(records_shadowCopy, idHeaderIndex);
@@ -172,11 +183,6 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 				}
 			}
 		}
-
-		/*
-		 * now create new shadow copy file from current main file!
-		 */
-		this.replaceShadowCopy();
 
 		return modifiedObjects;
 
@@ -262,7 +268,8 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		CsvWriterSettings writerSettings = new CsvWriterSettings();
 
-		CsvWriter writer = new CsvWriter(new FileWriter(this.getSourceFile()), writerSettings);
+		FileWriter fileWriter = new FileWriter(this.getSourceFile());
+		CsvWriter writer = new CsvWriter(fileWriter, writerSettings);
 
 		// Write the record headers of this file
 		writer.writeHeaders(this.headers);
@@ -270,6 +277,16 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		// Here we just tell the writer to write everything and close the given
 		// output Writer instance.
 		writer.writeStringRowsAndClose(allRecords);
+		
+		try {
+			writer.close();
+			fileWriter.close();
+			
+			writer = null;
+			fileWriter = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -581,14 +598,27 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		// the 'parse' method will parse the file and delegate each parsed row
 		// to the RowProcessor
-		parser.parse(getReader(file));
+		FileInputStream fileInputStream = new FileInputStream(file);
+		InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+		parser.parse(inputStreamReader);
 
 		// get the parsed records from the RowListProcessor here.
 		List<String[]> rows = rowProcessor.getRows();
 
 		this.headers = rowProcessor.getHeaders();
-		
-		parser.stopParsing();
+
+		try {
+			parser.stopParsing();
+			inputStreamReader.close();
+			fileInputStream.close();
+
+			parser = null;
+			inputStreamReader = null;
+			fileInputStream = null;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		/*
 		 * create maps to map each filter column name and subquery selector
@@ -597,12 +627,6 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		this.csvHeaderIndicesMap = makeCsvHeaderIndicesMap(headers);
 
 		return new CsvRecords(this.headers, rows);
-	}
-
-	private Reader getReader(File resource) throws UnsupportedEncodingException, FileNotFoundException {
-
-		return new InputStreamReader(new FileInputStream(resource), "UTF-8");
-
 	}
 
 }

@@ -86,6 +86,9 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 		try {
 			java.nio.file.Files.delete(TO);
 			java.nio.file.Files.copy(FROM, TO, options);
+			
+			FROM = null;
+			TO = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

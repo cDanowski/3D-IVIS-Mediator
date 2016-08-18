@@ -116,6 +116,14 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * find all matching nodes
 		 */
 		List<Node> selectedNodes = document.selectNodes(localQuery);
+		
+		try {
+			document = null;
+			reader = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 
 		/*
 		 * now execute all subqueries for each element and create IvisObject
@@ -233,8 +241,21 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			// Pretty print the document to System.out
 			OutputFormat format = OutputFormat.createPrettyPrint();
 			XMLWriter writer;
-			writer = new XMLWriter(new FileOutputStream(this.getSourceFile()), format);
+			FileOutputStream fileOutputStream = new FileOutputStream(this.getSourceFile());
+			writer = new XMLWriter(fileOutputStream, format);
 			writer.write(document);
+			
+			
+			try {
+				document = null;
+				reader = null;
+				fileOutputStream.close();
+				writer.close();
+				writer = null;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 
 			hasModified = true;
 		} catch (Exception e) {
@@ -276,6 +297,9 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		List<IvisObject> modifiedInstances = identifyModifiedOrNewInstances(selectedNodes_sourceFile,
 				selectedNodes_shadowCopy, subqueries_global_and_local_schema, elementName);
+		
+		// replace shadow copy file
+		this.replaceShadowCopy();
 
 		return modifiedInstances;
 	}
@@ -322,9 +346,6 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 				}
 			}
 		}
-
-		// replace shadow copy file
-		this.replaceShadowCopy();
 
 		return modifiedObjects;
 
@@ -374,7 +395,13 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 */
 		List<Node> selectedNodes = document.selectNodes(query_localSchema);
 		
-		reader = null;
+		try {
+			document = null;
+			reader = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return selectedNodes;
 	}
 
