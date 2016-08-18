@@ -21,17 +21,16 @@
 	</noscript>
 	<div class="row" align="center" id="appContainer">
 
-		<div class="col-sm-3" id="configuration">
+		<div class="col-sm-4" id="configuration">
 			<h2><b>Bookstore Example</b></h2>
 
-			<p>In this example you may visualize available book stocks. The bar color indicates the state (green: all good; blue: stock below reorder level but is reordered; red: stock below reorder level and not yet reordered)</p>
-			
-			<button type="button" class="btn btn-danger runtime"
-					onclick="resetScene()" disabled>Remove Current Visualization</button>
+			<p>In this example you may visualize available book stocks. 
+			The bar color indicates the state (green: all good; blue: stock below reorder 
+			level but is reordered; red: stock below reorder level and not yet reordered)</p>
 
 			<div class="form-group">
 			
-				<h4><b>Server Side Information Visualization</b></h4>
+				<h4><b>Request Visualization</b></h4>
 				
 				<p>Create an initial scene showing available books. Optionally, you may specify some filters using the
 				corresponding fields.</p>
@@ -54,7 +53,7 @@
 				</div>
 
 				<div class="form-group">
-					<label>Author (only one author can be specified)</label> <select
+					<label>Author (only one author can be defined)</label> <select
 						class="form-control filter" id="filter_author_comparison" disabled>
 						<option title="queried objects have the specified author value">EQUAL</option>
 						<option
@@ -88,15 +87,24 @@
 						placeholder="enter price, e.g. '4.99'" disabled></input>
 				</div>
 
-				<button type="button" class="btn btn-primary"
+				<div class="row">
+					<div class="col-sm-6">
+						<button type="button" class="btn btn-primary"
 					onclick="visualizeBookStocks()">Visualize Book Stocks</button>
+					</div>
+					<div class="col-*-6">
+						<button type="button" class="btn btn-danger runtime"
+					onclick="resetScene()" disabled>Remove Current Visualization</button>
+					</div>
+				</div>
+
 			</div>
 			
 			<!-- additional data request -->
 			
 			<div class="form-group">
 			
-				<h4><b>Runtime Information Visualization - Additional Data</b></h4>
+				<h4><b>Request Additional Data</b></h4>
 				
 				<p>Request additional books that are integrated into the existing visualization. Again, you may specify some filters using the
 				corresponding fields.</p>
@@ -105,10 +113,19 @@
 				<button type="button" class="btn btn-warning runtime"
 					onclick="visualizeBookStocks_runtime()" disabled>Visualize Additional Book Stocks</button>
 			</div>
+			
+			<div class="form-group">
+			
+				<h4><b>Manipulate Stock Value</b></h4>
+				
+				<p>Click on a visualized book shape to see its metadata in a modal.
+				In addition, you can alter the stock value and persist that modification at the server side data source!</p>
+			
+			</div>
 
 		</div>
 
-		<div class="col-sm-9" id="scene"></div>
+		<div class="col-sm-8" id="scene"></div>
 		
 		<!-- Modal -->
 		<div id="objectModal" class="modal fade" role="dialog">
