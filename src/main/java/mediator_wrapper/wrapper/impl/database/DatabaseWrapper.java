@@ -136,6 +136,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 
 			this.executeUpdateStatement(tableName, columnToUpdate, whereClauses, localQuery.getFilterStrategy());
 
+			this.cleanupConnection();
 			hasModified = true;
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
@@ -264,6 +265,8 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 					localQuery.getFilterStrategy());
 
 			ivisObjects = createIvisObjects(resultSet, subquerySelectors_global_and_local_schema, globalQuery);
+			
+			this.cleanupConnection();
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
