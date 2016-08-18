@@ -12,9 +12,11 @@ import java.nio.file.WatchService;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import mediator_wrapper.mediation.impl.IvisMediator;
 import util.UrlConstants;
 
 public class SourceFilesMonitor {
@@ -27,6 +29,7 @@ public class SourceFilesMonitor {
 
 	@Autowired
 	private SimpMessagingTemplate messageTemplate;
+	private IvisMediator ivisMediatorReference;
 
 	public SourceFilesMonitor(String sourceFilesDirectory) throws IOException {
 		this.sourceFilesDirectory = sourceFilesDirectory;
@@ -38,7 +41,7 @@ public class SourceFilesMonitor {
 		keyPaths.put(key, p);
 	}
 
-	private void processFileNotifications() throws InterruptedException {
+	private void processFileNotifications() throws InterruptedException, DocumentException, IOException {
 		while (true) {
 			WatchKey key = this.watcher.take();
 			
@@ -63,7 +66,7 @@ public class SourceFilesMonitor {
 		}
 	}
 
-	private void sendFileChangeEvent(Path dir, Path file, Kind eventType) {
+	private void sendFileChangeEvent(Path dir, Path file, Kind eventType) throws DocumentException, IOException {
 
 		System.out.println("File " + file + " has changed! Event: " + eventType.toString());
 
@@ -74,17 +77,27 @@ public class SourceFilesMonitor {
 		DataSourceChangeMessage dataSourceChangeMessage = new DataSourceChangeMessage();
 
 		dataSourceChangeMessage.setDataSourceIdentifier(file.toString());
+		
+		dataSourceChangeMessage.setRecordIds(ivisMediatorReference.fetchModifiedRecordIds(file.toString()));
 
 		messageTemplate.convertAndSend(UrlConstants.STOMP_CLIENT_DATA_SOURCE_CHANGE_ENDPOINT, dataSourceChangeMessage);
 	}
 
-	public void startListening() {
+	public void startListening(IvisMediator ivisMediator) {
+		this.ivisMediatorReference = ivisMediator;
+		
 		fileChangeProcessingThread = new Thread() {
 			public void run() {
 				try {
 					processFileNotifications();
 				} catch (InterruptedException ex) {
 					fileChangeProcessingThread = null;
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 

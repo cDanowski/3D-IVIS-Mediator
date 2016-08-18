@@ -1,5 +1,7 @@
 package mediator_wrapper.mediation.impl.sourceFilesMonitor;
 
+import java.util.List;
+
 public class DataSourceChangeMessage {
 
 	private String dataSourceIdentifier;
@@ -9,7 +11,7 @@ public class DataSourceChangeMessage {
 	 * 
 	 * might not be set for all data sources!
 	 */
-	private String recordId;
+	private List<String> recordIds;
 
 	public String getDataSourceIdentifier() {
 		return dataSourceIdentifier;
@@ -27,17 +29,18 @@ public class DataSourceChangeMessage {
 	 * 
 	 * @return
 	 */
-	public String getRecordId() {
-		return recordId;
+	public List<String> getRecordIds() {
+		return recordIds;
 	}
 
-	public void setRecordId(String recordId) {
-		this.recordId = recordId;
+	public void setRecordIds(List<String> recordIds) {
+		this.recordIds = recordIds;
 	}
 
 	@Override
 	public String toString() {
-		return "DataSourceChangeMessage [dataSourceIdentifier=" + dataSourceIdentifier + ", recordId=" + recordId + "]";
+		return "DataSourceChangeMessage [dataSourceIdentifier=" + dataSourceIdentifier + ", recordIds=" + recordIds
+				+ "]";
 	}
 
 }

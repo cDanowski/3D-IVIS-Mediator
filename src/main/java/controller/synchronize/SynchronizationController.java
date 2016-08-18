@@ -4,10 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import application_template.ApplicationTemplateInterface;
 import application_template.impl.VisualizationObject;
@@ -34,38 +33,40 @@ public class SynchronizationController {
 	@Autowired
 	private SimpMessagingTemplate messagingTemplate;
 
-//	/**
-//	 * Manages an incoming data query request from clients against the global
-//	 * schema.
-//	 * 
-//	 * Realizes Server Side Information Visualization feature (request data and
-//	 * create an X3DOM scene)
-//	 * 
-//	 * @return
-//	 */
-//	@MessageMapping(UrlConstants.DATA_SOURCE_CHANGE_ENDPOINT)
-//	@SendTo(UrlConstants.STOMP_CLIENT_DATA_SOURCE_CHANGE_ENDPOINT)
-//	public SynchronizationMessage onDataSourceChange(@RequestParam("dataSourceIdentifier") String id) {
-//
-//		/*
-//		 * TODO send a message to the client telling that a data source change
-//		 * happened
-//		 * 
-//		 * request the selector_globalSchema from the client in order to know
-//		 * what to extract from the data sources!
-//		 * 
-//		 * --> then extract modified entries and send back to client
-//		 */
-//		
-//		System.out.println(id);
-//
-//		SynchronizationMessage syncMessage = new SynchronizationMessage();
-//		
-//		syncMessage.setDataSourceIdentifier(id);
-//		
-//		return syncMessage;
-//
-//	}
+	// /**
+	// * Manages an incoming data query request from clients against the global
+	// * schema.
+	// *
+	// * Realizes Server Side Information Visualization feature (request data
+	// and
+	// * create an X3DOM scene)
+	// *
+	// * @return
+	// */
+	// @MessageMapping(UrlConstants.DATA_SOURCE_CHANGE_ENDPOINT)
+	// @SendTo(UrlConstants.STOMP_CLIENT_DATA_SOURCE_CHANGE_ENDPOINT)
+	// public SynchronizationMessage
+	// onDataSourceChange(@RequestParam("dataSourceIdentifier") String id) {
+	//
+	// /*
+	// * TODO send a message to the client telling that a data source change
+	// * happened
+	// *
+	// * request the selector_globalSchema from the client in order to know
+	// * what to extract from the data sources!
+	// *
+	// * --> then extract modified entries and send back to client
+	// */
+	//
+	// System.out.println(id);
+	//
+	// SynchronizationMessage syncMessage = new SynchronizationMessage();
+	//
+	// syncMessage.setDataSourceIdentifier(id);
+	//
+	// return syncMessage;
+	//
+	// }
 
 	/**
 	 * Manages an incoming data query request from clients against the global
@@ -73,12 +74,13 @@ public class SynchronizationController {
 	 * 
 	 * Realizes Server Side Information Visualization feature (request data and
 	 * create an X3DOM scene)
+	 * @return 
 	 * 
 	 * @return
 	 */
 	@MessageMapping(UrlConstants.SYNCHRONIZATION_ENDPOINT)
-	@SendTo(UrlConstants.STOMP_CLIENT_SYNCHRONIZATION_ENDPOINT)
-	public void synchronize(SynchronizationMessage synchronizationMessage) {
+	@SendToUser(destinations = UrlConstants.STOMP_CLIENT_SYNCHRONIZATION_ENDPOINT, broadcast = false)
+	public SynchronizationMessage synchronize(SynchronizationMessage synchronizationMessage) {
 
 		/*
 		 * TODO send a message to the client telling that a data source change
@@ -104,30 +106,34 @@ public class SynchronizationController {
 			/*
 			 * forward retrieved data to applicationTemplate to generate scene
 			 * 
-			 * problem: we do not know which templates are in use!?! we just
-			 * know that a data source was modified
+			 * requesting user has only one current applicationTemplate!
 			 * 
-			 * --> so we have to iterate over all application templates, check
-			 * if they produce a valid result and send it to the clients (for
-			 * each template! ,multiple messages might occur; on the client
-			 * side, check message for template identifier!)
+			 * Hence identify it and break on the rest. Then return message to
+			 * single requesting user
 			 */
+			
+			String applicationTemplateIdentifier = synchronizationMessage.getApplicationTemplateIdentifier();
 
 			for (ApplicationTemplateInterface applTemplate : this.availableApplicationTemplates) {
+				
+				if(applicationTemplateIdentifier.equalsIgnoreCase(applTemplate.getUniqueIdentifier())){
+					List<VisualizationObject> modifiedObjects = applTemplate.visualizeData_runtime(retrievedData);
 
-				List<VisualizationObject> modifiedObjects = applTemplate.visualizeData_runtime(retrievedData);
-
-				synchronizationMessage.setResponseVisualizationObjects(modifiedObjects);
-
-				messagingTemplate.convertAndSend(UrlConstants.STOMP_CLIENT_SYNCHRONIZATION_ENDPOINT,
-						synchronizationMessage);
+					synchronizationMessage.setResponseVisualizationObjects(modifiedObjects);
+					
+					break;
+				}
+				
+				// messagingTemplate.convertAndSendToUser(principal.getName(),
+				// UrlConstants.STOMP_CLIENT_SYNCHRONIZATION_ENDPOINT,
+				// synchronizationMessage);
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//
-		// return synchronizationMessage;
+
+		return synchronizationMessage;
 	}
 
 }

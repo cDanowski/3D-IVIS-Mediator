@@ -3,6 +3,7 @@ var SERVER_SIDE_VISUALIZATION_ENDPOINT = '/initial/visualize';
 var RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/runtime/visualizeAdditionalData';
 var RUNTIME_MODIFY_ENDPOINT = '/runtime/modify';
 var RUNTIME_NEW_OBJECT_ENDPOINT = '/runtime/new';
+var DATA_SOURCE_CHANGE_ENDPOINT = '/dataSourceChange';
 var SYNCHRONIZE_ENDPOINT = '/synchronize';
 
 // STOMP ENDPOINTS
@@ -12,8 +13,8 @@ var STOMP_RUNTIME_ADDITIONAL_DATA_ENDPOINT = '/user/queue'
 		+ RUNTIME_ADDITIONAL_DATA_ENDPOINT;
 var STOMP_RUNTIME_MODIFY_ENDPOINT = '/user/queue' + RUNTIME_MODIFY_ENDPOINT;
 var STOMP_RUNTIME_NEW_OBJECT_ENDPOINT = '/user/queue' + RUNTIME_NEW_OBJECT_ENDPOINT;
-var STOMP_DATA_SOURCE_CHANGE_ENDPOINT = '/topic/dataSourceChange';
-var STOMP_SYNCHRONIZE_ENDPOINT = '/topic/synchronize';
+var STOMP_DATA_SOURCE_CHANGE_ENDPOINT = '/topic' + DATA_SOURCE_CHANGE_ENDPOINT;
+var STOMP_SYNCHRONIZE_ENDPOINT = '/user/queue' + SYNCHRONIZE_ENDPOINT;
 
 // send message endpoints with prefix
 var SEND_SERVER_SIDE_VISUALIZATION_ENDPOINT = '/ivisApp'
@@ -130,12 +131,12 @@ function sendSynchronizationRequest(dataSourceChangeMessage){
 	var dataSourceIdentifier = dataSourceChangeMessage.dataSourceIdentifier;
 	
 	// might be unset!
-	var idOfModifiedRecord = dataSourceChangeMessage.recordId;
+	var idsOfModifiedRecord = dataSourceChangeMessage.recordIds;
 	
 	var syncMessage = {};
 	
 	syncMessage.dataSourceIdentifier = dataSourceIdentifier;
-	syncMessage.recordId = idOfModifiedRecord;
+	syncMessage.recordIds = idsOfModifiedRecord;
 	syncMessage.applicationTemplateIdentifier = APPLICATION_TEMPLATE_IDENTIFIER;
 	
 	syncMessage.query = {};

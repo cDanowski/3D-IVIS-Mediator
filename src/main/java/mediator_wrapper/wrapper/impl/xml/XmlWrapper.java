@@ -22,9 +22,14 @@ import org.dom4j.io.XMLWriter;
 import controller.runtime.modify.RuntimeModificationMessage;
 import ivisObject.AttributeValuePair;
 import ivisObject.IvisObject;
+import ivisQuery.FilterStrategy;
+import ivisQuery.FilterType;
+import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
+import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
+import mediator_wrapper.wrapper.abstract_types.DefaultQuery;
 
 /**
  * Wrapper to manage access to XML files.
@@ -116,14 +121,13 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * find all matching nodes
 		 */
 		List<Node> selectedNodes = document.selectNodes(localQuery);
-		
+
 		try {
 			document = null;
 			reader = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 
 		/*
 		 * now execute all subqueries for each element and create IvisObject
@@ -244,8 +248,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			FileOutputStream fileOutputStream = new FileOutputStream(this.getSourceFile());
 			writer = new XMLWriter(fileOutputStream, format);
 			writer.write(document);
-			
-			
+
 			try {
 				document = null;
 				reader = null;
@@ -255,7 +258,6 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
 
 			hasModified = true;
 		} catch (Exception e) {
@@ -267,89 +269,216 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 	@Override
 	public List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
-			List<String> subquerySelectors_globalSchema)
+			List<String> subquerySelectors_globalSchema, List<String> recordIds)
 			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException {
 
-		// we know it is an XPath String for XML files!
-		String query_localSchema = (String) this.transformToLocalQuery(query_globalSchema);
+		/*
+		 * 1. retrieve the modified instance!
+		 * 
+		 * Create a new localQuery_modifiedRecord
+		 * 
+		 * query is an XPath expression --> String!
+		 */
 
 		Map<String, String> subqueries_global_and_local_schema = this
 				.transformIntoGlobalAndLocalSubqueries(query_globalSchema, subquerySelectors_globalSchema);
 
-		String elementName = this.getNameFromXPathExpression(query_globalSchema.getSelector());
+		// XPath expression --> String
+		String query_modifiedRecord = (String) createQueryForModifiedRecords(recordIds, query_globalSchema);
 
-		/*
-		 * parse the whole file and compare its contents to shadow copy file
-		 * contents
-		 */
+		List<IvisObject> results = this.executeLocalQuery(query_modifiedRecord, subqueries_global_and_local_schema,
+				query_globalSchema);
 
-		File sourceFile = this.getSourceFile();
-		File shadowCopyFile = this.getShadowCopyFile();
-
-		List<Node> selectedNodes_sourceFile = retrieveAllNodesForQuery(query_localSchema, sourceFile);
-
-		/*
-		 * shadow copy contains all elements BEFORE the modification happened!
-		 * 
-		 * identify modifications
-		 */
-		List<Node> selectedNodes_shadowCopy = retrieveAllNodesForQuery(query_localSchema, shadowCopyFile);
-
-		List<IvisObject> modifiedInstances = identifyModifiedOrNewInstances(selectedNodes_sourceFile,
-				selectedNodes_shadowCopy, subqueries_global_and_local_schema, elementName);
 		
-		// replace shadow copy file
-		this.replaceShadowCopy();
-
-		return modifiedInstances;
-	}
-
-	private List<IvisObject> identifyModifiedOrNewInstances(List<Node> selectedNodes_sourceFile,
-			List<Node> selectedNodes_shadowCopy, Map<String, String> subqueries_global_and_local_schema,
-			String elementName) throws IOException {
 
 		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
-
-		/*
-		 * id property has the complete XPath expression to identify the id
-		 * 
-		 * but we only need the last bit after the final slash!
-		 */
-		String id_property_localSchema = this.getIdProperty().getSelector_localSchema();
 		
-		String[] split = id_property_localSchema.split("/");
-		String idProperty = split[split.length - 1];
-
-		Map<String, Node> idForXmlRecordMap = createIdForXmlRecordMap(selectedNodes_shadowCopy, idProperty);
-
-		for (Node node_sourceFile : selectedNodes_sourceFile) {
-			String recordId = node_sourceFile.selectSingleNode(idProperty).getText();
-
-			if (!idForXmlRecordMap.containsKey(recordId)) {
-				/*
-				 * new object
-				 */
-				modifiedObjects.add(createIvisObject(node_sourceFile, subqueries_global_and_local_schema, elementName));
-			}
-
-			else {
-				// compare to shadow copy
-
-				Node shadowCopy = idForXmlRecordMap.get(recordId);
-
-				if (hasModifiedProperties(node_sourceFile, shadowCopy, subqueries_global_and_local_schema)) {
-					/*
-					 * modified object
-					 */
-					modifiedObjects
-							.add(createIvisObject(node_sourceFile, subqueries_global_and_local_schema, elementName));
-				}
-			}
+		for (IvisObject ivisObject : results) {
+			
+			/*
+			 * second argument is null, since it is not needed in this class!
+			 */
+			if (this.passesClientFilters(ivisObject, null, query_globalSchema))
+			modifiedObjects.add(ivisObject);
 		}
 
 		return modifiedObjects;
-
+		
+//		// we know it is an XPath String for XML files!
+//		String query_localSchema = (String) this.transformToLocalQuery(query_globalSchema);
+//
+//		Map<String, String> subqueries_global_and_local_schema = this
+//				.transformIntoGlobalAndLocalSubqueries(query_globalSchema, subquerySelectors_globalSchema);
+//
+//		String elementName = this.getNameFromXPathExpression(query_globalSchema.getSelector());
+//
+//		/*
+//		 * parse the whole file and compare its contents to shadow copy file
+//		 * contents
+//		 */
+//
+//		File sourceFile = this.getSourceFile();
+//		File shadowCopyFile = this.getShadowCopyFile();
+//
+//		List<Node> selectedNodes_sourceFile = retrieveAllNodesForQuery(query_localSchema, sourceFile);
+//
+//		/*
+//		 * shadow copy contains all elements BEFORE the modification happened!
+//		 * 
+//		 * identify modifications
+//		 */
+//		List<Node> selectedNodes_shadowCopy = retrieveAllNodesForQuery(query_localSchema, shadowCopyFile);
+//
+//		List<IvisObject> modifiedInstances = identifyModifiedOrNewInstances(selectedNodes_sourceFile,
+//				selectedNodes_shadowCopy, subqueries_global_and_local_schema, elementName);
+//
+//		// replace shadow copy file
+//		this.replaceShadowCopy();
+//
+//		return modifiedInstances;
 	}
+
+	@Override
+	protected boolean passesClientFilters(IvisObject modifiedRecord, IvisQuery query_localSchema, IvisQuery query_globalSchema) {
+		/*
+		 * 2. now check if that modified object is actually visualized by the
+		 * requesting client
+		 * 
+		 * that means check the original filter definitions of the original
+		 * query
+		 * 
+		 * if NO FILTERS are defined, then he visualizes everything, including
+		 * modifiedRecord
+		 * 
+		 * else if defined filters include modifiedRecord, then he also
+		 * visualizes it
+		 */
+
+		List<IvisFilterForQuery> filters_globalSchema = query_globalSchema.getFilters();
+		
+		if (filters_globalSchema == null || filters_globalSchema.size() == 0)
+			return true;
+
+		else {
+			boolean passesFilters = false;
+
+			FilterStrategy filterStrategy = query_globalSchema.getFilterStrategy();
+			if(filterStrategy == null)
+				filterStrategy = FilterStrategy.AND;
+
+			for (int i = 0; i < filters_globalSchema.size(); i++) {
+
+				IvisFilterForQuery ivisFilter_globalSchema = filters_globalSchema.get(i);
+				String propertySelector_globalSchema = ivisFilter_globalSchema.getSelector();
+
+				if (this.passesFilter(modifiedRecord, ivisFilter_globalSchema, propertySelector_globalSchema)) {
+					passesFilters = true;
+					/*
+					 * if filter strategy is set to OR, then just one filter
+					 * must be passed.
+					 * 
+					 * Hence, we can skip other filters and return true!
+					 */
+					if (filterStrategy.equals(FilterStrategy.OR))
+						break;
+
+				} else {
+					passesFilters = false;
+
+					/*
+					 * if filter strategy is set to AND, then if one filter
+					 * fails, we can return false, since every filter must be
+					 * passed, which is not the case
+					 * 
+					 * Hence, we can skip other filters and return false!
+					 */
+					if (filterStrategy.equals(FilterStrategy.AND))
+						break;
+				}
+			}
+
+			return passesFilters;
+		}
+	}
+
+	@Override
+	protected Object createQueryForModifiedRecords(List<String> recordIds, IvisQuery query_globalSchema) {
+		
+		IvisQuery query_modifiedRecords = new IvisQuery();
+		query_modifiedRecords.setSelector(query_globalSchema.getSelector());
+		
+		List<IvisFilterForQuery> filters = new ArrayList<IvisFilterForQuery>();
+		String idProperty = this.getIdProperty().getSelector_globalSchema();
+		
+		for (String recordId : recordIds) {
+			/*
+			 * add one filter: where id=recordId
+			 */
+			IvisFilterForQuery idFilter = new IvisFilterForQuery();
+			
+			idFilter.setSelector(idProperty);
+			/*
+			 * recordId looks like "id=5"
+			 * 
+			 * hence, we have to split string by "=" and use second value
+			 */
+			idFilter.setFilterValue(recordId.split("=")[1]);
+			idFilter.setFilterType(FilterType.EQUAL);
+			filters.add(idFilter);
+		}
+
+		query_modifiedRecords.setFilters(filters);
+		query_modifiedRecords.setFilterStrategy(FilterStrategy.OR);
+		
+		return (String) this.transformToLocalQuery(query_modifiedRecords);
+	}
+
+//	private List<IvisObject> identifyModifiedOrNewInstances(List<Node> selectedNodes_sourceFile,
+//			List<Node> selectedNodes_shadowCopy, Map<String, String> subqueries_global_and_local_schema,
+//			String elementName) throws IOException {
+//
+//		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
+//
+//		/*
+//		 * id property has the complete XPath expression to identify the id
+//		 * 
+//		 * but we only need the last bit after the final slash!
+//		 */
+//		String id_property_localSchema = this.getIdProperty().getSelector_localSchema();
+//
+//		String[] split = id_property_localSchema.split("/");
+//		String idProperty = split[split.length - 1];
+//
+//		Map<String, Node> idForXmlRecordMap = createIdForXmlRecordMap(selectedNodes_shadowCopy, idProperty);
+//
+//		for (Node node_sourceFile : selectedNodes_sourceFile) {
+//			String recordId = node_sourceFile.selectSingleNode(idProperty).getText();
+//
+//			if (!idForXmlRecordMap.containsKey(recordId)) {
+//				/*
+//				 * new object
+//				 */
+//				modifiedObjects.add(createIvisObject(node_sourceFile, subqueries_global_and_local_schema, elementName));
+//			}
+//
+//			else {
+//				// compare to shadow copy
+//
+//				Node shadowCopy = idForXmlRecordMap.get(recordId);
+//
+//				if (hasModifiedProperties(node_sourceFile, shadowCopy, subqueries_global_and_local_schema)) {
+//					/*
+//					 * modified object
+//					 */
+//					modifiedObjects
+//							.add(createIvisObject(node_sourceFile, subqueries_global_and_local_schema, elementName));
+//				}
+//			}
+//		}
+//
+//		return modifiedObjects;
+//
+//	}
 
 	private boolean hasModifiedProperties(Node node_sourceFile, Node shadowCopy,
 			Map<String, String> subqueries_global_and_local_schema) {
@@ -394,7 +523,7 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		 * find all matching nodes
 		 */
 		List<Node> selectedNodes = document.selectNodes(query_localSchema);
-		
+
 		try {
 			document = null;
 			reader = null;
@@ -403,6 +532,95 @@ public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		}
 
 		return selectedNodes;
+	}
+
+	@Override
+	public List<String> extractIdsOfModifiedRecords(SubqueryGenerator subqueryGenerator) throws DocumentException, IOException {
+		// we know it is an XPath String for XML files!
+				DefaultQuery defaultQuery = this.getDefaultQuery();
+				String query_localSchema = (String) defaultQuery.getDefaultQuerySelector_localSchema();
+
+				List<String> subqueries_global = subqueryGenerator.getSubqueryMapping().get(defaultQuery.getDefaultQuerySelector_globalSchema());
+				
+				IvisQuery globalQuery = new IvisQuery();
+				globalQuery.setSelector(defaultQuery.getDefaultQuerySelector_globalSchema());
+				
+				Map<String, String> subqueries_global_and_local_schema = this
+						.transformIntoGlobalAndLocalSubqueries(globalQuery, subqueries_global);
+
+				String elementName = this.getNameFromXPathExpression(globalQuery.getSelector());
+
+				/*
+				 * parse the whole file and compare its contents to shadow copy file
+				 * contents
+				 */
+
+				File sourceFile = this.getSourceFile();
+				File shadowCopyFile = this.getShadowCopyFile();
+
+				List<Node> selectedNodes_sourceFile = retrieveAllNodesForQuery(query_localSchema, sourceFile);
+
+				/*
+				 * shadow copy contains all elements BEFORE the modification happened!
+				 * 
+				 * identify modifications
+				 */
+				List<Node> selectedNodes_shadowCopy = retrieveAllNodesForQuery(query_localSchema, shadowCopyFile);
+				
+				List<String> idsOfModifiedObjects = getIdsOfModifiedOrNewInstances(selectedNodes_sourceFile,
+						selectedNodes_shadowCopy, subqueries_global_and_local_schema, elementName);
+
+				// replace shadow copy file
+				this.replaceShadowCopy();
+				
+				return idsOfModifiedObjects;
+	}
+	
+	private List<String> getIdsOfModifiedOrNewInstances(List<Node> selectedNodes_sourceFile,
+			List<Node> selectedNodes_shadowCopy, Map<String, String> subqueries_global_and_local_schema,
+			String elementName) throws IOException {
+
+		List<String> idsOfModifiedObjects = new ArrayList<String>();
+
+		/*
+		 * id property has the complete XPath expression to identify the id
+		 * 
+		 * but we only need the last bit after the final slash!
+		 */
+		String id_property_localSchema = this.getIdProperty().getSelector_localSchema();
+
+		String[] split = id_property_localSchema.split("/");
+		String idProperty = split[split.length - 1];
+
+		Map<String, Node> idForXmlRecordMap = createIdForXmlRecordMap(selectedNodes_shadowCopy, idProperty);
+
+		for (Node node_sourceFile : selectedNodes_sourceFile) {
+			String recordId = node_sourceFile.selectSingleNode(idProperty).getText();
+
+			if (!idForXmlRecordMap.containsKey(recordId)) {
+				/*
+				 * new object
+				 */
+				idsOfModifiedObjects.add(createIdString(recordId));
+			}
+
+			else {
+				// compare to shadow copy
+
+				Node shadowCopy = idForXmlRecordMap.get(recordId);
+
+				if (hasModifiedProperties(node_sourceFile, shadowCopy, subqueries_global_and_local_schema)) {
+					/*
+					 * modified object
+					 */
+					idsOfModifiedObjects
+							.add(createIdString(recordId));
+				}
+			}
+		}
+
+		return idsOfModifiedObjects;
+
 	}
 
 }

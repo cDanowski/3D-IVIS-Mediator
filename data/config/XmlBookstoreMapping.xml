@@ -74,5 +74,11 @@
 		<selector_globalSchema>bookstore/book/@id</selector_globalSchema>
 		<selector_localSchema>books/book/@id</selector_localSchema>
 	</id-mapping>
+	
+	<!-- default query is used when inspecting the data source for changes! -->
+	<default-query>
+		<selector_globalSchema>bookstore/book</selector_globalSchema>
+		<selector_localSchema>books/book</selector_localSchema>
+	</default-query>
 
 </wrapperSpecificMapping>

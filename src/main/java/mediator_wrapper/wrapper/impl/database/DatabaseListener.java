@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.postgresql.PGNotification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +90,13 @@ public class DatabaseListener extends Thread {
 
 						dataSourceChangeMessage.setDataSourceIdentifier(wrapperReference);
 						
-						dataSourceChangeMessage.setRecordId(idOfModifiedRecord);
+						/*
+						 * the database trigger only return one single id, as it is triggered per row!
+						 */
+						List<String> recordIds = new ArrayList<String>();
+						recordIds.add(idOfModifiedRecord);
+						
+						dataSourceChangeMessage.setRecordIds(recordIds);
 
 						messageTemplate.convertAndSend(UrlConstants.STOMP_CLIENT_DATA_SOURCE_CHANGE_ENDPOINT, dataSourceChangeMessage);
 						

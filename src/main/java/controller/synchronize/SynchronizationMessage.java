@@ -20,7 +20,7 @@ public class SynchronizationMessage extends AbstractMessage {
 	 */
 	private String dataSourceIdentifier;
 
-	private String recordId;
+	private List<String> recordIds;
 
 	/*
 	 * computed by system; all modified/changed objects
@@ -35,12 +35,12 @@ public class SynchronizationMessage extends AbstractMessage {
 		this.dataSourceIdentifier = dataSourceIdentifier;
 	}
 
-	public String getRecordId() {
-		return recordId;
+	public List<String> getRecordIds() {
+		return recordIds;
 	}
 
-	public void setRecordId(String recordId) {
-		this.recordId = recordId;
+	public void setRecordIds(List<String> recordIds) {
+		this.recordIds = recordIds;
 	}
 
 	public List<VisualizationObject> getResponseVisualizationObjects() {
@@ -53,7 +53,7 @@ public class SynchronizationMessage extends AbstractMessage {
 
 	@Override
 	public String toString() {
-		return "SynchronizationMessage [dataSourceIdentifier=" + dataSourceIdentifier + ", recordId=" + recordId
+		return "SynchronizationMessage [dataSourceIdentifier=" + dataSourceIdentifier + ", recordIds=" + recordIds
 				+ ", responseVisualizationObjects=" + responseVisualizationObjects + "]";
 	}
 

@@ -41,7 +41,7 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 		this.user = user;
 		this.password = password;
 
-		this.instantiateSchemaMapping(localSchemaMappingLocation);
+		this.instantiateProperties(localSchemaMappingLocation);
 
 	}
 
@@ -314,13 +314,13 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 	 * 
 	 * @param query_globalSchema
 	 * @param subquerySelectors_globalSchema
-	 * @param recordId
+	 * @param recordIds
 	 *            should be set to the ID of the modified instance
 	 * @return the modified instance as 
 	 * @throws Exception 
 	 */
 	public abstract List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
-			List<String> subquerySelectors_globalSchema, String recordId) throws Exception;
+			List<String> subquerySelectors_globalSchema, List<String> recordIds) throws Exception;
 
 	/*
 	 * TODO common database parameters and access methods can be implemented

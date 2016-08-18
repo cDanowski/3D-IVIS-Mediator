@@ -87,6 +87,9 @@ public class XPathQueryHelper {
 	private static String buildCompleteFilterExpression(List<String> filterExpressions, FilterStrategy filterStrategy) {
 		StringBuilder stringBuilder = new StringBuilder();
 		
+		if(filterStrategy == null)
+			filterStrategy = FilterStrategy.AND;
+		
 		/*
 		 * start filter
 		 */

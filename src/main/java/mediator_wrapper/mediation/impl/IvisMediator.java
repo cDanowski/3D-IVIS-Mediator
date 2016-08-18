@@ -143,7 +143,7 @@ public class IvisMediator implements IvisMediatorInterface {
 		// this.sourceFilesMonitor = new
 		// SourceFilesMonitor(this.sourceFilesDirectory);
 
-		this.sourceFilesMonitor.startListening();
+		this.sourceFilesMonitor.startListening(this);
 
 	}
 
@@ -308,7 +308,7 @@ public class IvisMediator implements IvisMediatorInterface {
 		/*
 		 * recordId could be unset! It is not guaranteed to be set
 		 */
-		String recordId = syncMessage.getRecordId();
+		List<String> recordIds = syncMessage.getRecordIds();
 
 		List<IvisObject> modifiedInstances = null;
 
@@ -326,7 +326,7 @@ public class IvisMediator implements IvisMediatorInterface {
 				 */
 				if (fileWrapper.getSourceFile().getName().equalsIgnoreCase(file.toString())) {
 					modifiedInstances = fileWrapper.onSourceFileChanged(query_globalSchema,
-							subquerySelectors_globalSchema);
+							subquerySelectors_globalSchema, recordIds);
 					break;
 				}
 			} else if (wrapper instanceof AbstractIvisDataBaseWrapper) {
@@ -345,7 +345,7 @@ public class IvisMediator implements IvisMediatorInterface {
 				 */
 				if (databaseWrapper.getClass().toString().equalsIgnoreCase(className)) {
 					modifiedInstances = databaseWrapper.onSourceFileChanged(query_globalSchema,
-							subquerySelectors_globalSchema, recordId);
+							subquerySelectors_globalSchema, recordIds);
 					break;
 				}
 
@@ -359,6 +359,32 @@ public class IvisMediator implements IvisMediatorInterface {
 
 		return modifiedInstances;
 
+	}
+
+	/**
+	 * Identifies the instance of {@link AbstractIvisFileWrapper} to retrieve
+	 * the IDs of modified instances
+	 * 
+	 * @param fileName
+	 *            source file name of wrapper
+	 * @return
+	 * @throws IOException 
+	 * @throws DocumentException 
+	 */
+	public List<String> fetchModifiedRecordIds(String fileName) throws DocumentException, IOException {
+		for (IvisWrapperInterface ivisWrapperInterface : availableWrappers) {
+			if (ivisWrapperInterface instanceof AbstractIvisFileWrapper){
+				AbstractIvisFileWrapper fileWrapper = (AbstractIvisFileWrapper) ivisWrapperInterface;
+				
+				if(fileName.equalsIgnoreCase(fileWrapper.getSourceFile().getName())){
+					
+					return fileWrapper.extractIdsOfModifiedRecords(this.subqueryGenerator); 
+					
+				}
+			}
+		}
+		
+		return null;
 	}
 
 }

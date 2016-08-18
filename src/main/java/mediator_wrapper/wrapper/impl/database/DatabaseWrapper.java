@@ -18,7 +18,6 @@ import controller.runtime.modify.RuntimeModificationMessage;
 import ivisObject.AttributeValuePair;
 import ivisObject.IvisObject;
 import ivisQuery.FilterStrategy;
-import ivisQuery.FilterType;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
@@ -356,7 +355,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 
 	@Override
 	public List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
-			List<String> subquerySelectors_globalSchema, String recordId) throws Exception {
+			List<String> subquerySelectors_globalSchema, List<String> recordIds) throws Exception {
 
 		/*
 		 * 1. retrieve the modified instance!
@@ -368,138 +367,24 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 		Map<String, String> subqueries_global_and_local_schema = this
 				.transformIntoGlobalAndLocalSubqueries(query_globalSchema, subquerySelectors_globalSchema);
 
-		IvisQuery query_modifiedRecord = createQueryForModifiedRecord(recordId, query_localSchema);
+		/*
+		 * is of type IvisQuery
+		 */
+		IvisQuery query_modifiedRecord = (IvisQuery) createQueryForModifiedRecords(recordIds, query_localSchema);
 
 		List<IvisObject> results = this.executeLocalQuery(query_modifiedRecord, subqueries_global_and_local_schema,
 				query_globalSchema);
 
-		/*
-		 * since we filtered all records by one single ID, we know that results
-		 * only have one item, which is the modifiedRecord
-		 */
-		IvisObject modifiedRecord = results.get(0);
-
 		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
 
-		if (this.passesClientFilters(modifiedRecord, query_localSchema, query_globalSchema))
-			modifiedObjects.add(modifiedRecord);
+		for (IvisObject ivisObject : results) {
+
+			if (this.passesClientFilters(ivisObject, query_localSchema, query_globalSchema))
+				modifiedObjects.add(ivisObject);
+		}
 
 		return modifiedObjects;
 
-	}
-
-	private boolean passesClientFilters(IvisObject modifiedRecord, IvisQuery query_localSchema,
-			IvisQuery query_globalSchema) {
-		/*
-		 * 2. now check if that modified object is actually visualized by the
-		 * requesting client
-		 * 
-		 * that means check the original filter definitions of the original
-		 * query_localSchema
-		 * 
-		 * if NO FILTERS are defined, then he visualizes everything, including
-		 * modifiedRecord
-		 * 
-		 * else if defined filters include modifiedRecord, then he also
-		 * visualizes it
-		 */
-
-		List<IvisFilterForQuery> filters_globalSchema = query_globalSchema.getFilters();
-
-		List<IvisFilterForQuery> filters_localSchema = query_localSchema.getFilters();
-		if (filters_localSchema == null || filters_localSchema.size() == 0)
-			return true;
-
-		else {
-			boolean passesFilters = false;
-
-			FilterStrategy filterStrategy = query_localSchema.getFilterStrategy();
-
-			for (int i = 0; i < filters_localSchema.size(); i++) {
-
-				IvisFilterForQuery ivisFilter_localSchema = filters_localSchema.get(i);
-				IvisFilterForQuery ivisFilter_globalSchema = filters_globalSchema.get(i);
-				String propertySelector_globalSchema = ivisFilter_globalSchema.getSelector();
-
-				if (this.passesFilter(modifiedRecord, ivisFilter_localSchema, propertySelector_globalSchema)) {
-					passesFilters = true;
-					/*
-					 * if filter strategy is set to OR, then just one filter
-					 * must be passed.
-					 * 
-					 * Hence, we can skip other filters and return true!
-					 */
-					if (filterStrategy.equals(FilterStrategy.OR))
-						break;
-
-				} else {
-					passesFilters = false;
-
-					/*
-					 * if filter strategy is set to AND, then if one filter
-					 * fails, we can return false, since every filter must be
-					 * passed, which is not the case
-					 * 
-					 * Hence, we can skip other filters and return false!
-					 */
-					if (filterStrategy.equals(FilterStrategy.AND))
-						break;
-				}
-			}
-
-			return passesFilters;
-		}
-	}
-
-	private boolean passesFilter(IvisObject modifiedRecord, IvisFilterForQuery ivisFilter_localSchema,
-			String propertySelector_globalSchema) {
-
-		FilterType filterType = ivisFilter_localSchema.getFilterType();
-		Object filterValue = ivisFilter_localSchema.getFilterValue();
-
-		String objectValue = getObjectValueForSelector(modifiedRecord, propertySelector_globalSchema);
-
-		if (this.passesFilter(objectValue, filterValue, filterType))
-			return true;
-
-		return false;
-	}
-
-	private String getObjectValueForSelector(IvisObject modifiedRecord, String propertySelector_globalSchema) {
-
-		/*
-		 * propertySelector_globalSchema is a complete XPath expression
-		 * 
-		 * here, we just need the final expression (after the last "/") without
-		 * any "@" prefix.
-		 */
-		String propertyName = this.getNameFromXPathExpression(propertySelector_globalSchema);
-		String valueForAttribute = String.valueOf(modifiedRecord.getValueForAttribute(propertyName));
-
-		return valueForAttribute;
-	}
-
-	private IvisQuery createQueryForModifiedRecord(String recordId, IvisQuery query_localSchema) {
-		IvisQuery query_modifiedRecord = new IvisQuery();
-		query_modifiedRecord.setSelector(query_localSchema.getSelector());
-
-		/*
-		 * add one filter: where id=recordId
-		 */
-		IvisFilterForQuery idFilter = new IvisFilterForQuery();
-		idFilter.setSelector(this.getIdProperty().getSelector_localSchema());
-		/*
-		 * recordId looks like "id=5"
-		 * 
-		 * hence, we have to split string by "=" and use second value
-		 */
-		idFilter.setFilterValue(recordId.split("=")[1]);
-		idFilter.setFilterType(FilterType.EQUAL);
-		List<IvisFilterForQuery> filters = new ArrayList<IvisFilterForQuery>();
-		filters.add(idFilter);
-
-		query_modifiedRecord.setFilters(filters);
-		return query_modifiedRecord;
 	}
 
 }

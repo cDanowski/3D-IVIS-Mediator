@@ -31,8 +31,10 @@ import ivisQuery.FilterStrategy;
 import ivisQuery.FilterType;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
+import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
+import mediator_wrapper.wrapper.abstract_types.DefaultQuery;
 
 /**
  * Wrapper to manage access to CSV files.
@@ -77,33 +79,71 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 	@Override
 	public List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
-			List<String> subquerySelectors_globalSchema) throws IOException {
-		IvisQuery query_localSchema = (IvisQuery) this.transformToLocalQuery(query_globalSchema);
+			List<String> subquerySelectors_globalSchema, List<String> recordIds) throws Exception {
+
+		/*
+		 * 1. retrieve the modified instance!
+		 * 
+		 * Create a new localQuery_modifiedRecord
+		 * 
+		 * query is an XPath expression --> String!
+		 */
+
+		IvisQuery query_localSchema = this.transformToLocalQuery(query_globalSchema);
 
 		Map<String, String> subqueries_global_and_local_schema = this
 				.transformIntoGlobalAndLocalSubqueries(query_globalSchema, subquerySelectors_globalSchema);
 
-		String elementName = this.getNameFromXPathExpression(query_globalSchema.getSelector());
-
-		List<String[]> records = getRecordsForFilter(query_localSchema, this.getSourceFile());
-
 		/*
-		 * shadow copy contains all elements BEFORE the modification happened!
-		 * 
-		 * hence, we can compare allRecords against the shadowCopyRecords to
-		 * identify modifications
+		 * is of type IvisQuery
 		 */
-		List<String[]> records_shadowCopy = getRecordsForFilter(query_localSchema, this.getShadowCopyFile());
+		IvisQuery query_modifiedRecord = (IvisQuery) createQueryForModifiedRecords(recordIds, query_localSchema);
 
-		List<IvisObject> modifiedInstances = identifyModifiedOrNewInstances(records, records_shadowCopy,
-				subqueries_global_and_local_schema, elementName);
+		List<IvisObject> results = this.executeLocalQuery(query_modifiedRecord, subqueries_global_and_local_schema,
+				query_globalSchema);
 
-		/*
-		 * now create new shadow copy file from current main file!
-		 */
-		this.replaceShadowCopy();
+		List<IvisObject> modifiedObjects = new ArrayList<IvisObject>();
 
-		return modifiedInstances;
+		for (IvisObject ivisObject : results) {
+
+			if (this.passesClientFilters(ivisObject, query_localSchema, query_globalSchema))
+				modifiedObjects.add(ivisObject);
+		}
+
+		return modifiedObjects;
+
+		// IvisQuery query_localSchema = (IvisQuery)
+		// this.transformToLocalQuery(query_globalSchema);
+		//
+		// Map<String, String> subqueries_global_and_local_schema = this
+		// .transformIntoGlobalAndLocalSubqueries(query_globalSchema,
+		// subquerySelectors_globalSchema);
+		//
+		// String elementName =
+		// this.getNameFromXPathExpression(query_globalSchema.getSelector());
+		//
+		// List<String[]> records = getRecordsForFilter(query_localSchema,
+		// this.getSourceFile());
+		//
+		// /*
+		// * shadow copy contains all elements BEFORE the modification happened!
+		// *
+		// * hence, we can compare allRecords against the shadowCopyRecords to
+		// * identify modifications
+		// */
+		// List<String[]> records_shadowCopy =
+		// getRecordsForFilter(query_localSchema, this.getShadowCopyFile());
+		//
+		// List<IvisObject> modifiedInstances =
+		// identifyModifiedOrNewInstances(records, records_shadowCopy,
+		// subqueries_global_and_local_schema, elementName);
+		//
+		// /*
+		// * now create new shadow copy file from current main file!
+		// */
+		// this.replaceShadowCopy();
+		//
+		// return modifiedInstances;
 	}
 
 	private List<String[]> getRecordsForFilter(IvisQuery query_localSchema, File file)
@@ -277,11 +317,11 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		// Here we just tell the writer to write everything and close the given
 		// output Writer instance.
 		writer.writeStringRowsAndClose(allRecords);
-		
+
 		try {
 			writer.close();
 			fileWriter.close();
-			
+
 			writer = null;
 			fileWriter = null;
 		} catch (Exception e) {
@@ -315,7 +355,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 	}
 
 	@Override
-	protected Object transformToLocalQuery(IvisQuery globalQuery) {
+	protected IvisQuery transformToLocalQuery(IvisQuery globalQuery) {
 		String selector_globalSchema = globalQuery.getSelector();
 
 		String selector_localSchema = this.getSchemaMapping().get(selector_globalSchema);
@@ -461,6 +501,8 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 
 		List<IvisFilterForQuery> localFilters = localQuery.getFilters();
 		FilterStrategy filterStrategy = localQuery.getFilterStrategy();
+		if(filterStrategy == null)
+			filterStrategy = FilterStrategy.AND;
 
 		for (IvisFilterForQuery localFilter : localFilters) {
 			/*
@@ -555,6 +597,98 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperIn
 		this.csvHeaderIndicesMap = makeCsvHeaderIndicesMap(headers);
 
 		return new CsvRecords(this.headers, rows);
+	}
+
+	@Override
+	public List<String> extractIdsOfModifiedRecords(SubqueryGenerator subqueryGenerator)
+			throws DocumentException, IOException {
+
+		DefaultQuery defaultQuery = this.getDefaultQuery();
+		String querySelector_localSchema = defaultQuery.getDefaultQuerySelector_localSchema();
+
+		IvisQuery query_localSchema = new IvisQuery();
+		query_localSchema.setSelector(querySelector_localSchema);
+
+		List<String> subqueries_global = subqueryGenerator.getSubqueryMapping()
+				.get(defaultQuery.getDefaultQuerySelector_globalSchema());
+
+		IvisQuery globalQuery = new IvisQuery();
+		globalQuery.setSelector(defaultQuery.getDefaultQuerySelector_globalSchema());
+
+		Map<String, String> subqueries_global_and_local_schema = this.transformIntoGlobalAndLocalSubqueries(globalQuery,
+				subqueries_global);
+
+		String elementName = this.getNameFromXPathExpression(globalQuery.getSelector());
+
+		/*
+		 * parse the whole file and compare its contents to shadow copy file
+		 * contents
+		 */
+
+		List<String[]> records = getRecordsForFilter(query_localSchema, this.getSourceFile());
+
+		/*
+		 * shadow copy contains all elements BEFORE the modification happened!
+		 * 
+		 * hence, we can compare allRecords against the shadowCopyRecords to
+		 * identify modifications
+		 */
+		List<String[]> records_shadowCopy = getRecordsForFilter(query_localSchema, this.getShadowCopyFile());
+
+		List<String> idsOfModifiedObjects = getIdsOfModifiedOrNewInstances(records, records_shadowCopy,
+				subqueries_global_and_local_schema, elementName);
+
+		// replace shadow copy file
+		this.replaceShadowCopy();
+
+		return idsOfModifiedObjects;
+	}
+
+	private List<String> getIdsOfModifiedOrNewInstances(List<String[]> records, List<String[]> records_shadowCopy,
+			Map<String, String> subqueries_global_and_local_schema, String elementName) throws IOException {
+
+		List<String> idsOfModifiedObjects = new ArrayList<String>();
+
+		String csv_id_column = this.getIdProperty().getSelector_localSchema();
+
+		int idHeaderIndex = this.csvHeaderIndicesMap.get(csv_id_column);
+
+		Map<String, String[]> idForCsvRecordMap = createIdForCsvRecordMap(records_shadowCopy, idHeaderIndex);
+
+		/*
+		 * for each record, find the corresponding shadowCopy
+		 * 
+		 * if none is found --> new object!
+		 * 
+		 * if existing is found --> compare each property for equality
+		 */
+
+		for (String[] csvRecord : records) {
+			String recordId = csvRecord[idHeaderIndex];
+
+			if (!idForCsvRecordMap.containsKey(recordId)) {
+				/*
+				 * new object
+				 */
+				idsOfModifiedObjects.add(createIdString(recordId));
+			}
+
+			else {
+				// compare to shadow copy
+
+				String[] shadowCopy = idForCsvRecordMap.get(recordId);
+
+				if (hasModifiedProperties(csvRecord, shadowCopy)) {
+					/*
+					 * modified object
+					 */
+					idsOfModifiedObjects.add(createIdString(recordId));
+				}
+			}
+		}
+
+		return idsOfModifiedObjects;
+
 	}
 
 }

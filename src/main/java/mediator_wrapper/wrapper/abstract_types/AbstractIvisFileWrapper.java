@@ -14,6 +14,7 @@ import org.dom4j.DocumentException;
 
 import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
+import mediator_wrapper.mediation.impl.SubqueryGenerator;
 
 /**
  * Abstract wrapper class that manages file-based data sources.
@@ -37,7 +38,7 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 		 * 
 		 * parse mapping file; as map that maps selectors to local elements?!?!
 		 */
-		this.instantiateSchemaMapping(pathToSchemaMappingFile);
+		this.instantiateProperties(pathToSchemaMappingFile);
 	}
 
 	public File getSourceFile() {
@@ -59,16 +60,18 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 	 *            indicating which objects to retrieve
 	 * @param subquerySelectors_globalSchema
 	 *            subqueires to indicate which properties shall be extracted
+	 * @param recordIds 
 	 * 
 	 * @return
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 * @throws IOException
 	 * @throws DocumentException
+	 * @throws Exception 
 	 */
 	public abstract List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
-			List<String> subquerySelectors_globalSchema)
-			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException;
+			List<String> subquerySelectors_globalSchema, List<String> recordIds)
+			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException, Exception;
 
 	/**
 	 * TODO generic methods to access, parse, modify a file?
@@ -86,7 +89,7 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 		try {
 			java.nio.file.Files.delete(TO);
 			java.nio.file.Files.copy(FROM, TO, options);
-			
+
 			FROM = null;
 			TO = null;
 		} catch (IOException e) {
@@ -94,5 +97,16 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 		}
 
 	}
+
+	/**
+	 * Examines the source file and shadow copy file for modified entries and
+	 * returns their IDs as List of Strings like "id=2";
+	 * @param subqueryGenerator 
+	 * 
+	 * @return
+	 * @throws DocumentException 
+	 * @throws IOException 
+	 */
+	public abstract List<String> extractIdsOfModifiedRecords(SubqueryGenerator subqueryGenerator) throws DocumentException, IOException;
 
 }
