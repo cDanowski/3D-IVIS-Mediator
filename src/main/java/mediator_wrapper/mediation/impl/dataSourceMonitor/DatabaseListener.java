@@ -1,4 +1,4 @@
-package mediator_wrapper.wrapper.impl.database;
+package mediator_wrapper.mediation.impl.dataSourceMonitor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,7 +11,6 @@ import org.postgresql.PGNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import mediator_wrapper.mediation.impl.sourceFilesMonitor.DataSourceChangeMessage;
 import util.UrlConstants;
 
 public class DatabaseListener extends Thread {

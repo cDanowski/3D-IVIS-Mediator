@@ -1,4 +1,4 @@
-package mediator_wrapper.mediation.impl.sourceFilesMonitor;
+package mediator_wrapper.mediation.impl.dataSourceMonitor;
 
 import java.util.List;
 

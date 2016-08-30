@@ -20,7 +20,7 @@ import controller.synchronize.SynchronizationMessage;
 import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.IvisMediatorInterface;
-import mediator_wrapper.mediation.impl.sourceFilesMonitor.SourceFilesMonitor;
+import mediator_wrapper.mediation.impl.dataSourceMonitor.SourceFilesMonitor;
 import mediator_wrapper.wrapper.IvisWrapperInterface;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
