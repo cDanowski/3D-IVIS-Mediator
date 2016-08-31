@@ -21,7 +21,7 @@ import ivisQuery.IvisQuery;
  * @author Christian Danowski
  *
  */
-public interface IvisWrapperInterface {
+public interface IvisWrapper {
 
 	/**
 	 * Transforms the query against the global schema to a query against the

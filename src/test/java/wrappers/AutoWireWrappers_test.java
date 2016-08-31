@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import config.WebSocketConfig;
-import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.IvisWrapper;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -24,15 +24,15 @@ import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
 public class AutoWireWrappers_test {
 
 	@Autowired
-	List<IvisWrapperInterface> wrappers;
+	List<IvisWrapper> wrappers;
 
 	@Test
 	public void testWrappers() {
 		assertNotNull(wrappers);
 		assertTrue(wrappers.size() > 0);
 
-		for (IvisWrapperInterface wrapper : wrappers) {
-			assertTrue(wrapper instanceof IvisWrapperInterface);
+		for (IvisWrapper wrapper : wrappers) {
+			assertTrue(wrapper instanceof IvisWrapper);
 
 			if (wrapper instanceof AbstractIvisFileWrapper) {
 				assertNotNull(((AbstractIvisFileWrapper) wrapper).getSourceFile());

@@ -18,7 +18,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import config.WebSocketConfig;
 import mediator_wrapper.mediation.impl.IvisMediator;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
-import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.IvisWrapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = WebSocketConfig.class, loader = AnnotationConfigContextLoader.class)
@@ -35,7 +35,7 @@ public class AutowireMediator_test {
 	@Test
 	public void testAvailableWrappers() {
 
-		List<IvisWrapperInterface> availableWrappers = mediator.getAvailableWrappers();
+		List<IvisWrapper> availableWrappers = mediator.getAvailableWrappers();
 
 		assertNotNull(availableWrappers);
 		assertTrue(availableWrappers.size() > 0);
@@ -44,15 +44,15 @@ public class AutowireMediator_test {
 	@Test
 	public void testSchemaMapping() {
 
-		Map<String, List<IvisWrapperInterface>> wrapperMapping = mediator.getWrapperMapping();
+		Map<String, List<IvisWrapper>> wrapperMapping = mediator.getWrapperMapping();
 
 		assertNotNull(wrapperMapping);
 		assertTrue(wrapperMapping.size() > 0);
 
-		Iterator<Entry<String, List<IvisWrapperInterface>>> mappingIterator = wrapperMapping.entrySet().iterator();
+		Iterator<Entry<String, List<IvisWrapper>>> mappingIterator = wrapperMapping.entrySet().iterator();
 
 		while (mappingIterator.hasNext()) {
-			Entry<String, List<IvisWrapperInterface>> mappingEntry = mappingIterator.next();
+			Entry<String, List<IvisWrapper>> mappingEntry = mappingIterator.next();
 
 			assertNotNull(mappingEntry);
 			assertNotNull(mappingEntry.getKey());

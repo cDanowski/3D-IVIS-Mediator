@@ -14,7 +14,7 @@ import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ivisQuery.IvisQuery;
-import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.IvisWrapper;
 
 /**
  * Helper class to find all subqueries for a certain selector that points to

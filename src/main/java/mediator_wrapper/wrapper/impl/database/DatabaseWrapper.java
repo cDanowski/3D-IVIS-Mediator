@@ -21,7 +21,7 @@ import ivisQuery.FilterStrategy;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.impl.dataSourceMonitor.DatabaseListener;
-import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.IvisWrapper;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
 
 /**
@@ -30,7 +30,7 @@ import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
  * @author Christian Danowski
  *
  */
-public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements IvisWrapperInterface {
+public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements IvisWrapper {
 
 	private static final String IVIS_APP_NOTIFICATION = "ivisnotification";
 

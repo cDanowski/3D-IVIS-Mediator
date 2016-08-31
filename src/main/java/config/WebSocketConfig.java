@@ -20,7 +20,7 @@ import mediator_wrapper.mediation.impl.IvisMediator;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
 import mediator_wrapper.mediation.impl.dataSourceMonitor.DatabaseListener;
 import mediator_wrapper.mediation.impl.dataSourceMonitor.SourceFilesMonitor;
-import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.IvisWrapper;
 import mediator_wrapper.wrapper.impl.csv.CsvWrapper;
 import mediator_wrapper.wrapper.impl.database.DatabaseWrapper;
 import mediator_wrapper.wrapper.impl.xml.XmlWrapper;
@@ -177,7 +177,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	@Bean
 	public IvisMediator initializeMediator()
 			throws DocumentException, IOException, InterruptedException, ClassNotFoundException, SQLException {
-		List<IvisWrapperInterface> wrappers = new ArrayList<IvisWrapperInterface>();
+		List<IvisWrapper> wrappers = new ArrayList<IvisWrapper>();
 		wrappers.add(initializeXmlWrapper());
 		wrappers.add(initializeCsvWrapper());
 		wrappers.add(initializeDatabaseWrapper());

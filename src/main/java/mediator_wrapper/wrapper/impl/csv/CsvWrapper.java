@@ -32,7 +32,7 @@ import ivisQuery.FilterType;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
-import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.IvisWrapper;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
 import mediator_wrapper.wrapper.abstract_types.DefaultQuery;
 
@@ -42,7 +42,7 @@ import mediator_wrapper.wrapper.abstract_types.DefaultQuery;
  * @author Christian Danowski
  *
  */
-public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapperInterface {
+public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapper {
 
 	private Map<String, Integer> csvHeaderIndicesMap;
 	private String[] headers;

@@ -5,7 +5,7 @@
     <title lang="DE">Die Elfen</title>  
     <author>Bernhard Hennen</author>  
     <category>Fantasy</category>  
-    <amountInStock>12</amountInStock>  
+    <amountInStock>5</amountInStock>  
     <cost> 
       <currency>Euro</currency>  
       <price>10.00</price> 
@@ -35,7 +35,7 @@
     <title lang="DE">Elfenkönigin</title>  
     <author>Bernhard Hennen</author>  
     <category>Fantasy</category>  
-    <amountInStock>12</amountInStock>  
+    <amountInStock>11</amountInStock>  
     <cost> 
       <currency>Euro</currency>  
       <price>12.00</price> 

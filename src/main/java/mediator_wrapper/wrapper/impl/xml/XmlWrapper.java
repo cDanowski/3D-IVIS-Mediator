@@ -27,7 +27,7 @@ import ivisQuery.FilterType;
 import ivisQuery.IvisFilterForQuery;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
-import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.IvisWrapper;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
 import mediator_wrapper.wrapper.abstract_types.DefaultQuery;
 
@@ -37,7 +37,7 @@ import mediator_wrapper.wrapper.abstract_types.DefaultQuery;
  * @author Christian Danowski
  *
  */
-public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapperInterface {
+public class XmlWrapper extends AbstractIvisFileWrapper implements IvisWrapper {
 
 	public XmlWrapper(String pathToSourcefile, String pathToShadowCopyFile, String pathToSchemaMappingFile)
 			throws DocumentException {

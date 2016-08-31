@@ -21,7 +21,7 @@ import ivisObject.IvisObject;
 import ivisQuery.IvisQuery;
 import mediator_wrapper.mediation.IvisMediatorInterface;
 import mediator_wrapper.mediation.impl.dataSourceMonitor.SourceFilesMonitor;
-import mediator_wrapper.wrapper.IvisWrapperInterface;
+import mediator_wrapper.wrapper.IvisWrapper;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisDataBaseWrapper;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisFileWrapper;
 import mediator_wrapper.wrapper.abstract_types.AbstractIvisWebServiceWrapper;
@@ -41,9 +41,9 @@ public class IvisMediator implements IvisMediatorInterface {
 
 	private static final String XPATH_EXPRESSION_MAPPING_ELEMENT = "//mapping";
 
-	private List<IvisWrapperInterface> availableWrappers;
+	private List<IvisWrapper> availableWrappers;
 
-	private Map<String, List<IvisWrapperInterface>> wrapperMapping;
+	private Map<String, List<IvisWrapper>> wrapperMapping;
 
 	private SubqueryGenerator subqueryGenerator;
 
@@ -69,7 +69,7 @@ public class IvisMediator implements IvisMediatorInterface {
 	 */
 
 	@Autowired
-	public IvisMediator(List<IvisWrapperInterface> wrappers, String pathToWrapperMappingFile,
+	public IvisMediator(List<IvisWrapper> wrappers, String pathToWrapperMappingFile,
 			SubqueryGenerator subqueryGenerator, SourceFilesMonitor sourceFilesMonitor)
 			throws DocumentException, IOException, InterruptedException {
 
@@ -107,7 +107,7 @@ public class IvisMediator implements IvisMediatorInterface {
 		/*
 		 * new instance of wrapperMapping
 		 */
-		this.wrapperMapping = new HashMap<String, List<IvisWrapperInterface>>();
+		this.wrapperMapping = new HashMap<String, List<IvisWrapper>>();
 
 		/*
 		 * find all mappings
@@ -126,7 +126,7 @@ public class IvisMediator implements IvisMediatorInterface {
 			 */
 			List<Node> wrapperNodes = node.selectNodes(XPATH_EXPRESSION_WRAPPER);
 
-			List<IvisWrapperInterface> wrappersForSelector = makeListFromWrapperNodes(wrapperNodes);
+			List<IvisWrapper> wrappersForSelector = makeListFromWrapperNodes(wrapperNodes);
 
 			/*
 			 * add mapping to wrapperMapping map
@@ -147,11 +147,11 @@ public class IvisMediator implements IvisMediatorInterface {
 
 	}
 
-	public List<IvisWrapperInterface> getAvailableWrappers() {
+	public List<IvisWrapper> getAvailableWrappers() {
 		return availableWrappers;
 	}
 
-	public Map<String, List<IvisWrapperInterface>> getWrapperMapping() {
+	public Map<String, List<IvisWrapper>> getWrapperMapping() {
 		return wrapperMapping;
 	}
 
@@ -169,8 +169,8 @@ public class IvisMediator implements IvisMediatorInterface {
 	 * @param wrapperNodes
 	 * @return
 	 */
-	private List<IvisWrapperInterface> makeListFromWrapperNodes(List<Node> wrapperNodes) {
-		List<IvisWrapperInterface> wrappersForSelector = new ArrayList<IvisWrapperInterface>();
+	private List<IvisWrapper> makeListFromWrapperNodes(List<Node> wrapperNodes) {
+		List<IvisWrapper> wrappersForSelector = new ArrayList<IvisWrapper>();
 
 		/*
 		 * now for each wrapperNode
@@ -181,7 +181,7 @@ public class IvisMediator implements IvisMediatorInterface {
 		for (Node wrapperNode : wrapperNodes) {
 			String classNameOfTargetWrapper = wrapperNode.getText();
 
-			for (IvisWrapperInterface wrapperInstance : this.availableWrappers) {
+			for (IvisWrapper wrapperInstance : this.availableWrappers) {
 				/*
 				 * if class name is identical, then target wrapper has been
 				 * found!
@@ -224,13 +224,13 @@ public class IvisMediator implements IvisMediatorInterface {
 		 * find all wrapper instances, that offer data for the selected element
 		 * of the global schema
 		 */
-		List<IvisWrapperInterface> wrappersForSelector = this.wrapperMapping.get(selector_globalSchema);
+		List<IvisWrapper> wrappersForSelector = this.wrapperMapping.get(selector_globalSchema);
 
 		/*
 		 * now forward the initial query object and the identified
 		 * subquerySelectors to each found wrapper instance and collect its data
 		 */
-		for (IvisWrapperInterface wrapper : wrappersForSelector) {
+		for (IvisWrapper wrapper : wrappersForSelector) {
 
 			try {
 				List<IvisObject> retrievedObjectsForWrapper = wrapper.queryData(query, subquerySelectors);
@@ -265,7 +265,7 @@ public class IvisMediator implements IvisMediatorInterface {
 
 			String wrapperReference = modificationMessage.getWrapperReference();
 
-			for (IvisWrapperInterface wrapper : availableWrappers) {
+			for (IvisWrapper wrapper : availableWrappers) {
 				if (wrapper.getClass().getSimpleName().equalsIgnoreCase(wrapperReference))
 					hasModified = wrapper.modifyDataInstance(modificationMessage);
 			}
@@ -312,7 +312,7 @@ public class IvisMediator implements IvisMediatorInterface {
 
 		List<IvisObject> modifiedInstances = null;
 
-		for (IvisWrapperInterface wrapper : availableWrappers) {
+		for (IvisWrapper wrapper : availableWrappers) {
 			if (wrapper instanceof AbstractIvisFileWrapper) {
 				AbstractIvisFileWrapper fileWrapper = (AbstractIvisFileWrapper) wrapper;
 				/*
@@ -372,7 +372,7 @@ public class IvisMediator implements IvisMediatorInterface {
 	 * @throws DocumentException 
 	 */
 	public List<String> fetchModifiedRecordIds(String fileName) throws DocumentException, IOException {
-		for (IvisWrapperInterface ivisWrapperInterface : availableWrappers) {
+		for (IvisWrapper ivisWrapperInterface : availableWrappers) {
 			if (ivisWrapperInterface instanceof AbstractIvisFileWrapper){
 				AbstractIvisFileWrapper fileWrapper = (AbstractIvisFileWrapper) ivisWrapperInterface;
 				
