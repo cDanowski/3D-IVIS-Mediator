@@ -355,7 +355,7 @@ public class DatabaseWrapper extends AbstractIvisDataBaseWrapper implements Ivis
 	}
 
 	@Override
-	public List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
+	public List<IvisObject> onDataSourceChanged(IvisQuery query_globalSchema,
 			List<String> subquerySelectors_globalSchema, List<String> recordIds) throws Exception {
 
 		/*

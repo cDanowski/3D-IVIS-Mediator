@@ -325,7 +325,7 @@ public class IvisMediator implements IvisMediatorInterface {
 				 * compare dataSourceIdentifier to file name of wrapper
 				 */
 				if (fileWrapper.getSourceFile().getName().equalsIgnoreCase(file.toString())) {
-					modifiedInstances = fileWrapper.onSourceFileChanged(query_globalSchema,
+					modifiedInstances = fileWrapper.onDataSourceChanged(query_globalSchema,
 							subquerySelectors_globalSchema, recordIds);
 					break;
 				}
@@ -344,7 +344,7 @@ public class IvisMediator implements IvisMediatorInterface {
 				 * compare dataSourceIdentifier to class name of wrapper
 				 */
 				if (databaseWrapper.getClass().toString().equalsIgnoreCase(className)) {
-					modifiedInstances = databaseWrapper.onSourceFileChanged(query_globalSchema,
+					modifiedInstances = databaseWrapper.onDataSourceChanged(query_globalSchema,
 							subquerySelectors_globalSchema, recordIds);
 					break;
 				}

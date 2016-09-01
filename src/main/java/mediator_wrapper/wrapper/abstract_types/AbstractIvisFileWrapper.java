@@ -69,7 +69,7 @@ public abstract class AbstractIvisFileWrapper extends AbstractIvisWrapper {
 	 * @throws DocumentException
 	 * @throws Exception 
 	 */
-	public abstract List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
+	public abstract List<IvisObject> onDataSourceChanged(IvisQuery query_globalSchema,
 			List<String> subquerySelectors_globalSchema, List<String> recordIds)
 			throws UnsupportedEncodingException, FileNotFoundException, IOException, DocumentException, Exception;
 

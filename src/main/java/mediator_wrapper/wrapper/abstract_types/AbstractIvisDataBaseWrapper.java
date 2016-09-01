@@ -319,7 +319,7 @@ public abstract class AbstractIvisDataBaseWrapper extends AbstractIvisWrapper {
 	 * @return the modified instance as 
 	 * @throws Exception 
 	 */
-	public abstract List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
+	public abstract List<IvisObject> onDataSourceChanged(IvisQuery query_globalSchema,
 			List<String> subquerySelectors_globalSchema, List<String> recordIds) throws Exception;
 
 	/*

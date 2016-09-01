@@ -78,7 +78,7 @@ public class CsvWrapper extends AbstractIvisFileWrapper implements IvisWrapper {
 	}
 
 	@Override
-	public List<IvisObject> onSourceFileChanged(IvisQuery query_globalSchema,
+	public List<IvisObject> onDataSourceChanged(IvisQuery query_globalSchema,
 			List<String> subquerySelectors_globalSchema, List<String> recordIds) throws Exception {
 
 		/*
