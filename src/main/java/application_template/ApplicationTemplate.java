@@ -19,7 +19,7 @@ import ivisObject.IvisObject;
  * @author Christian Danowski
  *
  */
-public interface ApplicationTemplateInterface {
+public interface ApplicationTemplate {
 
 	/**
 	 * Returns the unique identifier of the template. It may be used to

@@ -14,7 +14,7 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
-import application_template.ApplicationTemplateInterface;
+import application_template.ApplicationTemplate;
 import application_template.impl.bookstoreTemplate.BookstoreApplicationTemplate;
 import mediator_wrapper.mediation.impl.IvisMediator;
 import mediator_wrapper.mediation.impl.SubqueryGenerator;
@@ -209,7 +209,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	 * @throws DocumentException
 	 */
 	@Bean
-	public ApplicationTemplateInterface bookstoreApplicationTemplate() throws DocumentException {
+	public ApplicationTemplate bookstoreApplicationTemplate() throws DocumentException {
 
 		return new BookstoreApplicationTemplate();
 	}

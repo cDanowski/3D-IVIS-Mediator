@@ -8,7 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
-import application_template.ApplicationTemplateInterface;
+import application_template.ApplicationTemplate;
 import application_template.impl.VisualizationObject;
 import ivisObject.IvisObject;
 import mediator_wrapper.mediation.impl.IvisMediator;
@@ -28,7 +28,7 @@ public class SynchronizationController {
 	private IvisMediator mediator;
 
 	@Autowired
-	private List<ApplicationTemplateInterface> availableApplicationTemplates;
+	private List<ApplicationTemplate> availableApplicationTemplates;
 
 	@Autowired
 	private SimpMessagingTemplate messagingTemplate;
@@ -114,7 +114,7 @@ public class SynchronizationController {
 			
 			String applicationTemplateIdentifier = synchronizationMessage.getApplicationTemplateIdentifier();
 
-			for (ApplicationTemplateInterface applTemplate : this.availableApplicationTemplates) {
+			for (ApplicationTemplate applTemplate : this.availableApplicationTemplates) {
 				
 				if(applicationTemplateIdentifier.equalsIgnoreCase(applTemplate.getUniqueIdentifier())){
 					List<VisualizationObject> modifiedObjects = applTemplate.visualizeData_runtime(retrievedData);

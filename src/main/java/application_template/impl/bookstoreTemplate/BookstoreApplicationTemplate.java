@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import application_template.ApplicationTemplateInterface;
+import application_template.ApplicationTemplate;
 import application_template.impl.VisualizationObject;
 import ivisObject.IvisObject;
 
@@ -16,7 +16,7 @@ import ivisObject.IvisObject;
  * @author Christian Danowski
  *
  */
-public class BookstoreApplicationTemplate implements ApplicationTemplateInterface {
+public class BookstoreApplicationTemplate implements ApplicationTemplate {
 
 	private String uniqueApplicationId = "bookstoreApplicationTemplate";
 

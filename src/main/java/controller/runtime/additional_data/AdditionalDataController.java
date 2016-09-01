@@ -8,7 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
-import application_template.ApplicationTemplateInterface;
+import application_template.ApplicationTemplate;
 import application_template.impl.VisualizationObject;
 import ivisObject.IvisObject;
 import mediator_wrapper.mediation.impl.IvisMediator;
@@ -29,7 +29,7 @@ public class AdditionalDataController {
 	IvisMediator mediator;
 
 	@Autowired
-	private List<ApplicationTemplateInterface> availableApplicationTemplates;
+	private List<ApplicationTemplate> availableApplicationTemplates;
 
 	@MessageMapping(UrlConstants.RUNTIME_ADDITIONAL_DATA_ENDPOINT)
 	@SendToUser(destinations = UrlConstants.STOMP_CLIENT_RUNTIME_ADDITIONAL_DATA_ENDPOINT, broadcast = false)
@@ -43,7 +43,7 @@ public class AdditionalDataController {
 			 */
 			String applicationTemplateIdentifier = runtimeMessage.getApplicationTemplateIdentifier();
 
-			for (ApplicationTemplateInterface applTemplate : this.availableApplicationTemplates) {
+			for (ApplicationTemplate applTemplate : this.availableApplicationTemplates) {
 				/*
 				 * identify the requested template!
 				 */

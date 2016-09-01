@@ -8,7 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
-import application_template.ApplicationTemplateInterface;
+import application_template.ApplicationTemplate;
 import ivisObject.IvisObject;
 import mediator_wrapper.mediation.impl.IvisMediator;
 import util.UrlConstants;
@@ -27,7 +27,7 @@ public class ServerSideVisualizationController {
 	private IvisMediator mediator;
 
 	@Autowired
-	private List<ApplicationTemplateInterface> availableApplicationTemplates;
+	private List<ApplicationTemplate> availableApplicationTemplates;
 
 	/**
 	 * Manages an incoming data query request from clients against the global
@@ -57,7 +57,7 @@ public class ServerSideVisualizationController {
 			 */
 			String applicationTemplateIdentifier = serverSideIvisMessage.getApplicationTemplateIdentifier();
 
-			for (ApplicationTemplateInterface applTemplate : this.availableApplicationTemplates) {
+			for (ApplicationTemplate applTemplate : this.availableApplicationTemplates) {
 				/*
 				 * identify the requested template!
 				 */
