@@ -445,7 +445,7 @@ function resetScene(){
 	$('.runtime').prop("disabled", true);
 	
 	// also reset translation value to initial value
-	translation_y = -0;
+	translation_y = -5;
 	
 }
 
