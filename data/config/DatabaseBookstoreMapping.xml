@@ -6,9 +6,9 @@
 		<!-- selector is an XPath expression pointing to an element of the global schema -->
 		<selector_globalSchema>bookstore/book</selector_globalSchema>
 		<!-- selector pointing to the equivalent element of the local schema;
-			in this case points to the target table (syntax "schema.tableName") 
+			in this case points to the target table (syntax "tableName") 
 			and column of the database (seperated by ":") 
-			e.g. "Book:*" means schema "public", relation "Book", all properties-->
+			e.g. "Book:*" means relation "Book", all properties-->
 		<selector_localSchema>Book:*</selector_localSchema>
 	</mapping>
 	

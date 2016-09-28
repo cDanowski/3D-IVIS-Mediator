@@ -22,13 +22,13 @@
 		<selector_localSchema>books/book/amountInStock</selector_localSchema>
 	</mapping>
 	
-	<!-- mapping for attribute stock -->
+	<!-- mapping for attribute reorderLevel -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@reorderLevel</selector_globalSchema>
 		<selector_localSchema>books/book/@reorderLevel</selector_localSchema>
 	</mapping>
 	
-	<!-- mapping for attribute stock -->
+	<!-- mapping for attribute reordered -->
 	<mapping>
 		<selector_globalSchema>bookstore/book/@reordered</selector_globalSchema>
 		<selector_localSchema>books/book/@isReordered</selector_localSchema>
@@ -69,6 +69,8 @@
 		<selector_globalSchema>bookstore/book/price/@currency</selector_globalSchema>
 		<selector_localSchema>books/book/cost/currency</selector_localSchema>
 	</mapping>
+	
+	<!-- is mapping -->
 	
 	<id-mapping>
 		<selector_globalSchema>bookstore/book/@id</selector_globalSchema>
